@@ -1,0 +1,483 @@
+/* リセットCSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 基本スタイル */
+body {
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+/* コンテナ */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ヘッダー */
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.header-image {
+    position: relative;
+    width: 100%;
+}
+
+.header-flower-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.form-header h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.2em;
+    color: white;
+    margin: 0;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+    white-space: nowrap;
+}
+
+.form-description {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.1em;
+    color: white;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+}
+
+/* ヘッダーオーバーレイ */
+.form-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+/* フォーム */
+.application-form {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* フォームグループ */
+.form-group {
+    margin-bottom: 25px;
+}
+
+/* ラベル */
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 必須・任意タグ */
+.required-tag, .optional-tag {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.required-tag {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.optional-tag {
+    background-color: #95a5a6;
+    color: white;
+}
+
+/* 入力フィールド */
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* テキストエリア */
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* セレクトボックス */
+.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    appearance: none;
+}
+
+/* フィールドセット */
+.address-fieldset, .radio-fieldset {
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 0;
+}
+
+.fieldset-legend {
+    font-weight: 600;
+    color: #2c3e50;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ラジオボタングループ */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* ラジオボタンラベル */
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: normal;
+    margin: 0;
+    gap: 12px;
+}
+
+.radio-label:hover {
+    border-color: #3498db;
+    background-color: #f8f9fa;
+}
+
+/* ラジオボタン入力 */
+.radio-input {
+    display: none;
+}
+
+/* カスタムラジオボタン */
+.radio-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #bdc3c7;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.radio-input:checked + .radio-custom {
+    border-color: #3498db;
+    background-color: #3498db;
+}
+
+.radio-input:checked + .radio-custom::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radio-input:checked ~ .radio-label {
+    border-color: #3498db;
+    background-color: #ebf3fd;
+}
+
+/* フォーム注意書き */
+.form-note {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    line-height: 1.4;
+}
+
+/* 参考画像エリア */
+.reference-image {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+}
+
+.reference-title {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 15px 0;
+    text-align: center;
+}
+
+.nameplate-reference-img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: block;
+    margin: 0 auto;
+}
+
+/* ボタンエリア */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e1e8ed;
+}
+
+/* ボタン */
+.submit-button, .reset-button {
+    padding: 14px 40px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.submit-button {
+    background-color: #27ae60;
+    color: white;
+}
+
+.submit-button:hover {
+    background-color: #229954;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.reset-button {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.reset-button:hover {
+    background-color: #7f8c8d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .application-form {
+        padding: 25px 20px;
+    }
+    
+    .form-header h1 {
+        font-size: 1.6em;
+    }
+    
+    .header-flower-img {
+        height: 250px;
+    }
+    
+    .form-description {
+        font-size: 1em;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .submit-button, .reset-button {
+        width: 100%;
+    }
+    
+    .radio-group {
+        gap: 10px;
+    }
+    
+    .reference-image {
+        padding: 15px;
+    }
+    
+    .nameplate-reference-img {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .form-header h1 {
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px 0;
+    }
+    
+    .form-header {
+        margin-bottom: 20px;
+    }
+    
+    .form-header h1 {
+        font-size: 1.2em;
+    }
+    
+    .header-flower-img {
+        height: 200px;
+    }
+    
+    .form-description {
+        font-size: 0.9em;
+        bottom: 15px;
+    }
+    
+    .application-form {
+        padding: 20px 15px;
+    }
+    
+    .address-fieldset, .radio-fieldset {
+        padding: 15px;
+    }
+    
+    .reference-image {
+        padding: 10px;
+        margin-top: 15px;
+    }
+    
+    .reference-title {
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+}
+
+/* アクセシビリティの向上 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* フォーカス時のアクセシビリティ */
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible,
+.radio-label:focus-within {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* エラー状態のスタイル */
+.was-validated .form-input:invalid,
+.was-validated .form-select:invalid,
+.was-validated .form-textarea:invalid {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* 読み込み中のスタイル */
+.submit-button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 印刷時のスタイル */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .form-header {
+        border: 1px solid #ccc;
+    }
+    
+    .application-form {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .header-flower-img {
+        height: 200px;
+    }
+    
+    .form-header::before {
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .submit-button, .reset-button {
+        display: none;
+    }
+    
+    .reference-image {
+        background-color: white;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .nameplate-reference-img {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+} 

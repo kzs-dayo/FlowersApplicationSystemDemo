@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生花寄贈申し込み一覧</title>
+    <link rel="stylesheet" href="list-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <h1>生花寄贈申し込み一覧</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="location.href='index.html'">新規申し込み</button>
+                <button class="btn btn-secondary" onclick="refreshList()">更新</button>
+            </div>
+        </header>
+
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="statusFilter">ステータス:</label>
+                <select id="statusFilter" onchange="filterApplications()">
+                    <option value="">すべて</option>
+                    <option value="pending">処理中</option>
+                    <option value="success">出力完了</option>
+                    <option value="failed">出力失敗</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="dateFilter">申込日:</label>
+                <input type="date" id="dateFilter" onchange="filterApplications()">
+            </div>
+            <div class="filter-group">
+                <label for="searchInput">検索:</label>
+                <input type="text" id="searchInput" placeholder="ご葬家名、故人名で検索" onkeyup="searchApplications()">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="applications-table" id="applicationsTable">
+                <thead>
+                    <tr>
+                        <th>申込ID</th>
+                        <th>申込日時</th>
+                        <th>ご葬家名</th>
+                        <th>故人名</th>
+                        <th>ご葬儀日程</th>
+                        <th>ご依頼者名</th>
+                        <th>連絡先</th>
+                        <th>金額</th>
+                        <th>支払い方法</th>
+                        <th>EXCEL出力</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsBody">
+                    <!-- サンプルデータ -->
+                    <tr>
+                        <td>A001</td>
+                        <td>2024/01/15 14:30</td>
+                        <td>輝家</td>
+                        <td>輝 太郎</td>
+                        <td>2024/01/20</td>
+                        <td>輝 花子</td>
+                        <td>090-1234-5678</td>
+                        <td>¥16,500</td>
+                        <td>振り込み</td>
+                        <td>
+                            <span class="status-badge status-success">
+                                <span class="status-icon">✓</span>
+                                出力完了
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-detail" onclick="viewDetail('A001')">詳細</button>
+                                <button class="btn btn-excel" onclick="downloadExcel('A001')">再出力</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>A002</td>
+                        <td>2024/01/15 16:45</td>
+                        <td>山田家</td>
+                        <td>山田 一郎</td>
+                        <td>2024/01/22</td>
+                        <td>山田 美香</td>
+                        <td>080-9876-5432</td>
+                        <td>¥20,000</td>
+                        <td>現地払い</td>
+                        <td>
+                            <span class="status-badge status-pending">
+                                <span class="status-icon">⏳</span>
+                                処理中
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-detail" onclick="viewDetail('A002')">詳細</button>
+                                <button class="btn btn-excel" onclick="downloadExcel('A002')" disabled>出力中</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>A003</td>
+                        <td>2024/01/16 09:15</td>
+                        <td>佐藤家</td>
+                        <td>佐藤 次郎</td>
+                        <td>2024/01/25</td>
+                        <td>佐藤 明子</td>
+                        <td>070-1111-2222</td>
+                        <td>¥16,500</td>
+                        <td>振り込み</td>
+                        <td>
+                            <span class="status-badge status-failed">
+                                <span class="status-icon">✗</span>
+                                出力失敗
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-detail" onclick="viewDetail('A003')">詳細</button>
+                                <button class="btn btn-excel btn-retry" onclick="retryExcel('A003')">再試行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>A004</td>
+                        <td>2024/01/16 11:30</td>
+                        <td>田中家</td>
+                        <td>田中 三郎</td>
+                        <td>2024/01/28</td>
+                        <td>田中 由美</td>
+                        <td>090-3333-4444</td>
+                        <td>¥16,500</td>
+                        <td>現地払い</td>
+                        <td>
+                            <span class="status-badge status-success">
+                                <span class="status-icon">✓</span>
+                                出力完了
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-detail" onclick="viewDetail('A004')">詳細</button>
+                                <button class="btn btn-excel" onclick="downloadExcel('A004')">再出力</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>A005</td>
+                        <td>2024/01/16 13:45</td>
+                        <td>鈴木家</td>
+                        <td>鈴木 四郎</td>
+                        <td>2024/01/30</td>
+                        <td>鈴木 恵子</td>
+                        <td>080-5555-6666</td>
+                        <td>¥25,000</td>
+                        <td>振り込み</td>
+                        <td>
+                            <span class="status-badge status-pending">
+                                <span class="status-icon">⏳</span>
+                                処理中
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-detail" onclick="viewDetail('A005')">詳細</button>
+                                <button class="btn btn-excel" onclick="downloadExcel('A005')" disabled>出力中</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button class="btn btn-pagination" onclick="changePage(1)">&laquo; 最初</button>
+            <button class="btn btn-pagination" onclick="changePage(-1)">&lsaquo; 前</button>
+            <span class="page-info">ページ 1 / 1 (5件中 1-5件を表示)</span>
+            <button class="btn btn-pagination" onclick="changePage(1)">次 &rsaquo;</button>
+            <button class="btn btn-pagination" onclick="changePage(-1)">最後 &raquo;</button>
+        </div>
+    </div>
+
+    <!-- 詳細モーダル -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>申込詳細</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 詳細内容がここに動的に挿入されます -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">閉じる</button>
+                <button class="btn btn-excel" onclick="downloadExcelFromModal()">EXCEL出力</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="list-script.js"></script>
+</body>
+</html> 

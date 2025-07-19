@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生花寄贈申し込みフォーム</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="form-header">
+            <div class="header-image">
+                <img src="24948665_m.jpg" alt="白い菊の花" class="header-flower-img">
+            </div>
+            <h1>生花寄贈申し込みフォーム</h1>
+            <p class="form-description">故人を偲ぶ心を込めて、<br>生花をお届けいたします。</p>
+        </header>
+
+        <form class="application-form" id="flowerForm">
+            <!-- ご葬家名 -->
+            <div class="form-group">
+                <label for="familyName" class="form-label">
+                    ご葬家名
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="text" id="familyName" name="familyName" class="form-input" required placeholder="例: 輝家">
+                <p class="form-note">ご葬家のお名前をご入力ください。</br>
+                    ※弊社施行のご葬儀に限ります。
+                </p>
+            </div>
+
+            <!-- 故人名 -->
+            <div class="form-group">
+                <label for="deceasedName" class="form-label">
+                    故人名
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="text" id="deceasedName" name="deceasedName" class="form-input" required placeholder="例: 輝 太郎">
+                <p class="form-note">故人のお名前をご入力ください。</p>
+            </div>
+
+            <!-- ご葬儀の日程 -->
+            <div class="form-group">
+                <label for="funeralDate" class="form-label">
+                    ご葬儀の日程
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="date" id="funeralDate" name="funeralDate" class="form-input" required>
+                <p class="form-note">生花をお届けする日程を選択してください。</p>
+            </div>
+
+            <!-- ご依頼者のお名前 -->
+            <div class="form-group">
+                <label for="applicantName" class="form-label">
+                    ご依頼者のお名前
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="text" id="applicantName" name="applicantName" class="form-input" required placeholder="例: 輝 花子">
+                <p class="form-note">お申し込みされる方のお名前をご入力ください。</p>
+            </div>
+
+            <!-- ご依頼者の連絡先 -->
+            <div class="form-group">
+                <label for="phone" class="form-label">
+                    ご依頼者の連絡先
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="tel" id="phone" name="phone" class="form-input" required placeholder="例: 090-1234-5678">
+                <p class="form-note">
+                    ・日中連絡が取れる電話番号を入力ください。<br>
+                    ・申込内容の確認の為、折り返しお電話させていただく場合がございます。<br>
+                </p>
+            </div>
+
+            <!-- ご依頼者の住所 -->
+            <fieldset class="address-fieldset">
+                <legend class="fieldset-legend">
+                    ご依頼者の住所
+                    <span class="required-tag">必須</span>
+                </legend>
+                
+                <div class="form-group">
+                    <label for="postalCode" class="form-label">郵便番号</label>
+                    <input type="text" id="postalCode" name="postalCode" class="form-input" required placeholder="例: 123-4567" pattern="[0-9]{3}-[0-9]{4}">
+                    <p class="form-note">ハイフンを含めてご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="prefecture" class="form-label">都道府県</label>
+                    <select id="prefecture" name="prefecture" class="form-select" required>
+                        <option value="">選択してください</option>
+                        <option value="北海道">北海道</option>
+                        <option value="青森県">青森県</option>
+                        <option value="岩手県">岩手県</option>
+                        <option value="宮城県">宮城県</option>
+                        <option value="秋田県">秋田県</option>
+                        <option value="山形県">山形県</option>
+                        <option value="福島県">福島県</option>
+                        <option value="茨城県">茨城県</option>
+                        <option value="栃木県">栃木県</option>
+                        <option value="群馬県">群馬県</option>
+                        <option value="埼玉県">埼玉県</option>
+                        <option value="千葉県">千葉県</option>
+                        <option value="東京都">東京都</option>
+                        <option value="神奈川県">神奈川県</option>
+                        <option value="新潟県">新潟県</option>
+                        <option value="富山県">富山県</option>
+                        <option value="石川県">石川県</option>
+                        <option value="福井県">福井県</option>
+                        <option value="山梨県">山梨県</option>
+                        <option value="長野県">長野県</option>
+                        <option value="岐阜県">岐阜県</option>
+                        <option value="静岡県">静岡県</option>
+                        <option value="愛知県">愛知県</option>
+                        <option value="三重県">三重県</option>
+                        <option value="滋賀県">滋賀県</option>
+                        <option value="京都府">京都府</option>
+                        <option value="大阪府">大阪府</option>
+                        <option value="兵庫県">兵庫県</option>
+                        <option value="奈良県">奈良県</option>
+                        <option value="和歌山県">和歌山県</option>
+                        <option value="鳥取県">鳥取県</option>
+                        <option value="島根県">島根県</option>
+                        <option value="岡山県">岡山県</option>
+                        <option value="広島県">広島県</option>
+                        <option value="山口県">山口県</option>
+                        <option value="徳島県">徳島県</option>
+                        <option value="香川県">香川県</option>
+                        <option value="愛媛県">愛媛県</option>
+                        <option value="高知県">高知県</option>
+                        <option value="福岡県">福岡県</option>
+                        <option value="佐賀県">佐賀県</option>
+                        <option value="長崎県">長崎県</option>
+                        <option value="熊本県">熊本県</option>
+                        <option value="大分県">大分県</option>
+                        <option value="宮崎県">宮崎県</option>
+                        <option value="鹿児島県">鹿児島県</option>
+                        <option value="沖縄県">沖縄県</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="city" class="form-label">市区町村</label>
+                    <input type="text" id="city" name="city" class="form-input" required placeholder="例: 渋谷区">
+                    <p class="form-note">市区町村名をご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="address1" class="form-label">番地</label>
+                    <input type="text" id="address1" name="address1" class="form-input" required placeholder="例: 1-2-3">
+                    <p class="form-note">番地・丁目をご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="address2" class="form-label">
+                        建物名・部屋番号
+                        <span class="optional-tag">任意</span>
+                    </label>
+                    <input type="text" id="address2" name="address2" class="form-input" placeholder="例: ○○マンション101号室">
+                    <p class="form-note">マンション名や部屋番号がある場合はご入力ください。</p>
+                </div>
+            </fieldset>
+
+            <!-- 金額 -->
+            <div class="form-group">
+                <fieldset class="radio-fieldset">
+                    <legend class="fieldset-legend">
+                        金額
+                        <span class="required-tag">必須</span>
+                    </legend>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="amount" value="16500" class="radio-input" required>
+                            <span class="radio-custom"></span>
+                            ￥16,500 (税込)
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="amount" value="other" class="radio-input" required>
+                            <span class="radio-custom"></span>
+                            その他金額
+                        </label>
+                    </div>
+                    <p class="form-note">
+                        ・ご寄贈された生花は祭壇の一部として組み込まれます。<br>
+                        ・生花寄贈は1件 16,500円（税込）です。<br>
+                        ・内訳：本体価格15,000円、消費税10％ 1,500円<br>
+                        ・金額は変更できません。<br>
+                    </p>
+                </fieldset>
+            </div>
+
+            <!-- その他金額 -->
+            <div class="form-group" id="customAmountGroup" style="display: none;">
+                <label for="customAmount" class="form-label">
+                    ご希望される金額（税込）
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="number" id="customAmount" name="customAmount" class="form-input" min="1" placeholder="例: 20000">
+                <p class="form-note">ご希望される金額を数字でご入力ください。</p>
+            </div>
+
+            <!-- 芳名板のお名前 -->
+            <div class="form-group">
+                <label for="nameplate" class="form-label">
+                    芳名板のお名前
+                    <span class="required-tag">必須</span>
+                </label>
+                <textarea id="nameplate" name="nameplate" class="form-textarea" required></textarea>
+                <p class="form-note">
+                    ・式場に掲示するお名前をご入力ください。<br>
+                    ・1枚の芳名板に連名可。連名の場合は表示する順番を上からご入力ください。<br>
+                    ・実際の芳名板は縦書きとなります。<br>
+                    ・キリスト教では、芳名板は式場の入口付近に掲示いたします。<br>
+                    ・また、ご遺族様のご希望で芳名板を掲示しない場合がございます。<br>
+                </p>
+                <div class="reference-image">
+                    <p class="reference-title">【参考】芳名板の設置例</p>
+                    <img src="芳名版.png" alt="芳名板の設置例" class="nameplate-reference-img">
+                </div>
+            </div>
+
+            <!-- メールアドレス -->
+            <div class="form-group">
+                <label for="email" class="form-label">
+                    メールアドレス
+                    <span class="optional-tag">任意</span>
+                </label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="example@example.com">
+                <p class="form-note">注文完了メールをお送りさせていただきます。</p>
+            </div>
+
+            <!-- お支払い方法 -->
+            <div class="form-group">
+                <fieldset class="radio-fieldset">
+                    <legend class="fieldset-legend">
+                        お支払い方法
+                        <span class="required-tag">必須</span>
+                    </legend>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="paymentMethod" value="transfer" class="radio-input" required>
+                            <span class="radio-custom"></span>
+                            振り込み
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentMethod" value="onsite" class="radio-input" required>
+                            <span class="radio-custom"></span>
+                            現地払い
+                        </label>
+                    </div>
+                    <p class="form-note">
+                        ・お振込み：後日請求書を送付いたします。<br>
+                        ・現地払い：当日現場にいる名札を着けたスタッフへお声掛けください。<br>
+                    </p>
+                </fieldset>
+            </div>
+
+            <!-- 備考欄 -->
+            <div class="form-group">
+                <label for="remarks" class="form-label">
+                    備考欄
+                    <span class="optional-tag">任意</span>
+                </label>
+                <textarea id="remarks" name="remarks" class="form-textarea" rows="4" placeholder="ご質問やご要望がございましたらご記入ください。"></textarea>
+                <p class="form-note">その他ご要望やご質問がございましたらご記入ください。</p>
+            </div>
+
+            <!-- 送信ボタン -->
+            <div class="form-actions">
+                <button type="submit" class="submit-button">申し込む</button>
+                <button type="reset" class="reset-button">リセット</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // ラジオボタンの制御
+        const amountRadios = document.querySelectorAll('input[name="amount"]');
+        const customAmountGroup = document.getElementById('customAmountGroup');
+        const customAmountInput = document.getElementById('customAmount');
+
+        amountRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    customAmountGroup.style.display = 'block';
+                    customAmountInput.required = true;
+                } else {
+                    customAmountGroup.style.display = 'none';
+                    customAmountInput.required = false;
+                    customAmountInput.value = '';
+                }
+            });
+        });
+
+        // フォーム送信処理
+        document.getElementById('flowerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // バリデーションクラスを追加
+            this.classList.add('was-validated');
+            
+            // フォームの有効性をチェック
+            if (this.checkValidity()) {
+                // フォームが有効な場合
+                alert('お申し込みありがとうございます。内容を確認後、ご連絡いたします。');
+                // 実際のアプリケーションでは、ここでフォームデータを送信
+            } else {
+                // フォームが無効な場合
+                const firstInvalidField = this.querySelector(':invalid');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
