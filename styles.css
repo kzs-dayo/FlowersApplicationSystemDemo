@@ -22,6 +22,36 @@ body {
     padding: 0 20px;
 }
 
+/* ナビゲーションバー */
+.navigation-bar {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.nav-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
 /* ヘッダー */
 .form-header {
     text-align: center;
@@ -323,6 +353,20 @@ body {
 @media (max-width: 768px) {
     .container {
         padding: 0 15px;
+    }
+    
+    .navigation-bar {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .nav-links {
+        justify-content: center;
+    }
+    
+    .nav-link {
+        padding: 8px 16px;
+        font-size: 0.9em;
     }
     
     .application-form {
