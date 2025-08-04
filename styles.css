@@ -10,7 +10,7 @@ body {
     font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: #f5f7fa;
     min-height: 100vh;
     padding: 20px 0;
 }
@@ -37,7 +37,7 @@ body {
 .nav-link {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #3498db;
+    background-color: #656565;
     color: white;
     text-decoration: none;
     border-radius: 6px;
@@ -47,9 +47,9 @@ body {
 }
 
 .nav-link:hover {
-    background-color: #2980b9;
+    background-color: #34495e;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.3);
 }
 
 /* ヘッダー */
@@ -130,7 +130,7 @@ body {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #2c3e50;
+    color: #656565;
     font-size: 1em;
     display: flex;
     align-items: center;
@@ -198,7 +198,7 @@ body {
 
 .fieldset-legend {
     font-weight: 600;
-    color: #2c3e50;
+    color: #656565;
     padding: 0 10px;
     display: flex;
     align-items: center;
@@ -250,7 +250,7 @@ body {
 
 .radio-input:checked + .radio-custom {
     border-color: #3498db;
-    background-color: #3498db;
+    background-color: #656565;
 }
 
 .radio-input:checked + .radio-custom::after {
@@ -290,7 +290,7 @@ body {
 .reference-title {
     font-size: 0.95em;
     font-weight: 600;
-    color: #2c3e50;
+    color: #656565;
     margin: 0 0 15px 0;
     text-align: center;
 }
@@ -328,12 +328,12 @@ body {
 }
 
 .submit-button {
-    background-color: #27ae60;
+    background-color: #666;
     color: white;
 }
 
 .submit-button:hover {
-    background-color: #229954;
+    background-color: #666;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
 }

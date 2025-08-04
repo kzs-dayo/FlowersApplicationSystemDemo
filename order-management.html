@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注文管理 - 供花注文管理システム</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="order-management.css?v=20241220-6">
+</head>
+<body>
+    <div class="layout">
+        <!-- サイドナビゲーション -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>供花注文管理システム</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-home"></i></span>
+                        トップ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
+                        ダッシュボード
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="application-form.html" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-edit"></i></span>
+                        申し込みフォーム
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="#order-list" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-list-alt"></i></span>
+                        注文一覧・管理
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- ヘッダー -->
+            <header class="header">
+                <div class="header-content">
+                    <h1>注文一覧・管理</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="showNewOrderForm()">
+                            <span class="btn-icon"><i class="fas fa-edit"></i></span>
+                            新規注文
+                        </button>
+                        <button class="btn btn-outline" onclick="refreshOrderList()">
+                            <span class="btn-icon"><i class="fas fa-sync"></i></span>
+                            更新
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- コンテンツ -->
+            <div class="content">
+                <!-- 統計サマリー -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-edit"></i></div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="activeTotalOrders">12</div>
+                            <div class="summary-label">有効注文数</div>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="activeTotalAmount">¥192,100</div>
+                            <div class="summary-label">有効売上合計</div>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-seedling"></i></div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="flowerOrders">2</div>
+                            <div class="summary-label">付け花注文</div>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="cancelledOrders">2</div>
+                            <div class="summary-label">キャンセル</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- フィルター・検索 -->
+                <div class="filter-section">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="statusFilter">ステータス:</label>
+                            <select id="statusFilter" onchange="filterOrders()">
+                                <option value="">すべて</option>
+                                <option value="active">有効</option>
+                                <option value="cancelled">キャンセル</option>
+                                <option value="invoiced">請求済み</option>
+                                <option value="paid">支払済み</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="paymentFilter">支払方法:</label>
+                            <select id="paymentFilter" onchange="filterOrders()">
+                                <option value="">すべて</option>
+                                <option value="transfer">振込</option>
+                                <option value="onsite">現地</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="flowerFilter">付け花:</label>
+                            <select id="flowerFilter" onchange="filterOrders()">
+                                <option value="">すべて</option>
+                                <option value="yes">あり</option>
+                                <option value="no">なし</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="searchInput">検索:</label>
+                            <input type="text" id="searchInput" placeholder="芳名板、依頼者名で検索" onkeyup="searchOrders()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- アクションバー -->
+                <div class="action-bar">
+                    <div class="bulk-actions">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        <label for="selectAll">全選択</label>
+                        <button class="btn btn-outline btn-sm" onclick="bulkCancel()" disabled id="bulkCancelBtn">
+                            一括キャンセル
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="bulkRevive()" disabled id="bulkReviveBtn">
+                            一括復活
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- 注文一覧（ご葬家別） -->
+                <div class="table-container" id="tableView">
+                    <div class="funeral-groups" id="funeralGroups">
+                        <!-- 輝家のご葬儀 -->
+                        <div class="funeral-group" data-funeral-id="1">
+                            <div class="funeral-header">
+                                <div class="funeral-info" onclick="toggleFuneralGroup(1)">
+                                    <div class="funeral-title">
+                                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                                        <h3>輝家のご葬儀</h3>
+                                        <span class="deceased-name">（故人: 輝 太郎様）</span>
+                                    </div>
+                                    <div class="funeral-details">
+                                        <span class="funeral-date">葬儀日: 2024/01/20</span>
+                                        <span class="funeral-venue">会場: セレモニーホール青山</span>
+                                    </div>
+                                    <div class="funeral-management">
+                                        <div class="funeral-management-info">
+                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-1">山田太郎</span></span>
+                                            <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-1">2024/01/20</span></span>
+                                        </div>
+                                        <button class="btn-edit-funeral" onclick="editFuneralInfo(1, event)"></button>
+                                    </div>
+                                </div>
+                                <div class="funeral-summary">
+                                    <div class="summary-item">
+                                        <span class="summary-label">注文数:</span>
+                                        <span class="summary-value">4件</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">合計金額:</span>
+                                        <span class="summary-value">¥82,500</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">支払方法:</span>
+                                        <span class="summary-badges">
+                                            <span class="payment-badge transfer">振込3件</span>
+                                            <span class="payment-badge onsite">現地1件</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="funeral-actions">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-primary dropdown-toggle" onclick="toggleDropdown(1)">
+                                            <i class="fas fa-file-alt"></i> 帳票作成
+                                        </button>
+                                        <div class="dropdown-menu" id="dropdown-1">
+                                                                            <button class="dropdown-item" onclick="generateFuneralQuotes(1)">
+                                    <i class="fas fa-file-contract"></i> 見積書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralDeliveryNotes(1)">
+                                    <i class="fas fa-truck"></i> 納品書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralInvoices(1)">
+                                    <i class="fas fa-file-invoice-dollar"></i> 請求書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralReceipts(1)">
+                                    <i class="fas fa-receipt"></i> 領収書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralLabels(1)">
+                                    <i class="fas fa-tags"></i> 宛名ラベル
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralSummary(1)">
+                                    <i class="fas fa-chart-bar"></i> 一覧表
+                                </button>
+                                <button class="dropdown-item" onclick="generateFloristOrder(1)">
+                                    <i class="fas fa-seedling"></i> 花屋送信用一覧
+                                </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="funeral-orders">
+                                <table class="orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="group-checkbox" data-group="1"></th>
+                                            <th>No.</th>
+                                            <th>受注日</th>
+                                            <th>芳名板</th>
+                                            <th>依頼者</th>
+                                            <th>連絡先</th>
+                                            <th>金額</th>
+                                            <th>手数料</th>
+                                            <th>支払方法</th>
+                                            <th>付け花</th>
+                                            <th>ステータス</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr data-order-id="12" data-status="active">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
+                                            <td>12</td>
+                                            <td>2024/01/16</td>
+                                            <td>株式会社サンプル</td>
+                                            <td>山田花子</td>
+                                            <td>090-1234-5678</td>
+                                            <td class="amount">¥16,500</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge transfer">振込</span></td>
+                                            <td><span class="flower-badge no">なし</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(12)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(12)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(12)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr data-order-id="13" data-status="active">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
+                                            <td>13</td>
+                                            <td>2024/01/16</td>
+                                            <td>輝商事株式会社</td>
+                                            <td>輝 次郎</td>
+                                            <td>080-1111-2222</td>
+                                            <td class="amount">¥16,500</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge transfer">振込</span></td>
+                                            <td><span class="flower-badge no">なし</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(13)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(13)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(13)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr data-order-id="14" data-status="active" class="special-amount">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
+                                            <td>14</td>
+                                            <td>2024/01/17</td>
+                                            <td>輝 三郎</td>
+                                            <td>輝 美子</td>
+                                            <td>070-3333-4444</td>
+                                            <td class="amount special">¥30,000</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge onsite">現地</span></td>
+                                            <td><span class="flower-badge yes">あり</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(14)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(14)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(14)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr data-order-id="15" data-status="active">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
+                                            <td>15</td>
+                                            <td>2024/01/17</td>
+                                            <td>輝同窓会一同</td>
+                                            <td>輝 友子</td>
+                                            <td>090-5555-6666</td>
+                                            <td class="amount">¥16,500</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge transfer">振込</span></td>
+                                            <td><span class="flower-badge no">なし</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(15)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(15)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(15)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 田中家のご葬儀 -->
+                        <div class="funeral-group" data-funeral-id="2">
+                                                        <div class="funeral-header">
+                                <div class="funeral-info" onclick="toggleFuneralGroup(2)">
+                                    <div class="funeral-title">
+                                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                                        <h3>田中家のご葬儀</h3>
+                                        <span class="deceased-name">（故人: 田中 一郎様）</span>
+                                    </div>
+                                    <div class="funeral-details">
+                                        <span class="funeral-date">葬儀日: 2024/01/22</span>
+                                        <span class="funeral-venue">会場: 田中家自宅</span>
+                                    </div>
+                                    <div class="funeral-management">
+                                        <div class="funeral-management-info">
+                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-2">佐藤花子</span></span>
+                                            <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-2">2024/01/19</span></span>
+                                        </div>
+                                        <button class="btn-edit-funeral" onclick="editFuneralInfo(2, event)"></button>
+                                    </div>
+                                </div>
+                                <div class="funeral-summary">
+                                    <div class="summary-item">
+                                        <span class="summary-label">注文数:</span>
+                                        <span class="summary-value">2件</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">合計金額:</span>
+                                        <span class="summary-value">¥36,500</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">支払方法:</span>
+                                        <span class="summary-badges">
+                                            <span class="payment-badge onsite">現地2件</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="funeral-actions">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-primary dropdown-toggle" onclick="toggleDropdown(2)">
+                                            <i class="fas fa-file-alt"></i> 帳票作成
+                                        </button>
+                                        <div class="dropdown-menu" id="dropdown-2">
+                                                                            <button class="dropdown-item" onclick="generateFuneralQuotes(2)">
+                                    <i class="fas fa-file-contract"></i> 見積書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralDeliveryNotes(2)">
+                                    <i class="fas fa-truck"></i> 納品書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralInvoices(2)">
+                                    <i class="fas fa-file-invoice-dollar"></i> 請求書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralReceipts(2)">
+                                    <i class="fas fa-receipt"></i> 領収書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralLabels(2)">
+                                    <i class="fas fa-tags"></i> 宛名ラベル
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralSummary(2)">
+                                    <i class="fas fa-chart-bar"></i> 一覧表
+                                </button>
+                                <button class="dropdown-item" onclick="generateFloristOrder(2)">
+                                    <i class="fas fa-seedling"></i> 花屋送信用一覧
+                                </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="funeral-orders">
+                                <table class="orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="group-checkbox" data-group="2"></th>
+                                            <th>No.</th>
+                                            <th>受注日</th>
+                                            <th>芳名板</th>
+                                            <th>依頼者</th>
+                                            <th>連絡先</th>
+                                            <th>金額</th>
+                                            <th>手数料</th>
+                                            <th>支払方法</th>
+                                            <th>付け花</th>
+                                            <th>ステータス</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr data-order-id="11" data-status="active" class="special-amount">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="2"></td>
+                                            <td>11</td>
+                                            <td>2024/01/15</td>
+                                            <td>田中工業株式会社</td>
+                                            <td>田中美子</td>
+                                            <td>080-9876-5432</td>
+                                            <td class="amount special">¥20,000</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge onsite">現地</span></td>
+                                            <td><span class="flower-badge yes">あり</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(11)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(11)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(11)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr data-order-id="16" data-status="active">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="2"></td>
+                                            <td>16</td>
+                                            <td>2024/01/18</td>
+                                            <td>田中商事労働組合</td>
+                                            <td>田中 健</td>
+                                            <td>090-7777-8888</td>
+                                            <td class="amount">¥16,500</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge onsite">現地</span></td>
+                                            <td><span class="flower-badge no">なし</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(16)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(16)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(16)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 佐藤家のご葬儀（キャンセル含む） -->
+                        <div class="funeral-group" data-funeral-id="3">
+                            <div class="funeral-header">
+                                <div class="funeral-info" onclick="toggleFuneralGroup(3)">
+                                    <div class="funeral-title">
+                                        <span class="expand-icon"><i class="fas fa-chevron-down"></i></span>
+                                        <h3>佐藤家のご葬儀</h3>
+                                        <span class="deceased-name">（故人: 佐藤 次郎様）</span>
+                                    </div>
+                                    <div class="funeral-details">
+                                        <span class="funeral-date">葬儀日: 2024/01/25</span>
+                                        <span class="funeral-venue">会場: 佐藤記念会館</span>
+                                    </div>
+                                    <div class="funeral-management">
+                                        <div class="funeral-management-info">
+                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-3">鈴木三郎</span></span>
+                                            <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-3">2024/01/22</span></span>
+                                        </div>
+                                        <button class="btn-edit-funeral" onclick="editFuneralInfo(3, event)"></button>
+                                    </div>
+                                </div>
+                                <div class="funeral-summary">
+                                    <div class="summary-item">
+                                        <span class="summary-label">注文数:</span>
+                                        <span class="summary-value">2件</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">合計金額:</span>
+                                        <span class="summary-value">¥16,500</span>
+                                        <span class="cancelled-amount">（¥16,500キャンセル）</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">支払方法:</span>
+                                        <span class="summary-badges">
+                                            <span class="payment-badge transfer">振込1件</span>
+                                            <span class="payment-badge cancelled">キャンセル1件</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="funeral-actions">
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-primary dropdown-toggle" onclick="toggleDropdown(3)">
+                                            <i class="fas fa-file-alt"></i> 帳票作成
+                                        </button>
+                                        <div class="dropdown-menu" id="dropdown-3">
+                                                                            <button class="dropdown-item" onclick="generateFuneralQuotes(3)">
+                                    <i class="fas fa-file-contract"></i> 見積書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralDeliveryNotes(3)">
+                                    <i class="fas fa-truck"></i> 納品書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralInvoices(3)">
+                                    <i class="fas fa-file-invoice-dollar"></i> 請求書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralReceipts(3)">
+                                    <i class="fas fa-receipt"></i> 領収書作成
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralLabels(3)">
+                                    <i class="fas fa-tags"></i> 宛名ラベル
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralSummary(3)">
+                                    <i class="fas fa-chart-bar"></i> 一覧表
+                                </button>
+                                <button class="dropdown-item" onclick="generateFloristOrder(3)">
+                                    <i class="fas fa-seedling"></i> 花屋送信用一覧
+                                </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="funeral-orders">
+                                <table class="orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="group-checkbox" data-group="3"></th>
+                                            <th>No.</th>
+                                            <th>受注日</th>
+                                            <th>芳名板</th>
+                                            <th>依頼者</th>
+                                            <th>連絡先</th>
+                                            <th>金額</th>
+                                            <th>手数料</th>
+                                            <th>支払方法</th>
+                                            <th>付け花</th>
+                                            <th>ステータス</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr data-order-id="10" data-status="cancelled" class="cancelled-row">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="3"></td>
+                                            <td>10</td>
+                                            <td>2024/01/15</td>
+                                            <td>佐藤工業株式会社</td>
+                                            <td>佐藤太郎</td>
+                                            <td>070-1111-2222</td>
+                                            <td class="amount">¥16,500</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge transfer">振込</span></td>
+                                            <td><span class="flower-badge no">なし</span></td>
+                                            <td><span class="status-badge cancelled">キャンセル</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm btn-outline" onclick="reviveOrder(10)">復活</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="viewOrderDetail(10)">詳細</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(10)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr data-order-id="17" data-status="active">
+                                            <td><input type="checkbox" class="row-checkbox" data-group="3"></td>
+                                            <td>17</td>
+                                            <td>2024/01/19</td>
+                                            <td>佐藤建設協力会</td>
+                                            <td>佐藤 恵</td>
+                                            <td>080-2222-3333</td>
+                                            <td class="amount">¥16,500</td>
+                                            <td class="fee">¥2,200</td>
+                                            <td><span class="payment-badge transfer">振込</span></td>
+                                            <td><span class="flower-badge no">なし</span></td>
+                                            <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm" onclick="editOrder(17)">修正</button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(17)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(17)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- ページネーション -->
+                <div class="pagination">
+                    <button class="btn btn-pagination" onclick="changePage('first')">&laquo; 最初</button>
+                    <button class="btn btn-pagination" onclick="changePage('prev')">&lsaquo; 前</button>
+                    <span class="page-info">ページ 1 / 1 (12件中 1-12件を表示)</span>
+                    <button class="btn btn-pagination" onclick="changePage('next')">次 &rsaquo;</button>
+                    <button class="btn btn-pagination" onclick="changePage('last')">最後 &raquo;</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 詳細表示モーダル -->
+    <div id="orderDetailModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>注文詳細 - No. <span id="modalOrderNumber"></span></h2>
+                <span class="close" onclick="closeModal('orderDetailModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid">
+                    <div class="detail-section">
+                        <h3>基本情報</h3>
+                        <div class="detail-row">
+                            <label>受注日:</label>
+                            <span id="detailOrderDate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>芳名板:</label>
+                            <span id="detailNameplate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>金額:</label>
+                            <span id="detailAmount"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>手数料:</label>
+                            <span id="detailFee"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>支払方法:</label>
+                            <span id="detailPayment"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>付け花:</label>
+                            <span id="detailFlower"></span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>依頼者情報</h3>
+                        <div class="detail-row">
+                            <label>お名前:</label>
+                            <span id="detailClientName"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>郵便番号:</label>
+                            <span id="detailPostalCode"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>住所:</label>
+                            <span id="detailAddress"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>電話番号:</label>
+                            <span id="detailPhone"></span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>請求先情報</h3>
+                        <div class="detail-row">
+                            <label>請求先:</label>
+                            <span id="detailBillingName"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>会社・団体名:</label>
+                            <span id="detailCompany"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>担当者:</label>
+                            <span id="detailContact"></span>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>備考・その他</h3>
+                        <div class="detail-row">
+                            <label>備考:</label>
+                            <span id="detailMemo"></span>
+                        </div>
+                        <div class="detail-row">
+                            <label>ステータス:</label>
+                            <span id="detailStatus"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('orderDetailModal')">閉じる</button>
+                <button class="btn btn-outline" onclick="generateOrderFormFromModal()"><i class="fas fa-file-alt"></i> 注文書</button>
+                <button class="btn btn-primary" onclick="editOrderFromModal()">修正</button>
+                <button class="btn btn-outline" onclick="printOrder()">印刷</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 一括操作確認モーダル -->
+    <div id="bulkActionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bulkActionTitle">一括操作の確認</h2>
+                <span class="close" onclick="closeModal('bulkActionModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <p id="bulkActionMessage"></p>
+                <div class="selected-orders">
+                    <h4>対象の注文:</h4>
+                    <ul id="selectedOrdersList"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('bulkActionModal')">キャンセル</button>
+                <button class="btn btn-primary" id="confirmBulkAction">実行</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注文書プレビューモーダル -->
+    <div id="orderFormModal" class="modal large-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>注文書 - No. <span id="orderFormNumber"></span></h2>
+                <span class="close" onclick="closeModal('orderFormModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="order-form-container" id="orderFormContent">
+                    <!-- 注文書の内容がここに動的に挿入される -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('orderFormModal')">閉じる</button>
+                <button class="btn btn-outline" onclick="printOrderForm()">印刷</button>
+                <button class="btn btn-primary" onclick="downloadOrderFormPDF()">PDF保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ご葬家別帳票生成進捗モーダル -->
+    <div id="funeralReportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="funeralReportTitle">帳票作成中...</h2>
+            </div>
+            <div class="modal-body">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="funeralProgressFill"></div>
+                    </div>
+                    <div class="progress-text" id="funeralProgressText">0%</div>
+                </div>
+                <div class="progress-message" id="funeralProgressMessage">処理を開始しています...</div>
+                <div class="funeral-report-details" id="funeralReportDetails">
+                    <!-- 作成対象の詳細がここに表示される -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 花屋送信用一覧モーダル -->
+    <div id="floristOrderModal" class="modal large-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>花屋送信用注文一覧 - <span id="floristFuneralName"></span></h2>
+                <span class="close" onclick="closeModal('floristOrderModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="florist-order-container" id="floristOrderContent">
+                    <!-- 花屋送信用一覧の内容がここに動的に挿入される -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('floristOrderModal')">閉じる</button>
+                <button class="btn btn-outline" onclick="printFloristOrder()">印刷</button>
+                <button class="btn btn-primary" onclick="downloadFloristOrderPDF()">PDF保存</button>
+                <button class="btn btn-success" onclick="emailFloristOrder()">メール送信</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ご葬家情報編集モーダル -->
+    <div id="funeralInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ご葬家情報編集 - <span id="editFuneralName"></span></h2>
+                <span class="close" onclick="closeModal('funeralInfoModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="funeral-edit-form">
+                    <div class="form-group">
+                        <label for="editStaffName" class="form-label">担当者名</label>
+                        <input type="text" id="editStaffName" class="form-input" placeholder="担当者名を入力してください">
+                        <p class="form-note">このご葬儀の担当者名を入力してください。</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editConfirmedDate" class="form-label">葬儀確定日</label>
+                        <input type="date" id="editConfirmedDate" class="form-input">
+                        <p class="form-note">葬儀が確定した日付を選択してください。</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">ご葬儀情報（参考）</label>
+                        <div class="funeral-ref-info">
+                            <div class="ref-item">
+                                <span class="ref-label">葬儀日:</span>
+                                <span class="ref-value" id="editFuneralDate"></span>
+                            </div>
+                            <div class="ref-item">
+                                <span class="ref-label">会場:</span>
+                                <span class="ref-value" id="editFuneralVenue"></span>
+                            </div>
+                            <div class="ref-item">
+                                <span class="ref-label">故人:</span>
+                                <span class="ref-value" id="editDeceasedName"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('funeralInfoModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveFuneralInfo()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 宛名ラベルモーダル -->
+    <div id="addressLabelModal" class="modal">
+        <div class="modal-content large address-label-modal">
+            <div class="modal-header">
+                <h2>宛名ラベル印刷</h2>
+                <span class="close" onclick="closeModal('addressLabelModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <!-- 動的コンテンツ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 書類モーダル -->
+    <div id="documentModal" class="modal">
+        <div class="modal-content large document-modal">
+            <div class="modal-header">
+                <h2>書類</h2>
+                <span class="close" onclick="closeModal('documentModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <!-- 動的コンテンツ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 注文編集モーダル -->
+    <div id="orderEditModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>注文編集 - No.<span id="editOrderNumber"></span></h2>
+                <span class="close" onclick="closeModal('orderEditModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <form id="orderEditForm" class="order-edit-form">
+                    <div class="form-section">
+                        <h3>基本情報</h3>
+                        <div class="form-row">
+                            <label for="editOrderDate">受注日:</label>
+                            <input type="date" id="editOrderDate" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="editNameplate">芳名板記載内容:</label>
+                            <input type="text" id="editNameplate" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="editRequester">依頼者名:</label>
+                            <input type="text" id="editRequester" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="editContact">連絡先:</label>
+                            <input type="tel" id="editContact" placeholder="090-1234-5678">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>金額・支払い</h3>
+                        <div class="form-row">
+                            <label for="editAmount">金額:</label>
+                            <input type="number" id="editAmount" min="0" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="editFee">手数料:</label>
+                            <input type="number" id="editFee" min="0" value="0">
+                        </div>
+                        <div class="form-row">
+                            <label for="editPaymentMethod">支払方法:</label>
+                            <select id="editPaymentMethod" required>
+                                <option value="振込">振込</option>
+                                <option value="現地">現地</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>オプション</h3>
+                        <div class="form-row">
+                            <label for="editFlower">付け花:</label>
+                            <select id="editFlower">
+                                <option value="no">なし</option>
+                                <option value="yes">あり</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="editMemo">備考:</label>
+                            <textarea id="editMemo" rows="3" placeholder="特記事項があれば入力してください"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="billingSection" style="display: none;">
+                        <h3>請求先情報（振込の場合）</h3>
+                        <div class="form-row">
+                            <label for="editBillingName">請求先名:</label>
+                            <input type="text" id="editBillingName">
+                        </div>
+                        <div class="form-row">
+                            <label for="editBillingCompany">会社・団体名:</label>
+                            <input type="text" id="editBillingCompany">
+                        </div>
+                        <div class="form-row">
+                            <label for="editBillingContact">担当者:</label>
+                            <input type="text" id="editBillingContact">
+                        </div>
+                        <div class="form-row">
+                            <label for="editBillingAddress">住所:</label>
+                            <input type="text" id="editBillingAddress">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('orderEditModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveOrderEdit()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="order-management.js"></script>
+</body>
+</html>

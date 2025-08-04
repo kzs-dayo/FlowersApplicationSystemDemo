@@ -1,0 +1,2662 @@
+/* 注文管理専用CSS */
+
+/* コンテンツ */
+.content {
+    padding: 30px;
+}
+
+/* 統計サマリーカード */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(44, 62, 80, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 4px solid #666;
+}
+
+.summary-icon {
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.summary-label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* フィルター・検索セクション */
+.filter-section {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #656565;
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+/* アクションバー */
+.action-bar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.bulk-actions input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+
+
+/* テーブルコンテナ */
+.table-container {
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+/* 注文テーブル */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.orders-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.orders-table th:hover {
+    background-color: #e9ecef;
+}
+
+.sort-indicator {
+    margin-left: 5px;
+    opacity: 0.5;
+}
+
+.orders-table td {
+    font-size: 0.9rem;
+}
+
+.orders-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* 特殊な行のスタイル */
+.orders-table tr.special-amount {
+    background-color: #fff3e0;
+}
+
+.orders-table tr.cancelled-row {
+    background-color: #ffebee;
+    opacity: 0.7;
+}
+
+.orders-table tr.cancelled-row td {
+    color: #666;
+}
+
+/* 金額・手数料の特殊表示 */
+.amount.special,
+.fee.special {
+    background-color: #fffacd;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* バッジ系スタイル */
+.payment-badge,
+.flower-badge,
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    display: inline-block;
+    min-width: 60px;
+}
+
+.payment-badge.transfer {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.payment-badge.onsite {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.flower-badge.yes {
+    background-color: #e8f5e8;
+    color: #666;
+}
+
+.flower-badge.no {
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.status-badge.active {
+    background-color: #e8f5e8;
+    color: #666;
+}
+
+.status-badge.cancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.status-badge.invoiced {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-badge.paid {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* アクションボタン */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+}
+
+
+
+/* ページネーション */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-pagination {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #666;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-pagination:hover {
+    background: #f8f9fa;
+    border-color: #656565;
+}
+
+.btn-pagination:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-info {
+    margin: 0 20px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* モーダル拡張 */
+.modal-content.large {
+    max-width: 800px;
+    width: 95%;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content.large .modal-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.detail-section {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.detail-section h3 {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 5px;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: flex-start;
+}
+
+.detail-row label {
+    font-weight: 500;
+    color: #555;
+    min-width: 100px;
+    margin-right: 10px;
+}
+
+.detail-row span {
+    flex: 1;
+    color: #666;
+}
+
+/* 選択された注文リスト */
+.selected-orders {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.selected-orders h4 {
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.selected-orders ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selected-orders li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.selected-orders li:last-child {
+    border-bottom: none;
+}
+
+/* チェックボックス関連 */
+.row-checkbox {
+    transform: scale(1.2);
+}
+
+/* ご葬家グループ表示 */
+.funeral-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.funeral-group {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.funeral-group:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ご葬家ヘッダー */
+.funeral-header {
+    background: #f8f9fa;
+    padding: 20px 25px;
+    cursor: pointer;
+    border-bottom: 2px solid #e9ecef;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.funeral-info {
+    flex: 1;
+}
+
+.funeral-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.expand-icon {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+    color: #656565;
+    font-weight: bold;
+}
+
+.funeral-group.collapsed .expand-icon {
+    transform: rotate(-90deg);
+}
+
+.funeral-title h3 {
+    font-size: 1.3rem;
+    color: #666;
+    margin: 0;
+    font-weight: 600;
+}
+
+.deceased-name {
+    font-size: 1rem;
+    color: #666;
+    font-weight: normal;
+}
+
+.funeral-details {
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.funeral-date,
+.funeral-venue {
+    display: flex;
+    align-items: center;
+}
+
+/* ご葬家サマリー */
+.funeral-summary {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.summary-label {
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.summary-value {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 600;
+}
+
+.cancelled-amount {
+    font-size: 0.9rem;
+    color: #d32f2f;
+    font-weight: normal;
+    margin-left: 8px;
+}
+
+.summary-badges {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.payment-badge.cancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+/* ご葬家の注文テーブル */
+.funeral-orders {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.funeral-group.collapsed .funeral-orders {
+    max-height: 0;
+    padding: 0;
+}
+
+.funeral-orders .orders-table {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.funeral-orders .orders-table thead th {
+    background-color: rgba(44, 62, 80, 0.05);
+    border-bottom: 2px solid #656565;
+    font-size: 0.85rem;
+    padding: 10px 12px;
+}
+
+.funeral-orders .orders-table tbody tr:first-child td {
+    border-top: none;
+}
+
+/* グループチェックボックス */
+.group-checkbox {
+    transform: scale(1.1);
+    accent-color: #656565;
+}
+
+.group-checkbox:checked ~ * {
+    background-color: rgba(44, 62, 80, 0.05);
+}
+
+/* 特別な状態表示 */
+.funeral-group.has-cancelled {
+    border-left: 4px solid #666;
+}
+
+.funeral-group.all-cancelled {
+    opacity: 0.7;
+    border-left: 4px solid #bdbdbd;
+}
+
+.funeral-group.has-special-amount {
+    border-left: 4px solid #666;
+}
+
+.funeral-group.normal {
+    border-left: 4px solid #666;
+}
+
+/* アニメーション */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.funeral-group {
+    animation: slideIn 0.3s ease-out;
+}
+
+.funeral-group:nth-child(1) { animation-delay: 0.1s; }
+.funeral-group:nth-child(2) { animation-delay: 0.2s; }
+.funeral-group:nth-child(3) { animation-delay: 0.3s; }
+.funeral-group:nth-child(4) { animation-delay: 0.4s; }
+
+/* ご葬家アクション */
+.funeral-actions {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+/* ドロップダウンメニュー */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    background: #656565;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 180px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: dropdownSlide 0.2s ease-out;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #666;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #656565;
+}
+
+.dropdown-item:active {
+    background-color: #e9ecef;
+}
+
+/* 注文書関連 */
+.order-form-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.order-form-header {
+    text-align: center;
+    border-bottom: 2px solid #666;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.order-form-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.order-form-subtitle {
+    font-size: 1rem;
+    color: #666;
+}
+
+.order-form-body {
+    display: grid;
+    gap: 25px;
+}
+
+.form-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-section h3 {
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.form-row {
+    display: flex;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #555;
+    min-width: 120px;
+    margin-right: 15px;
+}
+
+.form-value {
+    flex: 1;
+    color: #666;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+.form-value.important {
+    background: #fff3cd;
+    border-color: #ffeaa7;
+    font-weight: 600;
+}
+
+/* ご葬家別帳票詳細 */
+.funeral-report-details {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.funeral-report-details h4 {
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 1rem;
+}
+
+.report-target-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.report-target-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.report-target-item:last-child {
+    border-bottom: none;
+}
+
+.target-name {
+    color: #666;
+}
+
+.target-amount {
+    color: #656565;
+    font-weight: 600;
+}
+
+/* ご葬家管理情報 */
+.funeral-management {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start !important;
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: #e8f5e8 !important;
+    border: 2px solid #4CAF50 !important;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    position: relative;
+    width: fit-content;
+    max-width: 600px;
+}
+
+.funeral-management-info {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.funeral-staff,
+.funeral-confirmed-date {
+    display: flex;
+    align-items: center;
+    color: #555;
+    background: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+.staff-name,
+.confirmed-date {
+    font-weight: 600;
+    color: #666;
+    margin-left: 6px;
+}
+
+.btn-edit-funeral {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #656565 !important;
+    color: white !important;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 70px;
+    gap: 4px;
+    margin-left: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.btn-edit-funeral:active {
+    transform: translateY(0);
+}
+
+.btn-edit-funeral:focus {
+    outline: none;
+}
+
+.btn-edit-funeral::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    content: '\f303';
+    margin-right: 4px;
+}
+
+.btn-edit-funeral::after {
+    content: '編集';
+}
+
+/* ご葬家編集フォーム */
+.funeral-edit-form {
+    display: grid;
+    gap: 20px;
+}
+
+/* 注文編集フォーム */
+.order-edit-form {
+    display: grid;
+    gap: 25px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* モーダル内のスクロールバースタイル */
+.order-edit-form::-webkit-scrollbar {
+    width: 8px;
+}
+
+.order-edit-form::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.order-edit-form::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.order-edit-form::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.order-edit-form .form-section {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.order-edit-form .form-section h3 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.order-edit-form .form-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.order-edit-form .form-row:last-child {
+    margin-bottom: 0;
+}
+
+.order-edit-form .form-row label {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.order-edit-form .form-row input,
+.order-edit-form .form-row select,
+.order-edit-form .form-row textarea {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.order-edit-form .form-row input:focus,
+.order-edit-form .form-row select:focus,
+.order-edit-form .form-row textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.order-edit-form .form-row textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.order-edit-form .form-row input[type="number"] {
+    width: 150px;
+}
+
+.order-edit-form .form-row input[type="date"] {
+    width: 200px;
+}
+
+.order-edit-form .form-row input[type="tel"] {
+    width: 200px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #656565;
+}
+
+.form-note {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.funeral-ref-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.ref-item {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.ref-item:last-child {
+    margin-bottom: 0;
+}
+
+.ref-label {
+    font-weight: 600;
+    color: #555;
+    min-width: 80px;
+    margin-right: 10px;
+}
+
+.ref-value {
+    color: #666;
+    flex: 1;
+}
+
+/* 進捗表示の拡張 */
+.progress-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #656565;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-text {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.progress-message {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* 花屋送信用一覧 */
+.florist-order-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 8px;
+}
+
+.florist-order-header {
+    text-align: center;
+    border-bottom: 3px solid #4CAF50;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.florist-order-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2E7D32;
+    margin-bottom: 10px;
+}
+
+.florist-order-subtitle {
+    font-size: 1rem;
+    color: #666;
+}
+
+.florist-order-info {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 25px;
+}
+
+.florist-order-info h3 {
+    margin-bottom: 15px;
+    color: #2E7D32;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 8px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    color: #666;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    font-weight: 500;
+}
+
+.info-value.highlight {
+    background: #e8f5e8;
+    border-color: #4CAF50;
+    color: #2E7D32;
+    font-weight: 600;
+}
+
+.florist-orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.florist-orders-table th {
+    background: #4CAF50;
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid #388E3C;
+}
+
+.florist-orders-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+}
+
+.florist-orders-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.florist-orders-table tr:hover {
+    background-color: #e8f5e8;
+}
+
+.order-number {
+    font-weight: 600;
+    color: #2E7D32;
+    font-size: 1rem;
+}
+
+.nameplate-content {
+    font-weight: 600;
+    color: #666;
+    line-height: 1.4;
+    max-width: 200px;
+}
+
+.order-memo {
+    color: #666;
+    font-style: italic;
+    line-height: 1.4;
+    max-width: 150px;
+}
+
+.order-memo.empty {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.florist-order-footer {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+}
+
+.florist-contact-info {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.florist-contact-info strong {
+    color: #2E7D32;
+}
+
+/* メール送信ボタン */
+.btn-success {
+    background: #28a745;
+    color: white;
+    border: 1px solid #28a745;
+}
+
+.btn-success:hover {
+    background: #218838;
+    border-color: #1e7e34;
+}
+
+/* アクションボタンの調整 */
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    white-space: nowrap;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: 1px solid #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    border-color: #5a6268;
+}
+
+/* レスポンシブ対応 - ご葬家管理 */
+@media (max-width: 768px) {
+    .funeral-management {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px;
+    }
+    
+    .funeral-management-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .funeral-staff,
+    .funeral-confirmed-date {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .btn-edit-funeral {
+        width: 100%;
+        min-width: unset;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .funeral-management {
+        padding: 10px;
+    }
+    
+    .funeral-staff,
+    .funeral-confirmed-date {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* 宛名ラベル関連 */
+.address-label-modal {
+    max-width: 1000px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.address-label-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.address-label-header {
+    text-align: center;
+    border-bottom: 2px solid #656565;
+    padding-bottom: 15px;
+}
+
+.address-label-title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #656565;
+    margin-bottom: 8px;
+}
+
+.address-label-subtitle {
+    font-size: 1rem;
+    color: #666;
+}
+
+.print-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.envelope-settings,
+.font-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.envelope-settings label,
+.font-settings label {
+    font-weight: 600;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.envelope-settings select,
+.font-settings select {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: white;
+}
+
+.envelope-settings select:focus,
+.font-settings select:focus {
+    outline: none;
+    border-color: #656565;
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+}
+
+.sender-info {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.sender-info h4 {
+    margin-bottom: 15px;
+    color: #656565;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sender-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.sender-form .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sender-form .form-row label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.sender-form .form-row input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.sender-form .form-row input:focus {
+    outline: none;
+    border-color: #656565;
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+}
+
+.address-label-preview {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    background: #fafafa;
+    min-height: 300px;
+}
+
+.envelope-preview {
+    border: 2px solid #d4a574;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.envelope-preview:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.envelope-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.label-number {
+    font-weight: 600;
+    color: #656565;
+}
+
+.order-ref {
+    color: #666;
+    font-style: italic;
+}
+
+.envelope-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-height: 150px;
+    gap: 20px;
+}
+
+.recipient-area {
+    flex: 1;
+}
+
+.postal-code {
+    font-weight: bold;
+    color: #656565;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.address {
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: #666;
+}
+
+.recipient-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #656565;
+    line-height: 1.4;
+}
+
+.contact-name {
+    display: block;
+    margin-top: 5px;
+    color: #555;
+    font-size: 1rem;
+}
+
+.sender-area {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    text-align: right;
+    min-width: 200px;
+    border: 1px solid #e9ecef;
+}
+
+.sender-postal,
+.sender-address,
+.sender-name {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.sender-name {
+    font-weight: bold;
+    color: #656565;
+}
+
+.address-label-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}
+
+.address-label-actions .btn {
+    min-width: 120px;
+    font-weight: 500;
+}
+
+/* 封筒サイズ別スタイル */
+.envelope-chou3 .envelope-preview {
+    max-width: 400px;
+    aspect-ratio: 120/235;
+}
+
+.envelope-chou4 .envelope-preview {
+    max-width: 350px;
+    aspect-ratio: 90/205;
+}
+
+.envelope-kaku2 .envelope-preview {
+    max-width: 500px;
+    aspect-ratio: 240/332;
+}
+
+/* フォントサイズ別スタイル */
+.font-small .postal-code { font-size: 0.9rem; }
+.font-small .address { font-size: 0.85rem; }
+.font-small .recipient-name { font-size: 1rem; }
+.font-small .sender-postal,
+.font-small .sender-address,
+.font-small .sender-name { font-size: 0.8rem; }
+
+.font-medium .postal-code { font-size: 1.1rem; }
+.font-medium .address { font-size: 1rem; }
+.font-medium .recipient-name { font-size: 1.2rem; }
+.font-medium .sender-postal,
+.font-medium .sender-address,
+.font-medium .sender-name { font-size: 0.9rem; }
+
+.font-large .postal-code { font-size: 1.3rem; }
+.font-large .address { font-size: 1.1rem; }
+.font-large .recipient-name { font-size: 1.4rem; }
+.font-large .sender-postal,
+.font-large .sender-address,
+.font-large .sender-name { font-size: 1rem; }
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .address-label-modal {
+        width: 98%;
+        max-height: 95vh;
+    }
+    
+    .print-options {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .sender-form {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .envelope-body {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .sender-area {
+        min-width: unset;
+        text-align: left;
+    }
+    
+    .address-label-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .address-label-actions .btn {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .content {
+        padding: 20px;
+    }
+    
+    .filter-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .action-bar {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .orders-table {
+        font-size: 0.8rem;
+    }
+    
+    .orders-table th,
+    .orders-table td {
+        padding: 8px 6px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+
+    
+    /* ご葬家グループのモバイル対応 */
+    .funeral-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    
+    .funeral-summary {
+        justify-content: space-between;
+        gap: 15px;
+    }
+    
+    .summary-item {
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    .funeral-details {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .summary-badges {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .pagination {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .page-info {
+        margin: 10px 0;
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* 書類モーダル関連 */
+.document-modal {
+    max-width: 900px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.document-container {
+    font-family: "ヒラギノ角ゴ Pro", "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #656565;
+    padding-bottom: 20px;
+}
+
+.document-title h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #656565;
+    margin-bottom: 8px;
+}
+
+.document-number {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+.company-info {
+    text-align: right;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.company-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #656565;
+    margin-bottom: 8px;
+}
+
+.document-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.client-info h3,
+.document-dates h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #656565;
+    border-bottom: 2px solid #d4a574;
+    padding-bottom: 8px;
+}
+
+.info-row,
+.date-row {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.info-row label,
+.date-row label {
+    min-width: 80px;
+    font-weight: 600;
+    color: #555;
+    margin-right: 15px;
+}
+
+.info-row span,
+.date-row span {
+    color: #666;
+    font-weight: 500;
+}
+
+.date-row.validity {
+    color: #d32f2f;
+    font-weight: bold;
+    background: #ffebee;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 5px 0;
+}
+
+.date-row.delivery {
+    color: #2e7d32;
+    font-weight: bold;
+    background: #e8f5e8;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 5px 0;
+}
+
+.document-content {
+    margin-bottom: 30px;
+}
+
+.document-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: #656565;
+    border-bottom: 2px solid #d4a574;
+    padding-bottom: 10px;
+}
+
+.document-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.document-table th,
+.document-table td {
+    border: 1px solid #e0e0e0;
+    padding: 12px 8px;
+    text-align: left;
+}
+
+.document-table th {
+    background: #656565;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.document-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.document-table tbody tr:hover {
+    background-color: #e8f4fd;
+}
+
+.document-table .amount,
+.document-table .fee {
+    text-align: right;
+    font-weight: bold;
+    color: #656565;
+}
+
+.document-table .total-row {
+    background: #f8f9fa;
+    font-weight: bold;
+    border-top: 2px solid #656565;
+}
+
+.document-table .total-row .amount,
+.document-table .total-row .fee {
+    font-size: 1.1rem;
+    color: #d32f2f;
+}
+
+/* 銀行情報表示用スタイル */
+.bank-info {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid #17a2b8;
+}
+
+.bank-info h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #656565;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.bank-details {
+    display: grid;
+    gap: 10px;
+}
+
+.bank-row {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.bank-row label {
+    min-width: 90px;
+    font-weight: 500;
+    color: #666;
+    margin-right: 15px;
+}
+
+.bank-row span {
+    font-weight: 600;
+    color: #656565;
+    font-family: monospace;
+}
+
+/* 日付表示の特別スタイル */
+.date-row.due .due-date {
+    color: #dc3545;
+    font-weight: 700;
+    background: #fff5f5;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #fecaca;
+}
+
+.date-row.receipt span {
+    background: #d4edda;
+    color: #155724;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.document-notes {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #d4a574;
+    margin-bottom: 30px;
+}
+
+.document-notes h4 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #656565;
+    font-weight: 600;
+}
+
+.document-notes ul {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.document-notes li {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.document-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    border-top: 2px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+    margin: 0 -30px -30px -30px;
+}
+
+/* 注文選択機能のスタイル */
+.document-selection-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.order-selection-section {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+    overflow: hidden;
+}
+
+.selection-header {
+    background: #656565;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selection-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.selection-header h3 i {
+    margin-right: 8px;
+}
+
+.selection-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.selection-controls .btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.selection-controls .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.order-selection-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+}
+
+.selection-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.selection-table th {
+    background: #f1f3f4;
+    padding: 10px 8px;
+    border: 1px solid #dee2e6;
+    font-weight: 600;
+    color: #656565;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.selection-table td {
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.selection-table .text-center {
+    text-align: center;
+}
+
+.selection-table .order-checkbox {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.selection-table .amount,
+.selection-table .fee {
+    text-align: right;
+    font-weight: 600;
+    color: #656565;
+}
+
+.selection-summary {
+    background: #e9ecef;
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.summary-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.summary-info span {
+    color: #656565;
+}
+
+.summary-info strong {
+    color: #d32f2f;
+    margin-left: 5px;
+}
+
+.document-preview-section {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    overflow: hidden;
+}
+
+.preview-header {
+    background: #656565;
+    color: white;
+    padding: 15px 20px;
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.preview-header h3 i {
+    margin-right: 8px;
+}
+
+.document-preview-content {
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.no-selection-message {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.no-selection-message i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #dee2e6;
+}
+
+.no-selection-message p {
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* 複数個別帳票表示のスタイル */
+.multiple-documents-container {
+    padding: 0;
+}
+
+.documents-summary {
+    background: #e8f5e8;
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #155724;
+    font-size: 1rem;
+}
+
+.summary-header i {
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+.individual-document {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.individual-document:last-child {
+    margin-bottom: 0;
+}
+
+.document-separator {
+    background: #656565;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #656565;
+}
+
+.document-separator h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.document-separator h4 i {
+    color: #f39c12;
+}
+
+.separator-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.separator-actions .btn {
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.separator-actions .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.individual-document .document-container {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 20px;
+}
+
+.individual-document .document-header {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+}
+
+.individual-document .document-actions {
+    display: none; /* 個別帳票内の操作ボタンは非表示 */
+}
+
+.document-actions .btn {
+    min-width: 140px;
+    font-weight: 500;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+/* Excel一覧表のスタイル */
+.excel-summary-container {
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.excel-header {
+    background: #656565;
+    color: white;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.excel-title h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.excel-title h2 i {
+    color: #4CAF50;
+    font-size: 1.6rem;
+}
+
+.excel-info {
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.excel-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.excel-actions .btn {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.excel-actions .btn-success {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: white;
+}
+
+.excel-actions .btn-success:hover {
+    background: #45a049;
+    border-color: #45a049;
+}
+
+.excel-funeral-info {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #656565;
+    min-width: 60px;
+}
+
+.info-item span {
+    color: #34495e;
+    font-weight: 500;
+}
+
+.excel-table-container {
+    padding: 20px;
+    background: white;
+    overflow-x: auto; /* 横スクロール対応 */
+}
+
+.table-header {
+    margin-bottom: 15px;
+}
+
+.table-header h3 {
+    margin: 0 0 10px 0;
+    color: #656565;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-instructions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #1565c0;
+}
+
+.copy-instructions i {
+    color: #2196f3;
+}
+
+.excel-table-container {
+    padding: 20px;
+    background: white;
+    overflow-x: auto; /* 横スクロール対応 */
+}
+
+.excel-table {
+    width: 100%;
+    min-width: 1800px; /* 最小幅を設定（18項目対応） */
+    border-collapse: collapse;
+    margin: 15px 0;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.excel-table th {
+    background: #656565;
+    color: white;
+    padding: 8px 6px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border: none;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.excel-table td {
+    padding: 6px 4px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 0.75rem;
+    color: #656565;
+    white-space: nowrap;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 特定の列の幅調整 */
+.excel-table th:nth-child(1), /* No. */
+.excel-table td:nth-child(1) {
+    min-width: 50px;
+    max-width: 60px;
+}
+
+.excel-table th:nth-child(2), /* 故人 */
+.excel-table td:nth-child(2) {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+.excel-table th:nth-child(3), /* 芳名板記載内容 */
+.excel-table td:nth-child(3) {
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.excel-table th:nth-child(4), /* 依頼者名 */
+.excel-table td:nth-child(4) {
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.excel-table th:nth-child(5), /* 金額 */
+.excel-table td:nth-child(5) {
+    min-width: 80px;
+    max-width: 100px;
+    text-align: right;
+}
+
+.excel-table th:nth-child(6), /* 有料 */
+.excel-table td:nth-child(6) {
+    min-width: 60px;
+    max-width: 80px;
+    text-align: right;
+}
+
+.excel-table th:nth-child(17), /* 住所 */
+.excel-table td:nth-child(17) {
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.excel-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.excel-table .total-row {
+    background: #e8f5e8;
+    font-weight: 600;
+}
+
+.excel-table .total-row td {
+    border-top: 2px solid #4CAF50;
+    color: #2e7d48;
+}
+
+.excel-summary {
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.excel-summary h3 {
+    margin: 0 0 15px 0;
+    color: #656565;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: white;
+    border-radius: 5px;
+    border-left: 4px solid #787c80;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.summary-item label {
+    font-weight: 600;
+    color: #656565;
+}
+
+.summary-value {
+    font-weight: 700;
+    color: #2e7d48;
+    font-size: 1.05rem;
+}
+
+.excel-tsv-preview {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #e9ecef;
+}
+
+.tsv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.tsv-header h3 {
+    margin: 0;
+    color: #656565;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tsv-content {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 5px;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    max-height: 200px;
+    overflow-y: auto;
+    user-select: all;
+}
+
+.tsv-content pre {
+    margin: 0;
+    color: #656565;
+    line-height: 1.4;
+}
+
+/* コピー成功メッセージ */
+.copy-success-message {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    animation: slideInDown 0.3s ease-out;
+}
+
+.success-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #155724;
+    font-weight: 500;
+}
+
+.success-content i {
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 印刷時の個別帳票レイアウト */
+@media print {
+    .document-separator {
+        display: none;
+    }
+    
+    .individual-document {
+        page-break-after: always;
+        margin-bottom: 0;
+        border: none;
+        box-shadow: none;
+    }
+    
+    .individual-document:last-child {
+        page-break-after: avoid;
+    }
+    
+    .multiple-documents-container {
+        padding: 0;
+    }
+    
+    .documents-summary {
+        display: none;
+    }
+    
+    /* Excel表の印刷時非表示 */
+    .excel-actions {
+        display: none;
+    }
+    
+    .copy-instructions {
+        display: none;
+    }
+    
+    .tsv-header button {
+        display: none;
+    }
+}
+
+/* レスポンシブ対応 - 書類モーダル */
+@media (max-width: 768px) {
+    .document-modal {
+        width: 98%;
+        max-height: 95vh;
+    }
+    
+    .document-container {
+        padding: 20px;
+    }
+    
+    .document-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .company-info {
+        text-align: center;
+    }
+    
+    .document-info {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .document-table {
+        font-size: 0.8rem;
+    }
+    
+    .document-table th,
+    .document-table td {
+        padding: 8px 4px;
+    }
+    
+    .document-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .document-actions .btn {
+        min-width: unset;
+        width: 100%;
+    }
+}
