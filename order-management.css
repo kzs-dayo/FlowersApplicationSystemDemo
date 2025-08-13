@@ -1289,16 +1289,53 @@
 
 /* 宛名ラベル関連 */
 .address-label-modal {
-    max-width: 1000px;
-    width: 95%;
-    max-height: 90vh;
+    max-width: 1000px !important;
+    width: 95% !important;
+    max-height: 90vh !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.address-label-modal .modal-body {
+    flex: 1;
     overflow-y: auto;
+    padding-right: 10px;
+    max-height: calc(90vh - 80px); /* ヘッダーの高さのみを引く */
 }
 
 .address-label-container {
     display: flex;
     flex-direction: column;
     gap: 25px;
+}
+
+/* 宛名ラベルモーダルのスクロールバー */
+.address-label-modal .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.address-label-modal .modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.address-label-modal .modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.address-label-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 宛名ラベルモーダルの強制スクロール設定 */
+.address-label-modal {
+    overflow: hidden !important;
+}
+
+.address-label-modal .modal-body {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
 }
 
 .address-label-header {
@@ -2302,6 +2339,13 @@
     border-bottom: 1px solid #e9ecef;
 }
 
+.excel-funeral-info .info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
 .info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2314,15 +2358,38 @@
     gap: 8px;
 }
 
+.excel-funeral-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    min-width: 200px;
+}
+
 .info-item label {
     font-weight: 600;
-    color: #656565;
+    color: #666;
     min-width: 60px;
 }
 
+.excel-funeral-info .info-item label {
+    font-weight: 600;
+    color: #666;
+    min-width: 60px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
 .info-item span {
-    color: #34495e;
+    color: #666;
     font-weight: 500;
+}
+
+.excel-funeral-info .info-item span {
+    color: #666;
+    font-weight: 500;
+    font-size: 0.95rem;
+    flex: 1;
 }
 
 .excel-table-container {

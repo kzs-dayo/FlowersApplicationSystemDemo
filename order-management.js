@@ -1126,55 +1126,9 @@ function generateFuneralReceipts(funeralId) {
     }
 }
 
-// ご葬家別見積書作成
-function generateFuneralQuotes(funeralId) {
-    try {
-        console.log('見積書作成開始:', funeralId);
-        const funeralName = getFuneralName(funeralId);
-        console.log('ご葬家名:', funeralName);
-        
-        const orders = getFuneralOrders(funeralId, 'all'); // 全注文対象
-        console.log('注文データ:', orders);
-        
-        if (orders.length === 0) {
-            alert('見積対象の注文がありません。');
-            return;
-        }
-        
-        const quoteData = getFuneralQuoteData(funeralId);
-        console.log('見積書データ:', quoteData);
-        
-        showDocumentModal('見積書', funeralName, quoteData, 'quote');
-    } catch (error) {
-        console.error('見積書作成エラー:', error);
-        alert('見積書の作成中にエラーが発生しました。コンソールを確認してください。');
-    }
-}
 
-// ご葬家別納品書作成
-function generateFuneralDeliveryNotes(funeralId) {
-    try {
-        console.log('納品書作成開始:', funeralId);
-        const funeralName = getFuneralName(funeralId);
-        console.log('ご葬家名:', funeralName);
-        
-        const orders = getFuneralOrders(funeralId, 'all'); // 全注文対象
-        console.log('注文データ:', orders);
-        
-        if (orders.length === 0) {
-            alert('納品対象の注文がありません。');
-            return;
-        }
-        
-        const deliveryData = getFuneralDeliveryData(funeralId);
-        console.log('納品書データ:', deliveryData);
-        
-        showDocumentModal('納品書', funeralName, deliveryData, 'delivery');
-    } catch (error) {
-        console.error('納品書作成エラー:', error);
-        alert('納品書の作成中にエラーが発生しました。コンソールを確認してください。');
-    }
-}
+
+
 
 function generateFuneralLabels(funeralId) {
     const funeralName = getFuneralName(funeralId);
@@ -1747,9 +1701,6 @@ function generateExcelSummaryHTML(data) {
                     <button class="btn btn-outline" onclick="downloadExcelCSV()">
                         <i class="fas fa-download"></i> CSV出力
                     </button>
-                    <button class="btn btn-outline" onclick="downloadExcelTSV()">
-                        <i class="fas fa-download"></i> TSV出力
-                    </button>
                 </div>
             </div>
             
@@ -1843,46 +1794,6 @@ function generateExcelSummaryHTML(data) {
                         </tr>
                     </tfoot>
                 </table>
-            </div>
-            
-            <!-- 集計情報 -->
-            <div class="excel-summary">
-                <h3><i class="fas fa-chart-pie"></i> 集計情報</h3>
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <label>総注文件数:</label>
-                        <span class="summary-value">${data.summary.totalCount}件</span>
-                    </div>
-                    <div class="summary-item">
-                        <label>総金額:</label>
-                        <span class="summary-value">¥${data.summary.totalAmount.toLocaleString()}</span>
-                    </div>
-                    <div class="summary-item">
-                        <label>総手数料:</label>
-                        <span class="summary-value">¥${data.summary.totalFee.toLocaleString()}</span>
-                    </div>
-                    <div class="summary-item">
-                        <label>振込払い:</label>
-                        <span class="summary-value">${data.summary.paymentSummary.transfer}件</span>
-                    </div>
-                    <div class="summary-item">
-                        <label>現地払い:</label>
-                        <span class="summary-value">${data.summary.paymentSummary.onsite}件</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- TSV形式プレビュー -->
-            <div class="excel-tsv-preview">
-                <div class="tsv-header">
-                    <h3><i class="fas fa-code"></i> TSV形式プレビュー</h3>
-                    <button class="btn btn-sm btn-outline" onclick="copyTSVToClipboard()">
-                        <i class="fas fa-copy"></i> TSVをコピー
-                    </button>
-                </div>
-                <div class="tsv-content">
-                    <pre id="tsv-preview">${generateTSVContent(data)}</pre>
-                </div>
             </div>
         </div>
     `;
@@ -2537,108 +2448,9 @@ function getFuneralReceiptData(funeralId) {
     }
 }
 
-// 見積書データ取得
-function getFuneralQuoteData(funeralId) {
-    try {
-        console.log('見積書データ取得開始:', funeralId);
-        
-        const orders = getFuneralOrders(funeralId, 'all');
-        console.log('注文取得完了:', orders);
-        
-        const funeralInfo = funeralInfoData[funeralId];
-        if (!funeralInfo) {
-            throw new Error(`ご葬家情報が見つかりません: ${funeralId}`);
-        }
-        console.log('ご葬家情報:', funeralInfo);
-        
-        // 見積書の有効期限（葬儀日の前日まで）
-        const funeralDate = new Date(funeralInfo.funeralDate);
-        const validUntil = new Date(funeralDate);
-        validUntil.setDate(validUntil.getDate() - 1);
-        
-        const totalAmount = orders.reduce((sum, order) => {
-            const amount = parseInt(order.amount.replace(/[¥,]/g, '')) || 0;
-            return sum + amount;
-        }, 0);
-        
-        const totalFee = orders.reduce((sum, order) => {
-            const fee = parseInt((order.fee || '¥0').replace(/[¥,]/g, '')) || 0;
-            return sum + fee;
-        }, 0);
-        
-        const result = {
-            documentType: '見積書',
-            documentNumber: `Q-${new Date().getFullYear()}-${String(funeralId).padStart(4, '0')}`,
-            issueDate: new Date().toLocaleDateString('ja-JP'),
-            validUntil: validUntil.toLocaleDateString('ja-JP'),
-            funeralInfo: funeralInfo,
-            orders: orders,
-            totalAmount: totalAmount,
-            totalFee: totalFee,
-            notes: [
-                '上記金額にて生花の手配をさせていただきます。',
-                '本見積書は' + validUntil.toLocaleDateString('ja-JP') + 'まで有効です。',
-                '価格は税込表示となっております。',
-                'ご不明な点がございましたらお気軽にお問い合わせください。'
-            ]
-        };
-        
-        console.log('見積書データ作成完了:', result);
-        return result;
-    } catch (error) {
-        console.error('見積書データ取得エラー:', error);
-        throw error;
-    }
-}
 
-// 納品書データ取得
-function getFuneralDeliveryData(funeralId) {
-    try {
-        console.log('納品書データ取得開始:', funeralId);
-        
-        const orders = getFuneralOrders(funeralId, 'all');
-        console.log('注文取得完了:', orders);
-        
-        const funeralInfo = funeralInfoData[funeralId];
-        if (!funeralInfo) {
-            throw new Error(`ご葬家情報が見つかりません: ${funeralId}`);
-        }
-        console.log('ご葬家情報:', funeralInfo);
-        
-        const totalAmount = orders.reduce((sum, order) => {
-            const amount = parseInt(order.amount.replace(/[¥,]/g, '')) || 0;
-            return sum + amount;
-        }, 0);
-        
-        const totalFee = orders.reduce((sum, order) => {
-            const fee = parseInt((order.fee || '¥0').replace(/[¥,]/g, '')) || 0;
-            return sum + fee;
-        }, 0);
-        
-        const result = {
-            documentType: '納品書',
-            documentNumber: `D-${new Date().getFullYear()}-${String(funeralId).padStart(4, '0')}`,
-            issueDate: new Date().toLocaleDateString('ja-JP'),
-            deliveryDate: funeralInfo.funeralDate,
-            funeralInfo: funeralInfo,
-            orders: orders,
-            totalAmount: totalAmount,
-            totalFee: totalFee,
-            notes: [
-                '下記の通り生花を納品いたしました。',
-                '納品日: ' + funeralInfo.funeralDate,
-                '設置場所: ' + funeralInfo.venue,
-                'ご確認のほどよろしくお願いいたします。'
-            ]
-        };
-        
-        console.log('納品書データ作成完了:', result);
-        return result;
-    } catch (error) {
-        console.error('納品書データ取得エラー:', error);
-        throw error;
-    }
-}
+
+
 
 // 書類モーダル表示
 function showDocumentModal(documentType, funeralName, documentData, modalType) {
@@ -2688,8 +2500,6 @@ function showDocumentModal(documentType, funeralName, documentData, modalType) {
 
 // 注文選択機能付き書類HTML生成
 function generateDocumentSelectionHTML(data, type) {
-    const isQuote = type === 'quote';
-    const isDelivery = type === 'delivery';
     const isInvoice = type === 'invoice';
     const isReceipt = type === 'receipt';
     
@@ -2789,8 +2599,6 @@ function generateDocumentSelectionHTML(data, type) {
 
 // 書類HTML生成
 function generateDocumentHTML(data, type) {
-    const isQuote = type === 'quote';
-    const isDelivery = type === 'delivery';
     const isInvoice = type === 'invoice';
     const isReceipt = type === 'receipt';
     
@@ -2831,21 +2639,9 @@ function generateDocumentHTML(data, type) {
                 
                 <div class="document-dates">
                     <div class="date-row">
-                        <label>${isQuote ? '見積日' : isReceipt ? '領収日' : '発行日'}:</label>
+                        <label>${isReceipt ? '領収日' : '発行日'}:</label>
                         <span>${data.issueDate}</span>
                     </div>
-                    ${isQuote ? `
-                        <div class="date-row validity">
-                            <label>有効期限:</label>
-                            <span>${data.validUntil}</span>
-                        </div>
-                    ` : ''}
-                    ${isDelivery ? `
-                        <div class="date-row delivery">
-                            <label>納品日:</label>
-                            <span>${data.deliveryDate}</span>
-                        </div>
-                    ` : ''}
                     ${isInvoice ? `
                         <div class="date-row due">
                             <label>支払期限:</label>
@@ -2890,7 +2686,7 @@ function generateDocumentHTML(data, type) {
             ` : ''}
             
             <div class="document-content">
-                <h3>${isQuote ? 'お見積り内容' : isDelivery ? '納品内容' : isInvoice ? 'ご請求内容' : isReceipt ? '領収内容' : '内容'}</h3>
+                <h3>${isInvoice ? 'ご請求内容' : isReceipt ? '領収内容' : '内容'}</h3>
                 <table class="document-table">
                     <thead>
                         <tr>
@@ -2978,11 +2774,31 @@ function updateDocumentPreview(type) {
         const originalData = window.currentDocumentData;
         if (!originalData) {
             console.error('元のドキュメントデータが見つかりません');
+            console.error('window.currentDocumentData:', window.currentDocumentData);
             return;
         }
         
+        console.log('プレビュー更新開始:', {
+            type: type,
+            originalData: originalData,
+            ordersCount: originalData.orders?.length || 0
+        });
+        
         // 選択された注文のみでデータを作成
-        const selectedOrders = selectedIndices.map(index => originalData.orders[index]);
+        const selectedOrders = selectedIndices.map(index => {
+            const order = originalData.orders[index];
+            if (!order) {
+                console.warn(`注文データが見つかりません: index=${index}`);
+                return null;
+            }
+            return order;
+        }).filter(order => order !== null);
+        
+        console.log('選択された注文:', {
+            selectedIndices: selectedIndices,
+            selectedOrders: selectedOrders,
+            originalOrdersCount: originalData.orders?.length || 0
+        });
         
         // 金額を再計算（サマリー表示用）
         const totalAmount = selectedOrders.reduce((sum, order) => {
@@ -2995,22 +2811,31 @@ function updateDocumentPreview(type) {
             return sum + fee;
         }, 0);
         
-        // 選択状態のサマリーを更新
-        document.getElementById(`selected-count-${type}`).textContent = selectedOrders.length;
-        document.getElementById(`selected-total-${type}`).textContent = `¥${totalAmount.toLocaleString()}`;
-        document.getElementById(`selected-fee-${type}`).textContent = `¥${totalFee.toLocaleString()}`;
+        // 選択状態のサマリーを更新（要素が存在する場合のみ）
+        const countElement = document.getElementById(`selected-count-${type}`);
+        const totalElement = document.getElementById(`selected-total-${type}`);
+        const feeElement = document.getElementById(`selected-fee-${type}`);
+        
+        if (countElement) countElement.textContent = selectedOrders.length;
+        if (totalElement) totalElement.textContent = `¥${totalAmount.toLocaleString()}`;
+        if (feeElement) feeElement.textContent = `¥${totalFee.toLocaleString()}`;
         
         // プレビューエリアを更新
         const previewContainer = document.getElementById(`document-preview-${type}`);
-        if (previewContainer) {
-            if (selectedOrders.length === 0) {
-                previewContainer.innerHTML = `
-                    <div class="no-selection-message">
-                        <i class="fas fa-info-circle"></i>
-                        <p>注文を選択してください</p>
-                    </div>
-                `;
-            } else {
+        if (!previewContainer) {
+            console.warn(`プレビューエリアが見つかりません: document-preview-${type}`);
+            return;
+        }
+        
+        if (selectedOrders.length === 0) {
+            previewContainer.innerHTML = `
+                <div class="no-selection-message">
+                    <i class="fas fa-info-circle"></i>
+                    <p>注文を選択してください</p>
+                </div>
+            `;
+        } else {
+            try {
                 // 各注文に対して個別の帳票を生成
                 const individualDocuments = selectedOrders.map((order, index) => {
                     const orderAmount = parseInt(order.amount.replace(/[¥,]/g, '')) || 0;
@@ -3051,6 +2876,14 @@ function updateDocumentPreview(type) {
                         ${individualDocuments}
                     </div>
                 `;
+            } catch (innerError) {
+                console.error('個別帳票生成エラー:', innerError);
+                previewContainer.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>帳票の生成中にエラーが発生しました。ページを再読み込みしてください。</p>
+                    </div>
+                `;
             }
         }
         
@@ -3058,7 +2891,13 @@ function updateDocumentPreview(type) {
         
     } catch (error) {
         console.error('プレビュー更新エラー:', error);
-        alert('プレビューの更新中にエラーが発生しました。');
+        console.error('エラー詳細:', {
+            type: type,
+            selectedOrders: selectedOrders?.length || 0,
+            originalData: originalData ? '存在' : 'なし',
+            previewContainer: document.getElementById(`document-preview-${type}`) ? '存在' : 'なし'
+        });
+        alert(`プレビューの更新中にエラーが発生しました。\n\nエラー: ${error.message}\n\n詳細はコンソールを確認してください。`);
     }
 }
 
@@ -3228,13 +3067,12 @@ function printDocument(type) {
 
 // 書類PDF出力
 function downloadDocumentPDF(type) {
-    alert(`${type === 'quote' ? '見積書' : '納品書'}のPDF出力機能は開発中です。\n現在は印刷機能をご利用ください。`);
+    alert('PDF出力機能は開発中です。\n現在は印刷機能をご利用ください。');
 }
 
 // 書類メール送信
 function emailDocument(type) {
-    const documentType = type === 'quote' ? '見積書' : '納品書';
-    alert(`${documentType}のメール送信機能は開発中です。\n現在は印刷機能をご利用ください。`);
+    alert('メール送信機能は開発中です。\n現在は印刷機能をご利用ください。');
 }
 
 // 書類印刷用CSS
@@ -3320,15 +3158,7 @@ function getDocumentPrintCSS(type) {
             font-weight: bold;
         }
         
-        .date-row.validity {
-            color: #d32f2f;
-            font-weight: bold;
-        }
-        
-        .date-row.delivery {
-            color: #2e7d32;
-            font-weight: bold;
-        }
+
         
         .document-content h3 {
             font-size: 14pt;
@@ -3617,8 +3447,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         toggleDropdown: toggleDropdown,
         generateFloristOrder: generateFloristOrder,
         generateFuneralLabels: generateFuneralLabels,
-        generateFuneralQuotes: generateFuneralQuotes,
-        generateFuneralDeliveryNotes: generateFuneralDeliveryNotes,
+
         showAddressLabelModal: showAddressLabelModal,
         showDocumentModal: showDocumentModal,
         updateEnvelopePreview: updateEnvelopePreview,
@@ -3627,8 +3456,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         editFuneralInfo: editFuneralInfo,
         funeralInfoData: funeralInfoData,
         getFuneralOrders: getFuneralOrders,
-        getFuneralQuoteData: getFuneralQuoteData,
-        getFuneralDeliveryData: getFuneralDeliveryData,
+
         getFuneralInvoiceData: getFuneralInvoiceData,
         getFuneralReceiptData: getFuneralReceiptData,
         // 注文選択関連
@@ -3647,16 +3475,12 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         downloadExcelCSV: downloadExcelCSV,
         downloadExcelTSV: downloadExcelTSV,
         // テスト用関数
-        testQuote: () => generateFuneralQuotes(1),
-        testDelivery: () => generateFuneralDeliveryNotes(1),
         testInvoice: () => generateFuneralInvoices(1),
         testReceipt: () => generateFuneralReceipts(1),
         testExcelSummary: () => generateFuneralSummary(1)
     };
     
     // コンソールでテストできるように関数をグローバルに追加
-    window.testQuote = () => generateFuneralQuotes(1);
-    window.testDelivery = () => generateFuneralDeliveryNotes(1);
     window.testInvoice = () => generateFuneralInvoices(1);
     window.testReceipt = () => generateFuneralReceipts(1);
     window.testExcelSummary = () => generateFuneralSummary(1);

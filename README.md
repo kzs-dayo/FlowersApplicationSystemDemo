@@ -111,7 +111,7 @@ FlowersApplicationSystemDemo/
 
 1. **新規注文**: `index.html`で顧客情報と注文詳細を入力
 2. **注文管理**: `order-management.html`で注文の確認・修正・キャンセル
-3. **帳票作成**: `reports.html`で各種帳票を生成・ダウンロード
+3. **帳票作成**: `reports.html`で請求書・領収書等の帳票を生成・ダウンロード
 4. **統計確認**: `dashboard.html`で売上や進捗状況を確認
 
 ## 今後の拡張予定
