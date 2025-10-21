@@ -5,22 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>生花寄贈申し込みフォーム</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="application-form.css">
 </head>
 <body>
     <div class="container">
-        <!-- ナビゲーションバー -->
-        <nav class="navigation-bar">
-            <div class="nav-links">
-                <a href="index.html"><i class="fas fa-home"></i> トップ</a>
-                <a href="dashboard.html"><i class="fas fa-chart-bar"></i> ダッシュボード</a>
-                <a href="order-management.html"><i class="fas fa-list-alt"></i> 注文一覧・管理</a>
-            </div>
-        </nav>
-
         <header class="form-header">
             <div class="header-image">
-                <img src="24948665_m.jpg" alt="白い菊の花" class="header-flower-img">
+                <img src="image/Gemini_Generated_Image_ls0twcls0twcls0t.png" alt="白い百合の花" class="header-flower-img">
             </div>
             <h1>生花寄贈申し込みフォーム</h1>
             <p class="form-description">故人を偲ぶ心を込めて、<br>生花をお届けいたします。</p>
@@ -33,20 +24,32 @@
                     ご葬家名
                     <span class="required-tag">必須</span>
                 </label>
-                <input type="text" id="familyName" name="familyName" class="form-input" required placeholder="例: 輝家">
-                <p class="form-note">ご葬家のお名前をご入力ください。</br>
+                <div class="input-with-suffix">
+                    <input type="text" id="familyName" name="familyName" class="form-input" required placeholder="例: 輝">
+                    <span class="input-suffix">家</span>
+                </div>
+                <p class="form-note">ご葬家のお名前をご入力ください。（「家」は自動で付きます）</br>
                     ※弊社施行のご葬儀に限ります。
                 </p>
             </div>
 
             <!-- 故人名 -->
             <div class="form-group">
-                <label for="deceasedName" class="form-label">
-                    故人名
-                    <span class="required-tag">必須</span>
+                <label class="form-label">
+                    故人のお名前
+                    <span class="required-tag">苗字必須</span>
                 </label>
-                <input type="text" id="deceasedName" name="deceasedName" class="form-input" required placeholder="例: 輝 太郎">
-                <p class="form-note">故人のお名前をご入力ください。</p>
+                <div class="name-input-group">
+                    <div class="name-field">
+                        <input type="text" id="deceasedLastName" name="deceasedLastName" class="form-input" required placeholder="苗字（例: 輝）">
+                        <label class="field-sublabel">苗字</label>
+                    </div>
+                    <div class="name-field">
+                        <input type="text" id="deceasedFirstName" name="deceasedFirstName" class="form-input" placeholder="名前（例: 太郎）">
+                        <label class="field-sublabel">名前 <span class="optional-tag">任意</span></label>
+                    </div>
+                </div>
+                <p class="form-note">故人様の苗字は必須です。お名前は分かる範囲でご入力ください。</p>
             </div>
 
             <!-- ご葬儀の日程 -->
@@ -59,14 +62,46 @@
                 <p class="form-note">生花をお届けする日程を選択してください。</p>
             </div>
 
+            <!-- 代表者（ご依頼者）区分 -->
+            <div class="form-group">
+                <fieldset class="radio-fieldset">
+                    <legend class="fieldset-legend">
+                        ご依頼者区分
+                        <span class="required-tag">必須</span>
+                    </legend>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="applicantType" value="individual" class="radio-input" required checked>
+                            <span class="radio-custom"></span>
+                            個人
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="applicantType" value="company" class="radio-input" required>
+                            <span class="radio-custom"></span>
+                            企業・団体
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+
             <!-- ご依頼者のお名前 -->
             <div class="form-group">
                 <label for="applicantName" class="form-label">
-                    ご依頼者のお名前
+                    <span id="applicantLabel">ご依頼者のお名前</span>
                     <span class="required-tag">必須</span>
                 </label>
                 <input type="text" id="applicantName" name="applicantName" class="form-input" required placeholder="例: 輝 花子">
-                <p class="form-note">お申し込みされる方のお名前をご入力ください。</p>
+                <p class="form-note" id="applicantNote">お申し込みされる方のお名前をご入力ください。</p>
+            </div>
+
+            <!-- 担当者名 -->
+            <div class="form-group" id="contactPersonGroup" style="display: none;">
+                <label for="contactPerson" class="form-label">
+                    担当者名
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="text" id="contactPerson" name="contactPerson" class="form-input" placeholder="例: 山田 太郎">
+                <p class="form-note">企業・団体の担当者のお名前をご入力ください。</p>
             </div>
 
             <!-- ご依頼者の連絡先 -->
@@ -80,6 +115,16 @@
                     ・日中連絡が取れる電話番号を入力ください。<br>
                     ・申込内容の確認の為、折り返しお電話させていただく場合がございます。<br>
                 </p>
+            </div>
+
+            <!-- メールアドレス -->
+            <div class="form-group">
+                <label for="email" class="form-label">
+                    メールアドレス
+                    <span class="required-tag">必須</span>
+                </label>
+                <input type="email" id="email" name="email" class="form-input" required placeholder="example@example.com">
+                <p class="form-note">注文完了メールをお送りさせていただきます。</p>
             </div>
 
             <!-- ご依頼者の住所 -->
@@ -225,18 +270,8 @@
                 </p>
                 <div class="reference-image">
                     <p class="reference-title">【参考】芳名板の設置例</p>
-                    <img src="芳名版.png" alt="芳名板の設置例" class="nameplate-reference-img">
+                    <img src="image/芳名版.png" alt="芳名板の設置例" class="nameplate-reference-img">
                 </div>
-            </div>
-
-            <!-- メールアドレス -->
-            <div class="form-group">
-                <label for="email" class="form-label">
-                    メールアドレス
-                    <span class="optional-tag">任意</span>
-                </label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="example@example.com">
-                <p class="form-note">注文完了メールをお送りさせていただきます。</p>
             </div>
 
             <!-- お支払い方法 -->
@@ -265,6 +300,117 @@
                 </fieldset>
             </div>
 
+            <!-- 請求書ご送付先 -->
+            <fieldset class="address-fieldset">
+                <legend class="fieldset-legend">
+                    請求書ご送付先
+                    <span class="required-tag">必須</span>
+                </legend>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="sameAsApplicant" class="checkbox-input">
+                        <span class="checkbox-custom"></span>
+                        依頼者と同じ
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoiceName" class="form-label">
+                        <span id="invoiceNameLabel">お名前</span>
+                    </label>
+                    <input type="text" id="invoiceName" name="invoiceName" class="form-input" required placeholder="例: 輝 花子">
+                </div>
+
+                <!-- 請求書送付先担当者名 -->
+                <div class="form-group" id="invoiceContactPersonGroup" style="display: none;">
+                    <label for="invoiceContactPerson" class="form-label">担当者名</label>
+                    <input type="text" id="invoiceContactPerson" name="invoiceContactPerson" class="form-input" placeholder="例: 山田 太郎">
+                    <p class="form-note">企業・団体の担当者のお名前をご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoicePostalCode" class="form-label">郵便番号</label>
+                    <input type="text" id="invoicePostalCode" name="invoicePostalCode" class="form-input" required placeholder="例: 123-4567" pattern="[0-9]{3}-[0-9]{4}">
+                    <p class="form-note">ハイフンを含めてご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoicePrefecture" class="form-label">都道府県</label>
+                    <select id="invoicePrefecture" name="invoicePrefecture" class="form-select" required>
+                        <option value="">選択してください</option>
+                        <option value="北海道">北海道</option>
+                        <option value="青森県">青森県</option>
+                        <option value="岩手県">岩手県</option>
+                        <option value="宮城県">宮城県</option>
+                        <option value="秋田県">秋田県</option>
+                        <option value="山形県">山形県</option>
+                        <option value="福島県">福島県</option>
+                        <option value="茨城県">茨城県</option>
+                        <option value="栃木県">栃木県</option>
+                        <option value="群馬県">群馬県</option>
+                        <option value="埼玉県">埼玉県</option>
+                        <option value="千葉県">千葉県</option>
+                        <option value="東京都">東京都</option>
+                        <option value="神奈川県">神奈川県</option>
+                        <option value="新潟県">新潟県</option>
+                        <option value="富山県">富山県</option>
+                        <option value="石川県">石川県</option>
+                        <option value="福井県">福井県</option>
+                        <option value="山梨県">山梨県</option>
+                        <option value="長野県">長野県</option>
+                        <option value="岐阜県">岐阜県</option>
+                        <option value="静岡県">静岡県</option>
+                        <option value="愛知県">愛知県</option>
+                        <option value="三重県">三重県</option>
+                        <option value="滋賀県">滋賀県</option>
+                        <option value="京都府">京都府</option>
+                        <option value="大阪府">大阪府</option>
+                        <option value="兵庫県">兵庫県</option>
+                        <option value="奈良県">奈良県</option>
+                        <option value="和歌山県">和歌山県</option>
+                        <option value="鳥取県">鳥取県</option>
+                        <option value="島根県">島根県</option>
+                        <option value="岡山県">岡山県</option>
+                        <option value="広島県">広島県</option>
+                        <option value="山口県">山口県</option>
+                        <option value="徳島県">徳島県</option>
+                        <option value="香川県">香川県</option>
+                        <option value="愛媛県">愛媛県</option>
+                        <option value="高知県">高知県</option>
+                        <option value="福岡県">福岡県</option>
+                        <option value="佐賀県">佐賀県</option>
+                        <option value="長崎県">長崎県</option>
+                        <option value="熊本県">熊本県</option>
+                        <option value="大分県">大分県</option>
+                        <option value="宮崎県">宮崎県</option>
+                        <option value="鹿児島県">鹿児島県</option>
+                        <option value="沖縄県">沖縄県</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoiceCity" class="form-label">市区町村</label>
+                    <input type="text" id="invoiceCity" name="invoiceCity" class="form-input" required placeholder="例: 渋谷区">
+                    <p class="form-note">市区町村名をご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoiceAddress1" class="form-label">番地</label>
+                    <input type="text" id="invoiceAddress1" name="invoiceAddress1" class="form-input" required placeholder="例: 1-2-3">
+                    <p class="form-note">番地・丁目をご入力ください。</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="invoiceAddress2" class="form-label">
+                        建物名・部屋番号
+                        <span class="optional-tag">任意</span>
+                    </label>
+                    <input type="text" id="invoiceAddress2" name="invoiceAddress2" class="form-input" placeholder="例: ○○マンション101号室">
+                    <p class="form-note">マンション名や部屋番号がある場合はご入力ください。</p>
+                </div>
+            </fieldset>
+
             <!-- 備考欄 -->
             <div class="form-group">
                 <label for="remarks" class="form-label">
@@ -284,7 +430,7 @@
     </div>
 
     <script>
-        // ラジオボタンの制御
+        // 金額のラジオボタン制御
         const amountRadios = document.querySelectorAll('input[name="amount"]');
         const customAmountGroup = document.getElementById('customAmountGroup');
         const customAmountInput = document.getElementById('customAmount');
@@ -298,6 +444,131 @@
                     customAmountGroup.style.display = 'none';
                     customAmountInput.required = false;
                     customAmountInput.value = '';
+                }
+            });
+        });
+
+        // 請求書送付先「依頼者と同じ」チェックボックス変数定義
+        const sameAsApplicantCheckbox = document.getElementById('sameAsApplicant');
+        
+        // 代表者区分のラジオボタン制御
+        const applicantTypeRadios = document.querySelectorAll('input[name="applicantType"]');
+        const contactPersonGroup = document.getElementById('contactPersonGroup');
+        const contactPersonInput = document.getElementById('contactPerson');
+        const applicantLabel = document.getElementById('applicantLabel');
+        const applicantNote = document.getElementById('applicantNote');
+        const applicantNameInput = document.getElementById('applicantName');
+        
+        // 請求書送付先の要素も取得
+        const invoiceNameLabel = document.getElementById('invoiceNameLabel');
+        const invoiceNameInput = document.getElementById('invoiceName');
+        const invoiceContactPersonGroup = document.getElementById('invoiceContactPersonGroup');
+        const invoiceContactPersonInput = document.getElementById('invoiceContactPerson');
+
+        applicantTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'company') {
+                    // 企業・団体の場合
+                    contactPersonGroup.style.display = 'block';
+                    contactPersonInput.required = true;
+                    applicantLabel.textContent = '企業・団体名';
+                    applicantNote.textContent = '企業・団体名をご入力ください。';
+                    applicantNameInput.placeholder = '例: 株式会社〇〇';
+                    
+                    // 請求書送付先も企業・団体用に変更
+                    invoiceNameLabel.textContent = '企業・団体名';
+                    invoiceNameInput.placeholder = '例: 株式会社〇〇';
+                    invoiceContactPersonGroup.style.display = 'block';
+                } else {
+                    // 個人の場合
+                    contactPersonGroup.style.display = 'none';
+                    contactPersonInput.required = false;
+                    contactPersonInput.value = '';
+                    applicantLabel.textContent = 'ご依頼者のお名前';
+                    applicantNote.textContent = 'お申し込みされる方のお名前をご入力ください。';
+                    applicantNameInput.placeholder = '例: 輝 花子';
+                    
+                    // 請求書送付先も個人用に変更
+                    invoiceNameLabel.textContent = 'お名前';
+                    invoiceNameInput.placeholder = '例: 輝 花子';
+                    invoiceContactPersonGroup.style.display = 'none';
+                    invoiceContactPersonInput.value = '';
+                }
+                
+                // 「依頼者と同じ」がチェックされている場合は、変更を反映
+                if (sameAsApplicantCheckbox.checked) {
+                    invoiceNameInput.value = applicantNameInput.value;
+                    invoiceContactPersonInput.value = contactPersonInput.value;
+                    
+                    // 担当者フィールドの非活性化状態も更新
+                    if (this.value === 'company') {
+                        invoiceContactPersonInput.disabled = true;
+                    }
+                }
+            });
+        });
+
+        // 請求書送付先「依頼者と同じ」チェックボックス制御
+        const invoiceFields = {
+            name: invoiceNameInput,
+            contactPerson: invoiceContactPersonInput,
+            postalCode: document.getElementById('invoicePostalCode'),
+            prefecture: document.getElementById('invoicePrefecture'),
+            city: document.getElementById('invoiceCity'),
+            address1: document.getElementById('invoiceAddress1'),
+            address2: document.getElementById('invoiceAddress2')
+        };
+        
+        const applicantFields = {
+            name: applicantNameInput,
+            contactPerson: contactPersonInput,
+            postalCode: document.getElementById('postalCode'),
+            prefecture: document.getElementById('prefecture'),
+            city: document.getElementById('city'),
+            address1: document.getElementById('address1'),
+            address2: document.getElementById('address2')
+        };
+
+        sameAsApplicantCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // 依頼者情報をコピー
+                invoiceFields.name.value = applicantFields.name.value;
+                invoiceFields.contactPerson.value = applicantFields.contactPerson.value;
+                invoiceFields.postalCode.value = applicantFields.postalCode.value;
+                invoiceFields.prefecture.value = applicantFields.prefecture.value;
+                invoiceFields.city.value = applicantFields.city.value;
+                invoiceFields.address1.value = applicantFields.address1.value;
+                invoiceFields.address2.value = applicantFields.address2.value;
+                
+                // フィールドを非活性化（担当者フィールドは表示されている場合のみ）
+                invoiceFields.name.disabled = true;
+                invoiceFields.postalCode.disabled = true;
+                invoiceFields.prefecture.disabled = true;
+                invoiceFields.city.disabled = true;
+                invoiceFields.address1.disabled = true;
+                invoiceFields.address2.disabled = true;
+                if (invoiceContactPersonGroup.style.display !== 'none') {
+                    invoiceFields.contactPerson.disabled = true;
+                }
+            } else {
+                // フィールドを活性化
+                invoiceFields.name.disabled = false;
+                invoiceFields.postalCode.disabled = false;
+                invoiceFields.prefecture.disabled = false;
+                invoiceFields.city.disabled = false;
+                invoiceFields.address1.disabled = false;
+                invoiceFields.address2.disabled = false;
+                if (invoiceContactPersonGroup.style.display !== 'none') {
+                    invoiceFields.contactPerson.disabled = false;
+                }
+            }
+        });
+
+        // 依頼者情報が変更されたときに、チェックボックスがONの場合は自動更新
+        Object.keys(applicantFields).forEach(key => {
+            applicantFields[key].addEventListener('input', function() {
+                if (sameAsApplicantCheckbox.checked) {
+                    invoiceFields[key].value = this.value;
                 }
             });
         });

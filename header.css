@@ -1,0 +1,497 @@
+/* ヘッダー共通CSS */
+
+/* アカウント切り替えモーダル */
+.account-switcher-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-switcher-modal.show {
+    display: flex;
+}
+
+.account-switcher-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.account-switcher-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.account-switcher-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #666;
+    color: white;
+}
+
+.account-switcher-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.account-switcher-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.account-switcher-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.account-switcher-body {
+    padding: 24px;
+    overflow-y: auto;
+    max-height: calc(80vh - 80px);
+}
+
+.account-switcher-note {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+    color: #1565c0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.account-switcher-note i {
+    font-size: 1.2rem;
+}
+
+.account-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.account-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.account-card:hover {
+    border-color: #666;
+    box-shadow: 0 4px 12px rgba(102, 102, 102, 0.2);
+    transform: translateY(-2px);
+}
+
+.account-card.active {
+    border-color: #666;
+    background: #f8f9fa;
+}
+
+.account-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.account-card-icon.admin {
+    background: #666;
+}
+
+.account-card-icon.approver {
+    background: #28a745;
+}
+
+.account-card-icon.staff {
+    background: #1976d2;
+}
+
+.account-card-info {
+    flex: 1;
+}
+
+.account-card-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.account-card-role {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.account-card-email {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.account-card-check {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #28a745;
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* アカウント切り替え通知 */
+.account-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10001;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease;
+    border-left: 4px solid #4caf50;
+}
+
+.account-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.account-notification i {
+    font-size: 1.5rem;
+    color: #4caf50;
+}
+
+.account-notification span {
+    color: #333;
+    font-weight: 500;
+}
+
+.header {
+    background: white;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* アカウント情報 */
+.account-info {
+    position: relative;
+}
+
+.account-dropdown {
+    position: relative;
+}
+
+.account-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.account-button:hover {
+    background: #f8f9fa;
+    border-color: #999;
+}
+
+.account-button i.fa-user-circle {
+    font-size: 1.5rem;
+    color: #666;
+}
+
+.account-button i.fa-chevron-down {
+    font-size: 0.75rem;
+    color: #999;
+    transition: transform 0.3s ease;
+}
+
+.account-dropdown.active .account-button i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.account-name {
+    font-weight: 500;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.account-dropdown.active .account-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.account-menu-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.account-menu-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.account-menu-role {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.account-menu-divider {
+    height: 1px;
+    background: #f0f0f0;
+}
+
+.account-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.account-menu-item:hover {
+    background: #f8f9fa;
+}
+
+.account-menu-item i {
+    font-size: 1rem;
+    color: #666;
+    width: 16px;
+    text-align: center;
+}
+
+/* ================================
+   ヘッダー・アカウント情報のレスポンシブ対応
+   ================================ */
+@media (max-width: 1024px) {
+    .header-right {
+        gap: 15px;
+    }
+    
+    .header-actions {
+        gap: 8px;
+    }
+    
+    .account-name {
+        max-width: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 15px 20px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .header-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .header-right {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    
+    .header-actions .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .account-info {
+        width: 100%;
+    }
+    
+    .account-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .account-menu {
+        left: 0;
+        right: 0;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content h1 {
+        font-size: 1.3rem;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+    }
+    
+    .header-actions .btn {
+        width: 100%;
+    }
+    
+    .account-name {
+        max-width: 100px;
+        font-size: 0.9rem;
+    }
+    
+    .account-switcher-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .account-switcher-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .account-card {
+        padding: 16px;
+    }
+    
+    .account-card-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .account-card-name {
+        font-size: 1rem;
+    }
+    
+    .account-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        padding: 12px 16px;
+    }
+}
+

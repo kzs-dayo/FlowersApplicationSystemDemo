@@ -1,3 +1,5 @@
+/* 申し込みフォーム専用CSS */
+
 /* リセットCSS */
 * {
     margin: 0;
@@ -41,6 +43,7 @@ body {
     color: white;
     text-decoration: none;
     border-radius: 6px;
+    border: 2px solid transparent;
     font-weight: 600;
     font-size: 0.95em;
     transition: all 0.3s ease;
@@ -48,8 +51,7 @@ body {
 
 .nav-link:hover {
     background-color: #34495e;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(44, 62, 80, 0.3);
+    border: 2px solid #2c3e50;
 }
 
 /* ヘッダー */
@@ -68,7 +70,7 @@ body {
 
 .header-flower-img {
     width: 100%;
-    height: 300px;
+    height: 400px;
     object-fit: cover;
     object-position: center;
     display: block;
@@ -117,7 +119,7 @@ body {
     background: white;
     padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
 }
 
 /* フォームグループ */
@@ -169,8 +171,14 @@ body {
 
 .form-input:focus, .form-select:focus, .form-textarea:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    border: 2px solid #3498db;
+}
+
+.form-input:disabled, .form-select:disabled, .form-textarea:disabled {
+    background-color: #f5f5f5;
+    color: #7f8c8d;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* テキストエリア */
@@ -270,12 +278,115 @@ body {
     background-color: #ebf3fd;
 }
 
+/* チェックボックスラベル */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: normal;
+    margin: 0;
+    gap: 12px;
+    background-color: white;
+}
+
+.checkbox-label:hover {
+    border-color: #3498db;
+    background-color: #f8f9fa;
+}
+
+/* チェックボックス入力 */
+.checkbox-input {
+    display: none;
+}
+
+/* カスタムチェックボックス */
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #bdc3c7;
+    border-radius: 4px;
+    background-color: white;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%) rotate(45deg);
+}
+
+.checkbox-label:focus-within {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
 /* フォーム注意書き */
 .form-note {
     margin-top: 5px;
     font-size: 0.9em;
     color: #7f8c8d;
     line-height: 1.4;
+}
+
+/* 名前入力グループ */
+.name-input-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.name-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.field-sublabel {
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    margin-top: 0.25rem;
+    text-align: center;
+    font-weight: normal;
+}
+
+/* 入力欄の接尾辞（「家」など） */
+.input-with-suffix {
+    position: relative;
+    display: block;
+}
+
+.input-with-suffix .form-input {
+    padding-right: 45px;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #656565;
+    pointer-events: none;
+    user-select: none;
 }
 
 /* 参考画像エリア */
@@ -300,7 +411,7 @@ body {
     max-width: 600px;
     height: auto;
     border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ddd;
     display: block;
     margin: 0 auto;
 }
@@ -318,7 +429,7 @@ body {
 /* ボタン */
 .submit-button, .reset-button {
     padding: 14px 40px;
-    border: none;
+    border: 2px solid transparent;
     border-radius: 6px;
     font-size: 1.1em;
     font-weight: 600;
@@ -334,8 +445,7 @@ body {
 
 .submit-button:hover {
     background-color: #666;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+    border: 2px solid #555;
 }
 
 .reset-button {
@@ -345,8 +455,7 @@ body {
 
 .reset-button:hover {
     background-color: #7f8c8d;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+    border: 2px solid #6c7a7b;
 }
 
 /* レスポンシブデザイン */
@@ -378,7 +487,7 @@ body {
     }
     
     .header-flower-img {
-        height: 250px;
+        height: 300px;
     }
     
     .form-description {
@@ -404,6 +513,20 @@ body {
     .nameplate-reference-img {
         max-width: 100%;
     }
+    
+    .name-input-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .input-suffix {
+        font-size: 1em;
+        right: 12px;
+    }
+    
+    .input-with-suffix .form-input {
+        padding-right: 40px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -426,7 +549,7 @@ body {
     }
     
     .header-flower-img {
-        height: 200px;
+        height: 250px;
     }
     
     .form-description {
@@ -475,8 +598,7 @@ body {
 .was-validated .form-input:invalid,
 .was-validated .form-select:invalid,
 .was-validated .form-textarea:invalid {
-    border-color: #e74c3c;
-    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    border: 2px solid #e74c3c;
 }
 
 /* 読み込み中のスタイル */
@@ -524,4 +646,5 @@ body {
         box-shadow: none;
         border: 1px solid #ccc;
     }
-} 
+}
+

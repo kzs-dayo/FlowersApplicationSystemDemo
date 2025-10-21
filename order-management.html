@@ -5,62 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注文管理 - 供花注文管理システム</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="order-management.css?v=20241220-11">
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="order-management.css?v=20241220-14">
 </head>
 <body>
     <div class="layout">
         <!-- サイドナビゲーション -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <h2>供花注文管理システム</h2>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="index.html" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-home"></i></span>
-                        トップ
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
-                        ダッシュボード
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="application-form.html" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-edit"></i></span>
-                        申し込みフォーム
-                    </a>
-                </li>
-                <li class="nav-item active">
-                    <a href="#order-list" class="nav-link">
-                        <span class="nav-icon"><i class="fas fa-list-alt"></i></span>
-                        注文一覧・管理
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <div id="sidebar-container"></div>
 
         <!-- メインコンテンツ -->
         <main class="main-content">
             <!-- ヘッダー -->
-            <header class="header">
-                <div class="header-content">
-                    <h1>注文一覧・管理</h1>
-                    <div class="header-actions">
-                        <button class="btn btn-primary" onclick="showNewOrderForm()">
-                            <span class="btn-icon"><i class="fas fa-edit"></i></span>
-                            新規注文
-                        </button>
-                        <button class="btn btn-outline" onclick="refreshOrderList()">
-                            <span class="btn-icon"><i class="fas fa-sync"></i></span>
-                            更新
-                        </button>
-                    </div>
-                </div>
-            </header>
+            <div id="header-container"></div>
 
             <!-- コンテンツ -->
             <div class="content">
@@ -71,20 +28,6 @@
                         <div class="summary-content">
                             <div class="summary-value" id="activeTotalOrders">12</div>
                             <div class="summary-label">有効注文数</div>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-icon"><i class="fas fa-dollar-sign"></i></div>
-                        <div class="summary-content">
-                            <div class="summary-value" id="activeTotalAmount">¥192,100</div>
-                            <div class="summary-label">有効売上合計</div>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-icon"><i class="fas fa-seedling"></i></div>
-                        <div class="summary-content">
-                            <div class="summary-value" id="flowerOrders">2</div>
-                            <div class="summary-label">付け花注文</div>
                         </div>
                     </div>
                     <div class="summary-card">
@@ -115,14 +58,6 @@
                                 <option value="">すべて</option>
                                 <option value="transfer">振込</option>
                                 <option value="onsite">現地</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="flowerFilter">付け花:</label>
-                            <select id="flowerFilter" onchange="filterOrders()">
-                                <option value="">すべて</option>
-                                <option value="yes">あり</option>
-                                <option value="no">なし</option>
                             </select>
                         </div>
                         <div class="filter-group">
@@ -165,20 +100,46 @@
                                     </div>
                                     <div class="funeral-management">
                                         <div class="funeral-management-info">
-                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-1">山田太郎</span></span>
+                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-1">鈴木 一郎</span></span>
                                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-1">2024/01/20</span></span>
                                         </div>
                                         <button class="btn-edit-funeral" onclick="editFuneralInfo(1, event)"></button>
                                     </div>
                                 </div>
                                 <div class="funeral-summary">
+                                    <div class="summary-item flower-calc">
+                                        <div class="flower-calc-header">
+                                            <span class="summary-label">
+                                                <i class="fas fa-calculator"></i> 花代処理: 
+                                                <span class="mode-badge-small builtin" id="mode-badge-1">組込式</span>
+                                            </span>
+                                            <button class="btn-edit-inline" onclick="editFlowerSettings(1, event)" title="設定変更">
+                                                <i class="fas fa-edit"></i> 設定
+                                            </button>
+                                        </div>
+                                        <div class="flower-calc-details">
+                                            <div class="calc-detail-item">
+                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
+                                                    <span class="calc-detail-value deduct" id="inline-deduct-1">-¥50,000</span>
+                                                    <span class="calc-detail-tax" id="inline-deduct-tax-1" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥4,545)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-divider"></div>
+                                            <div class="calc-detail-item" id="addon-item-1">
+                                                <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">つけ花（超過分・税込）</span>
+                                                    <span class="calc-detail-value addon" id="inline-addon-1">¥38,500</span>
+                                                    <span class="calc-detail-tax" id="inline-addon-tax-1" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥3,500)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="summary-item">
                                         <span class="summary-label">注文数:</span>
                                         <span class="summary-value">4件</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">合計金額:</span>
-                                        <span class="summary-value">¥82,500</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="summary-label">支払方法:</span>
@@ -228,13 +189,14 @@
                                             <th>金額</th>
                                             <th>手数料</th>
                                             <th>支払方法</th>
-                                            <th>付け花</th>
                                             <th>ステータス</th>
+                                            <th>承認状況</th>
+                                            <th>花屋送信状況</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr data-order-id="12" data-status="active">
+                                        <tr data-order-id="12" data-status="active" data-staff="鈴木 一郎">
                                             <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
                                             <td>12</td>
                                             <td>2024/01/16</td>
@@ -244,17 +206,34 @@
                                             <td class="amount">¥16,500</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="flower-badge no">なし</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-12">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(12)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-12">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(12)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(12)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(12)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(12)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(12)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr data-order-id="13" data-status="active">
+                                        <tr data-order-id="13" data-status="active" data-staff="鈴木 一郎">
                                             <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
                                             <td>13</td>
                                             <td>2024/01/16</td>
@@ -264,37 +243,71 @@
                                             <td class="amount">¥16,500</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="flower-badge no">なし</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-13">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(13)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-13">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(13)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(13)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(13)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(13)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(13)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr data-order-id="14" data-status="active" class="special-amount">
+                                        <tr data-order-id="14" data-status="active" data-staff="鈴木 一郎">
                                             <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
                                             <td>14</td>
                                             <td>2024/01/17</td>
                                             <td>輝 三郎</td>
                                             <td>輝 美子</td>
                                             <td>070-3333-4444</td>
-                                            <td class="amount special">¥30,000</td>
+                                            <td class="amount">¥30,000</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
-                                            <td><span class="flower-badge yes">あり</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-14">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(14)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-14">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(14)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(14)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(14)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(14)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(14)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr data-order-id="15" data-status="active">
+                                        <tr data-order-id="15" data-status="active" data-staff="鈴木 一郎">
                                             <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
                                             <td>15</td>
                                             <td>2024/01/17</td>
@@ -304,12 +317,29 @@
                                             <td class="amount">¥16,500</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="flower-badge no">なし</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-15">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(15)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-15">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(15)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(15)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(15)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(15)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(15)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
@@ -334,20 +364,46 @@
                                     </div>
                                     <div class="funeral-management">
                                         <div class="funeral-management-info">
-                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-2">佐藤花子</span></span>
+                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-2">山田 太郎</span></span>
                                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-2">2024/01/19</span></span>
                                         </div>
                                         <button class="btn-edit-funeral" onclick="editFuneralInfo(2, event)"></button>
                                     </div>
                                 </div>
                                 <div class="funeral-summary">
+                                    <div class="summary-item flower-calc">
+                                        <div class="flower-calc-header">
+                                            <span class="summary-label">
+                                                <i class="fas fa-calculator"></i> 花代処理: 
+                                                <span class="mode-badge-small addon" id="mode-badge-2">つけ花</span>
+                                            </span>
+                                            <button class="btn-edit-inline" onclick="editFlowerSettings(2, event)" title="設定変更">
+                                                <i class="fas fa-edit"></i> 設定
+                                            </button>
+                                        </div>
+                                        <div class="flower-calc-details">
+                                            <div class="calc-detail-item" id="deduct-item-2" style="display: none;">
+                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
+                                                    <span class="calc-detail-value deduct" id="inline-deduct-2">¥0</span>
+                                                    <span class="calc-detail-tax" id="inline-deduct-tax-2" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-divider" id="divider-2" style="display: none;"></div>
+                                            <div class="calc-detail-item" id="addon-item-2">
+                                                <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">つけ花（全額・税込）</span>
+                                                    <span class="calc-detail-value addon" id="inline-addon-2">¥40,900</span>
+                                                    <span class="calc-detail-tax" id="inline-addon-tax-2" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥3,718)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="summary-item">
                                         <span class="summary-label">注文数:</span>
                                         <span class="summary-value">2件</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">合計金額:</span>
-                                        <span class="summary-value">¥36,500</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="summary-label">支払方法:</span>
@@ -396,33 +452,51 @@
                                             <th>金額</th>
                                             <th>手数料</th>
                                             <th>支払方法</th>
-                                            <th>付け花</th>
                                             <th>ステータス</th>
+                                            <th>承認状況</th>
+                                            <th>花屋送信状況</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr data-order-id="11" data-status="active" class="special-amount">
+                                        <tr data-order-id="11" data-status="active" data-staff="山田 太郎">
                                             <td><input type="checkbox" class="row-checkbox" data-group="2"></td>
                                             <td>11</td>
                                             <td>2024/01/15</td>
                                             <td>田中工業株式会社</td>
                                             <td>田中美子</td>
                                             <td>080-9876-5432</td>
-                                            <td class="amount special">¥20,000</td>
+                                            <td class="amount">¥20,000</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
-                                            <td><span class="flower-badge yes">あり</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-11">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(11)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-11">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(11)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(11)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(11)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(11)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(11)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr data-order-id="16" data-status="active">
+                                        <tr data-order-id="16" data-status="active" data-staff="山田 太郎">
                                             <td><input type="checkbox" class="row-checkbox" data-group="2"></td>
                                             <td>16</td>
                                             <td>2024/01/18</td>
@@ -432,12 +506,29 @@
                                             <td class="amount">¥16,500</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
-                                            <td><span class="flower-badge no">なし</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-16">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(16)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-16">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(16)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(16)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(16)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(16)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(16)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
@@ -462,21 +553,46 @@
                                     </div>
                                     <div class="funeral-management">
                                         <div class="funeral-management-info">
-                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-3">鈴木三郎</span></span>
+                                            <span class="funeral-staff">担当者: <span class="staff-name" id="staff-3">佐藤 花子</span></span>
                                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-3">2024/01/22</span></span>
                                         </div>
                                         <button class="btn-edit-funeral" onclick="editFuneralInfo(3, event)"></button>
                                     </div>
                                 </div>
                                 <div class="funeral-summary">
+                                    <div class="summary-item flower-calc">
+                                        <div class="flower-calc-header">
+                                            <span class="summary-label">
+                                                <i class="fas fa-calculator"></i> 花代処理: 
+                                                <span class="mode-badge-small builtin" id="mode-badge-3">組込式</span>
+                                            </span>
+                                            <button class="btn-edit-inline" onclick="editFlowerSettings(3, event)" title="設定変更">
+                                                <i class="fas fa-edit"></i> 設定
+                                            </button>
+                                        </div>
+                                        <div class="flower-calc-details">
+                                            <div class="calc-detail-item" id="deduct-item-3">
+                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
+                                                    <span class="calc-detail-value deduct" id="inline-deduct-3">-¥18,700</span>
+                                                    <span class="calc-detail-tax" id="inline-deduct-tax-3" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥1,700)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-divider" id="divider-3" style="display: none;"></div>
+                                            <div class="calc-detail-item" id="addon-item-3" style="display: none;">
+                                                <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">つけ花（超過分・税込）</span>
+                                                    <span class="calc-detail-value addon" id="inline-addon-3">¥0</span>
+                                                    <span class="calc-detail-tax" id="inline-addon-tax-3" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="summary-item">
                                         <span class="summary-label">注文数:</span>
                                         <span class="summary-value">2件</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="summary-label">合計金額:</span>
-                                        <span class="summary-value">¥16,500</span>
-                                        <span class="cancelled-amount">（¥16,500キャンセル）</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="summary-label">支払方法:</span>
@@ -526,13 +642,14 @@
                                             <th>金額</th>
                                             <th>手数料</th>
                                             <th>支払方法</th>
-                                            <th>付け花</th>
                                             <th>ステータス</th>
+                                            <th>承認状況</th>
+                                            <th>花屋送信状況</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr data-order-id="10" data-status="cancelled" class="cancelled-row">
+                                        <tr data-order-id="10" data-status="cancelled" class="cancelled-row" data-staff="佐藤 花子">
                                             <td><input type="checkbox" class="row-checkbox" data-group="3"></td>
                                             <td>10</td>
                                             <td>2024/01/15</td>
@@ -542,8 +659,23 @@
                                             <td class="amount">¥16,500</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="flower-badge no">なし</span></td>
                                             <td><span class="status-badge cancelled">キャンセル</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-10">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(10)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-10">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(10)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm btn-outline" onclick="reviveOrder(10)">復活</button>
@@ -552,7 +684,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr data-order-id="17" data-status="active">
+                                        <tr data-order-id="17" data-status="active" data-staff="佐藤 花子">
                                             <td><input type="checkbox" class="row-checkbox" data-group="3"></td>
                                             <td>17</td>
                                             <td>2024/01/19</td>
@@ -562,12 +694,29 @@
                                             <td class="amount">¥16,500</td>
                                             <td class="fee">¥2,200</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="flower-badge no">なし</span></td>
                                             <td><span class="status-badge active">有効</span></td>
+                                            <td>
+                                                <div class="approval-status-cell">
+                                                    <span class="approval-badge pending" id="approval-status-17">承認待ち</span>
+                                                    <button class="btn-approval-action" onclick="showApprovalModal(17)" title="承認処理">
+                                                        <i class="fas fa-user-check"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="email-status-cell">
+                                                    <span class="email-status-badge unsent" id="email-status-17">未送信</span>
+                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(17)" title="ステータスを変更">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(17)">修正</button>
-                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(17)">キャンセル</button>
+                                                    <button class="btn btn-sm btn-warning" onclick="requestApproval(17)" title="承認依頼を再送信">
+                                                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                                                    </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(17)"><i class="fas fa-file-alt"></i> 注文書</button>
                                                 </div>
                                             </td>
@@ -623,10 +772,6 @@
                         <div class="detail-row">
                             <label>支払方法:</label>
                             <span id="detailPayment"></span>
-                        </div>
-                        <div class="detail-row">
-                            <label>付け花:</label>
-                            <span id="detailFlower"></span>
                         </div>
                     </div>
                     <div class="detail-section">
@@ -722,6 +867,15 @@
                 <button class="btn btn-secondary" onclick="closeModal('orderFormModal')">閉じる</button>
                 <button class="btn btn-outline" onclick="printOrderForm()">印刷</button>
                 <button class="btn btn-primary" onclick="downloadOrderFormPDF()">PDF保存</button>
+                <button class="btn btn-primary" onclick="toggleEditMode()" id="editToggleBtn">
+                    <i class="fas fa-edit"></i> 編集
+                </button>
+                <button class="btn btn-success" onclick="saveOrderForm()" id="saveBtn" style="display: none;">
+                    <i class="fas fa-save"></i> 保存
+                </button>
+                <button class="btn btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display: none;">
+                    <i class="fas fa-times"></i> キャンセル
+                </button>
             </div>
         </div>
     </div>
@@ -841,6 +995,179 @@
         </div>
     </div>
 
+    <!-- 花代処理設定モーダル -->
+    <div id="flowerSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>花代処理設定 - <span id="settingsFuneralName"></span></h2>
+                <span class="close" onclick="closeModal('flowerSettingsModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="flower-settings-form">
+                    <div class="form-section">
+                        <h3>処理方式の選択</h3>
+                        <div class="form-row radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="flowerMode" value="builtin" id="modeBuiltin" checked onchange="toggleBuiltinLimit()">
+                                <span class="radio-label">
+                                    <strong>①組み込み式（葬儀代金から引く）</strong>
+                                    <p class="option-desc">固定の花代を葬儀代金から引き、超過分をつけ花として処理します</p>
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="flowerMode" value="addon" id="modeAddon" onchange="toggleBuiltinLimit()">
+                                <span class="radio-label">
+                                    <strong>②つけ花（葬儀代金は変わらない）</strong>
+                                    <p class="option-desc">すべての花代をつけ花として処理し、葬儀代金は変更しません</p>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="builtinLimitSection">
+                        <h3>組込上限額の設定</h3>
+                        <div class="form-row">
+                            <label for="builtinLimitInput">葬儀代金から引く上限額（円）:</label>
+                            <input type="number" id="builtinLimitInput" min="0" step="1000" value="50000" placeholder="例: 50000">
+                            <p class="form-note">
+                                この金額までを葬儀代金から引きます。超過分は自動的につけ花として処理されます。<br>
+                                ※手数料も含めた総額で計算されます
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>計算プレビュー</h3>
+                        <div class="preview-calculation">
+                            <div class="preview-item">
+                                <span class="preview-label">生花合計:</span>
+                                <span class="preview-value" id="previewFlowerTotal">¥0</span>
+                            </div>
+                            <div class="preview-item">
+                                <span class="preview-label">手数料合計（¥2,200 × <span id="previewOrderCount">0</span>件）:</span>
+                                <span class="preview-value" id="previewFeeTotal">¥0</span>
+                            </div>
+                            <div class="preview-item total">
+                                <span class="preview-label">総合計（税込）:</span>
+                                <span class="preview-value" id="previewGrandTotal">¥0</span>
+                            </div>
+                            <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
+                                <span class="preview-label">内税:</span>
+                                <span class="preview-value" id="previewTotalTax">¥0</span>
+                            </div>
+                            <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
+                                <span class="preview-label">税抜:</span>
+                                <span class="preview-value" id="previewTotalExcludingTax">¥0</span>
+                            </div>
+                            <hr>
+                            <div class="preview-item highlight">
+                                <span class="preview-label">葬儀代から減額（税込）:</span>
+                                <span class="preview-value deduct" id="previewDeduct">¥0</span>
+                            </div>
+                            <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
+                                <span class="preview-label">内税:</span>
+                                <span class="preview-value" id="previewDeductTax">¥0</span>
+                            </div>
+                            <div class="preview-item highlight">
+                                <span class="preview-label">つけ花（税込）:</span>
+                                <span class="preview-value addon" id="previewAddon">¥0</span>
+                            </div>
+                            <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
+                                <span class="preview-label">内税:</span>
+                                <span class="preview-value" id="previewAddonTax">¥0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('flowerSettingsModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveFlowerSettings()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新規ご葬家作成モーダル -->
+    <div id="newFuneralModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>新規ご葬家登録</h2>
+                <span class="close" onclick="closeModal('newFuneralModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <form id="newFuneralForm" class="order-edit-form">
+                    <div class="form-section">
+                        <h3>基本情報</h3>
+                        <div class="form-row">
+                            <label for="newFuneralFamily">ご葬家名:</label>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="text" id="newFuneralFamily" required placeholder="例: 山田" style="flex: 1;">
+                                <span style="font-size: 16px; font-weight: 500;">家</span>
+                            </div>
+                            <p class="form-note">姓のみを入力してください（「家」は自動で付きます）</p>
+                        </div>
+                        <div class="form-row">
+                            <label for="newDeceased">故人名:</label>
+                            <input type="text" id="newDeceased" required placeholder="例: 山田 太郎">
+                            <p class="form-note">故人様のお名前を入力してください</p>
+                        </div>
+                        <div class="form-row">
+                            <label for="newFuneralDate">葬儀日:</label>
+                            <input type="date" id="newFuneralDate" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="newVenue">会場:</label>
+                            <input type="text" id="newVenue" required placeholder="例: セレモニーホール〇〇">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>管理情報</h3>
+                        <div class="form-row">
+                            <label for="newStaff">担当者名:</label>
+                            <input type="text" id="newStaff" placeholder="担当者名を入力">
+                            <p class="form-note">このご葬儀の担当者名（任意）</p>
+                        </div>
+                        <div class="form-row">
+                            <label for="newConfirmedDate">葬儀確定日:</label>
+                            <input type="date" id="newConfirmedDate">
+                            <p class="form-note">葬儀が確定した日付（任意）</p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>花代処理設定</h3>
+                        <div class="form-row radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="newFlowerMode" value="builtin" checked>
+                                <span class="radio-label">
+                                    <strong>組み込み式（葬儀代金から引く）</strong>
+                                    <p class="option-desc">固定の花代を葬儀代金から引き、超過分をつけ花として処理します</p>
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="newFlowerMode" value="addon">
+                                <span class="radio-label">
+                                    <strong>つけ花（葬儀代金は変わらない）</strong>
+                                    <p class="option-desc">すべての花代をつけ花として処理し、葬儀代金は変更しません</p>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="form-row" id="newBuiltinLimitRow">
+                            <label for="newBuiltinLimit">組込上限額（円）:</label>
+                            <input type="number" id="newBuiltinLimit" min="0" step="1000" value="50000" placeholder="50000">
+                            <p class="form-note">葬儀代金から引く上限額（組み込み式の場合のみ）</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('newFuneralModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveNewFuneral()">登録</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 注文編集モーダル -->
     <div id="orderEditModal" class="modal">
         <div class="modal-content large">
@@ -856,71 +1183,226 @@
                             <label for="editOrderDate">受注日:</label>
                             <input type="date" id="editOrderDate" required>
                         </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>ご依頼者情報</h3>
                         <div class="form-row">
-                            <label for="editNameplate">芳名板記載内容:</label>
-                            <input type="text" id="editNameplate" required>
+                            <label>ご依頼者区分:</label>
+                            <div class="radio-group-inline">
+                                <label>
+                                    <input type="radio" name="editApplicantType" value="individual" checked>
+                                    個人
+                                </label>
+                                <label>
+                                    <input type="radio" name="editApplicantType" value="company">
+                                    企業・団体
+                                </label>
+                            </div>
                         </div>
                         <div class="form-row">
-                            <label for="editRequester">依頼者名:</label>
-                            <input type="text" id="editRequester" required>
+                            <label for="editApplicantName" id="editApplicantNameLabel">ご依頼者のお名前:</label>
+                            <input type="text" id="editApplicantName" required placeholder="例: 輝 花子">
+                        </div>
+                        <div class="form-row" id="editContactPersonRow" style="display: none;">
+                            <label for="editContactPerson">担当者名:</label>
+                            <input type="text" id="editContactPerson" placeholder="例: 山田 太郎">
                         </div>
                         <div class="form-row">
-                            <label for="editContact">連絡先:</label>
-                            <input type="tel" id="editContact" placeholder="090-1234-5678">
+                            <label for="editPhone">連絡先電話番号:</label>
+                            <input type="tel" id="editPhone" required placeholder="090-1234-5678">
+                        </div>
+                        <div class="form-row">
+                            <label for="editEmail">メールアドレス:</label>
+                            <input type="email" id="editEmail" required placeholder="example@example.com">
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>金額・支払い</h3>
+                        <h3>ご依頼者の住所</h3>
                         <div class="form-row">
-                            <label for="editAmount">金額:</label>
-                            <input type="number" id="editAmount" min="0" required>
+                            <label for="editPostalCode">郵便番号:</label>
+                            <input type="text" id="editPostalCode" required placeholder="123-4567" pattern="[0-9]{3}-[0-9]{4}">
                         </div>
                         <div class="form-row">
-                            <label for="editFee">手数料:</label>
-                            <input type="number" id="editFee" min="0" value="0">
+                            <label for="editPrefecture">都道府県:</label>
+                            <select id="editPrefecture" required>
+                                <option value="">選択してください</option>
+                                <option value="北海道">北海道</option>
+                                <option value="青森県">青森県</option>
+                                <option value="岩手県">岩手県</option>
+                                <option value="宮城県">宮城県</option>
+                                <option value="秋田県">秋田県</option>
+                                <option value="山形県">山形県</option>
+                                <option value="福島県">福島県</option>
+                                <option value="茨城県">茨城県</option>
+                                <option value="栃木県">栃木県</option>
+                                <option value="群馬県">群馬県</option>
+                                <option value="埼玉県">埼玉県</option>
+                                <option value="千葉県">千葉県</option>
+                                <option value="東京都">東京都</option>
+                                <option value="神奈川県">神奈川県</option>
+                                <option value="新潟県">新潟県</option>
+                                <option value="富山県">富山県</option>
+                                <option value="石川県">石川県</option>
+                                <option value="福井県">福井県</option>
+                                <option value="山梨県">山梨県</option>
+                                <option value="長野県">長野県</option>
+                                <option value="岐阜県">岐阜県</option>
+                                <option value="静岡県">静岡県</option>
+                                <option value="愛知県">愛知県</option>
+                                <option value="三重県">三重県</option>
+                                <option value="滋賀県">滋賀県</option>
+                                <option value="京都府">京都府</option>
+                                <option value="大阪府">大阪府</option>
+                                <option value="兵庫県">兵庫県</option>
+                                <option value="奈良県">奈良県</option>
+                                <option value="和歌山県">和歌山県</option>
+                                <option value="鳥取県">鳥取県</option>
+                                <option value="島根県">島根県</option>
+                                <option value="岡山県">岡山県</option>
+                                <option value="広島県">広島県</option>
+                                <option value="山口県">山口県</option>
+                                <option value="徳島県">徳島県</option>
+                                <option value="香川県">香川県</option>
+                                <option value="愛媛県">愛媛県</option>
+                                <option value="高知県">高知県</option>
+                                <option value="福岡県">福岡県</option>
+                                <option value="佐賀県">佐賀県</option>
+                                <option value="長崎県">長崎県</option>
+                                <option value="熊本県">熊本県</option>
+                                <option value="大分県">大分県</option>
+                                <option value="宮崎県">宮崎県</option>
+                                <option value="鹿児島県">鹿児島県</option>
+                                <option value="沖縄県">沖縄県</option>
+                            </select>
                         </div>
                         <div class="form-row">
-                            <label for="editPaymentMethod">支払方法:</label>
+                            <label for="editCity">市区町村:</label>
+                            <input type="text" id="editCity" required placeholder="例: 渋谷区">
+                        </div>
+                        <div class="form-row">
+                            <label for="editAddress1">番地:</label>
+                            <input type="text" id="editAddress1" required placeholder="例: 1-2-3">
+                        </div>
+                        <div class="form-row">
+                            <label for="editAddress2">建物名・部屋番号:</label>
+                            <input type="text" id="editAddress2" placeholder="例: ○○マンション101号室">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>芳名板・金額</h3>
+                        <div class="form-row">
+                            <label for="editNameplate">芳名板のお名前:</label>
+                            <textarea id="editNameplate" rows="3" required placeholder="式場に掲示するお名前を入力してください"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label for="editAmount">金額（税込）:</label>
+                            <input type="number" id="editAmount" min="0" required placeholder="16500">
+                        </div>
+                        <div class="form-row">
+                            <label for="editPaymentMethod">お支払い方法:</label>
                             <select id="editPaymentMethod" required>
-                                <option value="振込">振込</option>
-                                <option value="現地">現地</option>
+                                <option value="">選択してください</option>
+                                <option value="transfer">振り込み</option>
+                                <option value="onsite">現地払い</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-section">
-                        <h3>オプション</h3>
+                        <h3>請求書ご送付先</h3>
                         <div class="form-row">
-                            <label for="editFlower">付け花:</label>
-                            <select id="editFlower">
-                                <option value="no">なし</option>
-                                <option value="yes">あり</option>
+                            <label>
+                                <input type="checkbox" id="editSameAsApplicant">
+                                依頼者と同じ
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label for="editInvoiceName" id="editInvoiceNameLabel">お名前:</label>
+                            <input type="text" id="editInvoiceName" required placeholder="例: 輝 花子">
+                        </div>
+                        <div class="form-row" id="editInvoiceContactPersonRow" style="display: none;">
+                            <label for="editInvoiceContactPerson">担当者名:</label>
+                            <input type="text" id="editInvoiceContactPerson" placeholder="例: 山田 太郎">
+                        </div>
+                        <div class="form-row">
+                            <label for="editInvoicePostalCode">郵便番号:</label>
+                            <input type="text" id="editInvoicePostalCode" required placeholder="123-4567" pattern="[0-9]{3}-[0-9]{4}">
+                        </div>
+                        <div class="form-row">
+                            <label for="editInvoicePrefecture">都道府県:</label>
+                            <select id="editInvoicePrefecture" required>
+                                <option value="">選択してください</option>
+                                <option value="北海道">北海道</option>
+                                <option value="青森県">青森県</option>
+                                <option value="岩手県">岩手県</option>
+                                <option value="宮城県">宮城県</option>
+                                <option value="秋田県">秋田県</option>
+                                <option value="山形県">山形県</option>
+                                <option value="福島県">福島県</option>
+                                <option value="茨城県">茨城県</option>
+                                <option value="栃木県">栃木県</option>
+                                <option value="群馬県">群馬県</option>
+                                <option value="埼玉県">埼玉県</option>
+                                <option value="千葉県">千葉県</option>
+                                <option value="東京都">東京都</option>
+                                <option value="神奈川県">神奈川県</option>
+                                <option value="新潟県">新潟県</option>
+                                <option value="富山県">富山県</option>
+                                <option value="石川県">石川県</option>
+                                <option value="福井県">福井県</option>
+                                <option value="山梨県">山梨県</option>
+                                <option value="長野県">長野県</option>
+                                <option value="岐阜県">岐阜県</option>
+                                <option value="静岡県">静岡県</option>
+                                <option value="愛知県">愛知県</option>
+                                <option value="三重県">三重県</option>
+                                <option value="滋賀県">滋賀県</option>
+                                <option value="京都府">京都府</option>
+                                <option value="大阪府">大阪府</option>
+                                <option value="兵庫県">兵庫県</option>
+                                <option value="奈良県">奈良県</option>
+                                <option value="和歌山県">和歌山県</option>
+                                <option value="鳥取県">鳥取県</option>
+                                <option value="島根県">島根県</option>
+                                <option value="岡山県">岡山県</option>
+                                <option value="広島県">広島県</option>
+                                <option value="山口県">山口県</option>
+                                <option value="徳島県">徳島県</option>
+                                <option value="香川県">香川県</option>
+                                <option value="愛媛県">愛媛県</option>
+                                <option value="高知県">高知県</option>
+                                <option value="福岡県">福岡県</option>
+                                <option value="佐賀県">佐賀県</option>
+                                <option value="長崎県">長崎県</option>
+                                <option value="熊本県">熊本県</option>
+                                <option value="大分県">大分県</option>
+                                <option value="宮崎県">宮崎県</option>
+                                <option value="鹿児島県">鹿児島県</option>
+                                <option value="沖縄県">沖縄県</option>
                             </select>
                         </div>
+                        <div class="form-row">
+                            <label for="editInvoiceCity">市区町村:</label>
+                            <input type="text" id="editInvoiceCity" required placeholder="例: 渋谷区">
+                        </div>
+                        <div class="form-row">
+                            <label for="editInvoiceAddress1">番地:</label>
+                            <input type="text" id="editInvoiceAddress1" required placeholder="例: 1-2-3">
+                        </div>
+                        <div class="form-row">
+                            <label for="editInvoiceAddress2">建物名・部屋番号:</label>
+                            <input type="text" id="editInvoiceAddress2" placeholder="例: ○○マンション101号室">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>備考</h3>
                         <div class="form-row">
                             <label for="editMemo">備考:</label>
                             <textarea id="editMemo" rows="3" placeholder="特記事項があれば入力してください"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-section" id="billingSection" style="display: none;">
-                        <h3>請求先情報（振込の場合）</h3>
-                        <div class="form-row">
-                            <label for="editBillingName">請求先名:</label>
-                            <input type="text" id="editBillingName">
-                        </div>
-                        <div class="form-row">
-                            <label for="editBillingCompany">会社・団体名:</label>
-                            <input type="text" id="editBillingCompany">
-                        </div>
-                        <div class="form-row">
-                            <label for="editBillingContact">担当者:</label>
-                            <input type="text" id="editBillingContact">
-                        </div>
-                        <div class="form-row">
-                            <label for="editBillingAddress">住所:</label>
-                            <input type="text" id="editBillingAddress">
                         </div>
                     </div>
                 </form>
@@ -932,6 +1414,138 @@
         </div>
     </div>
 
+    <!-- 承認者設定モーダル -->
+    <div id="approverSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>承認者設定</h2>
+                <span class="close" onclick="closeModal('approverSettingsModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="approver-settings-form">
+                    <div class="settings-header">
+                        <div class="settings-info">
+                            <p class="info-text">
+                                <i class="fas fa-info-circle"></i>
+                                承認者ロールのアカウントを管理します。承認依頼時にここから選択できます。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="current-approvers">
+                        <h3><i class="fas fa-users"></i> 登録済み承認者</h3>
+                        <div id="approverList" class="approver-list">
+                            <!-- 承認者リストが動的に挿入される -->
+                        </div>
+                    </div>
+                    
+                    <div class="add-approver-section" id="addApproverSection">
+                        <h3><i class="fas fa-user-plus"></i> 承認者を追加</h3>
+                        <p class="form-note">
+                            登録済みのユーザーアカウントから承認者を選択してください。<br>
+                            <small>※最大3人まで設定可能です</small>
+                        </p>
+                        <div class="form-row">
+                            <label for="selectUserForApprover">ユーザーを選択:</label>
+                            <select id="selectUserForApprover" class="form-input" onchange="updateSelectedUserInfo()">
+                                <option value="">選択してください</option>
+                                <!-- ユーザーリストが動的に挿入される -->
+                            </select>
+                        </div>
+                        <div class="selected-user-info" id="selectedUserInfo" style="display: none;">
+                            <div class="user-info-card">
+                                <div class="user-info-row">
+                                    <label>名前:</label>
+                                    <span id="selectedUserName"></span>
+                                </div>
+                                <div class="user-info-row">
+                                    <label>役職:</label>
+                                    <span id="selectedUserTitle"></span>
+                                </div>
+                                <div class="user-info-row">
+                                    <label>部署:</label>
+                                    <span id="selectedUserDepartment"></span>
+                                </div>
+                                <div class="user-info-row">
+                                    <label>メール:</label>
+                                    <span id="selectedUserEmail"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="addSelectedUserAsApprover()" id="addApproverBtn">
+                            <i class="fas fa-plus"></i> 承認者として追加
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('approverSettingsModal')">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 承認依頼モーダル -->
+    <div id="approvalRequestModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>承認依頼（再送） - 注文No.<span id="approvalOrderNumber"></span></h2>
+                <span class="close" onclick="closeModal('approvalRequestModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="approval-request-form">
+                    <!-- 現在の承認状況 -->
+                    <div class="form-section" id="currentApprovalSection">
+                        <h3><i class="fas fa-list-check"></i> 承認状況と再送信</h3>
+                        <p class="form-note">
+                            <i class="fas fa-info-circle"></i>
+                            各承認者の状況を確認し、必要に応じて個別に再送信できます。
+                        </p>
+                        <div id="currentApprovalStatus" class="current-approval-status">
+                            <!-- 現在の承認状況が動的に挿入される -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('approvalRequestModal')">閉じる</button>
+                <button class="btn btn-warning" onclick="resendToAllApprovers()">
+                    <i class="fas fa-redo"></i> 全承認者に一括再送
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 承認/却下モーダル -->
+    <div id="approvalActionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>承認処理 - 注文No.<span id="actionOrderNumber"></span></h2>
+                <span class="close" onclick="closeModal('approvalActionModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="approval-action-form">
+                    <div class="form-section">
+                        <h3>承認/却下コメント</h3>
+                        <div class="form-row">
+                            <textarea id="actionComment" class="form-input" rows="8" placeholder="承認または却下の理由を入力してください" style="min-height: 200px; font-size: 1rem; width: 100%; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('approvalActionModal')">キャンセル</button>
+                <button class="btn btn-outline" onclick="rejectOrderAction()" style="background: #dc3545; color: white; border-color: #dc3545;">
+                    <i class="fas fa-times-circle"></i> 却下
+                </button>
+                <button class="btn btn-success" onclick="approveOrderAction()">
+                    <i class="fas fa-check-circle"></i> 承認
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="sidebar.js"></script>
+    <script src="header.js"></script>
     <script src="order-management.js"></script>
 </body>
 </html>

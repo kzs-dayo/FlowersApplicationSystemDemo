@@ -1,0 +1,98 @@
+<header class="header">
+    <div class="header-content">
+        <h1 id="pageTitle">供花注文管理システム</h1>
+        <div class="header-right">
+            <div class="header-actions" id="headerActions">
+                <!-- ページ固有のボタンがここに挿入されます -->
+            </div>
+            <div class="account-info">
+                <div class="account-dropdown">
+                    <button class="account-button" onclick="toggleAccountMenu()">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="account-name" id="accountName">ゲスト</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="account-menu-name" id="accountMenuName">ゲスト</div>
+                            <div class="account-menu-role" id="accountMenuRole">-</div>
+                        </div>
+                        <div class="account-menu-divider"></div>
+                        <a href="#" class="account-menu-item" onclick="showAccountSwitcher(); return false;">
+                            <i class="fas fa-users"></i>
+                            アカウント切り替え（デモ）
+                        </a>
+                        <a href="#" class="account-menu-item" onclick="showAccountSettings(); return false;">
+                            <i class="fas fa-cog"></i>
+                            アカウント設定
+                        </a>
+                        <a href="#" class="account-menu-item" onclick="handleLogout(); return false;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            ログアウト
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- アカウント切り替えモーダル -->
+<div class="account-switcher-modal" id="accountSwitcherModal">
+    <div class="account-switcher-overlay" onclick="closeAccountSwitcher()"></div>
+    <div class="account-switcher-content">
+        <div class="account-switcher-header">
+            <h3><i class="fas fa-users"></i> アカウント切り替え（デモ）</h3>
+            <button class="account-switcher-close" onclick="closeAccountSwitcher()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="account-switcher-body">
+            <p class="account-switcher-note">
+                <i class="fas fa-info-circle"></i> デモ画面用：以下のアカウントに切り替えることができます
+            </p>
+            <div class="account-cards">
+                <div class="account-card" onclick="switchAccount('admin')">
+                    <div class="account-card-icon admin">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="account-card-info">
+                        <div class="account-card-name">山田 太郎</div>
+                        <div class="account-card-role">管理者</div>
+                        <div class="account-card-email">yamada@example.com</div>
+                    </div>
+                    <div class="account-card-check" id="check-admin">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="account-card" onclick="switchAccount('approver')">
+                    <div class="account-card-icon approver">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="account-card-info">
+                        <div class="account-card-name">佐藤 花子</div>
+                        <div class="account-card-role">承認者</div>
+                        <div class="account-card-email">sato@example.com</div>
+                    </div>
+                    <div class="account-card-check" id="check-approver">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="account-card" onclick="switchAccount('staff')">
+                    <div class="account-card-icon staff">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="account-card-info">
+                        <div class="account-card-name">鈴木 一郎</div>
+                        <div class="account-card-role">担当者</div>
+                        <div class="account-card-email">suzuki@example.com</div>
+                    </div>
+                    <div class="account-card-check" id="check-staff">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
