@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注文管理 - 供花注文管理システム</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="sidebar.css">
     <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="order-management.css?v=20241220-14">
@@ -155,22 +156,27 @@
                                             <i class="fas fa-file-alt"></i> 帳票作成
                                         </button>
                                         <div class="dropdown-menu" id="dropdown-1">
-                                            
-                                <button class="dropdown-item" onclick="generateFuneralInvoices(1)">
-                                    <i class="fas fa-file-invoice-dollar"></i> 請求書作成
-                                </button>
-                                <button class="dropdown-item" onclick="generateFuneralReceipts(1)">
-                                    <i class="fas fa-receipt"></i> 領収書作成
-                                </button>
-                                <button class="dropdown-item" onclick="generateFuneralLabels(1)">
-                                    <i class="fas fa-tags"></i> 宛名ラベル
-                                </button>
-                                <button class="dropdown-item" onclick="generateFuneralSummary(1)">
-                                    <i class="fas fa-chart-bar"></i> 一覧表
-                                </button>
-                                <button class="dropdown-item" onclick="generateFloristOrder(1)">
-                                    <i class="fas fa-seedling"></i> 花屋送信用一覧
-                                </button>
+                                            <button class="dropdown-item" onclick="generateFuneralInvoices(1)">
+                                                <i class="fas fa-file-invoice-dollar"></i> 請求書作成
+                                            </button>
+                                            <button class="dropdown-item" onclick="generateFuneralReceipts(1)">
+                                                <i class="fas fa-receipt"></i> 領収書作成
+                                            </button>
+                                            <button class="dropdown-item" onclick="generateFuneralInvoiceLabels(1)">
+                                                <i class="fas fa-tags"></i> 請求書用宛名ラベル
+                                            </button>
+                                            <button class="dropdown-item" onclick="generateFuneralReceiptLabels(1)">
+                                                <i class="fas fa-receipt"></i> 領収書用宛名ラベル
+                                            </button>
+                                            <button class="dropdown-item" onclick="generateFuneralSummary(1)">
+                                                <i class="fas fa-chart-bar"></i> 一覧表
+                                            </button>
+                                            <button class="dropdown-item" onclick="generateFloristOrder(1)">
+                                                <i class="fas fa-seedling"></i> 花屋送信用一覧
+                                            </button>
+                                            <button class="dropdown-item" onclick="generateCustomerList(1)">
+                                                <i class="fas fa-users"></i> 顧客一覧帳票
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -425,14 +431,20 @@
                                 <button class="dropdown-item" onclick="generateFuneralReceipts(2)">
                                     <i class="fas fa-receipt"></i> 領収書作成
                                 </button>
-                                <button class="dropdown-item" onclick="generateFuneralLabels(2)">
-                                    <i class="fas fa-tags"></i> 宛名ラベル
+                                <button class="dropdown-item" onclick="generateFuneralInvoiceLabels(2)">
+                                    <i class="fas fa-tags"></i> 請求書用宛名ラベル
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralReceiptLabels(2)">
+                                    <i class="fas fa-receipt"></i> 領収書用宛名ラベル
                                 </button>
                                 <button class="dropdown-item" onclick="generateFuneralSummary(2)">
                                     <i class="fas fa-chart-bar"></i> 一覧表
                                 </button>
                                 <button class="dropdown-item" onclick="generateFloristOrder(2)">
                                     <i class="fas fa-seedling"></i> 花屋送信用一覧
+                                </button>
+                                <button class="dropdown-item" onclick="generateCustomerList(2)">
+                                    <i class="fas fa-users"></i> 顧客一覧帳票
                                 </button>
                                         </div>
                                     </div>
@@ -615,14 +627,20 @@
                                 <button class="dropdown-item" onclick="generateFuneralReceipts(3)">
                                     <i class="fas fa-receipt"></i> 領収書作成
                                 </button>
-                                <button class="dropdown-item" onclick="generateFuneralLabels(3)">
-                                    <i class="fas fa-tags"></i> 宛名ラベル
+                                <button class="dropdown-item" onclick="generateFuneralInvoiceLabels(3)">
+                                    <i class="fas fa-tags"></i> 請求書用宛名ラベル
+                                </button>
+                                <button class="dropdown-item" onclick="generateFuneralReceiptLabels(3)">
+                                    <i class="fas fa-receipt"></i> 領収書用宛名ラベル
                                 </button>
                                 <button class="dropdown-item" onclick="generateFuneralSummary(3)">
                                     <i class="fas fa-chart-bar"></i> 一覧表
                                 </button>
                                 <button class="dropdown-item" onclick="generateFloristOrder(3)">
                                     <i class="fas fa-seedling"></i> 花屋送信用一覧
+                                </button>
+                                <button class="dropdown-item" onclick="generateCustomerList(3)">
+                                    <i class="fas fa-users"></i> 顧客一覧帳票
                                 </button>
                                         </div>
                                     </div>
@@ -1216,6 +1234,10 @@
                             <label for="editEmail">メールアドレス:</label>
                             <input type="email" id="editEmail" required placeholder="example@example.com">
                         </div>
+                        <div class="form-row">
+                            <label for="editFax">FAX番号:</label>
+                            <input type="tel" id="editFax" placeholder="03-1234-5678">
+                        </div>
                     </div>
 
                     <div class="form-section">
@@ -1396,6 +1418,14 @@
                             <label for="editInvoiceAddress2">建物名・部屋番号:</label>
                             <input type="text" id="editInvoiceAddress2" placeholder="例: ○○マンション101号室">
                         </div>
+                        <div class="form-row">
+                            <label for="editInvoicePhone">電話番号:</label>
+                            <input type="tel" id="editInvoicePhone" placeholder="090-1234-5678">
+                        </div>
+                        <div class="form-row">
+                            <label for="editInvoiceFax">FAX番号:</label>
+                            <input type="tel" id="editInvoiceFax" placeholder="03-1234-5678">
+                        </div>
                     </div>
 
                     <div class="form-section">
@@ -1540,6 +1570,26 @@
                 <button class="btn btn-success" onclick="approveOrderAction()">
                     <i class="fas fa-check-circle"></i> 承認
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顧客一覧帳票モーダル -->
+    <div id="customerListModal" class="modal large-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>顧客一覧帳票 - <span id="funeralNameDisplay"></span></h2>
+                <span class="close" onclick="closeModal('customerListModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="customer-list-container" id="customerListContent">
+                    <!-- 顧客一覧帳票の内容がここに動的に挿入される -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('customerListModal')">閉じる</button>
+                <button class="btn btn-outline" onclick="printCustomerList()">印刷</button>
+                <button class="btn btn-primary" onclick="downloadCustomerListPDF()">PDF保存</button>
             </div>
         </div>
     </div>

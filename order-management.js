@@ -913,7 +913,8 @@ function getOrderData(orderNo) {
                 name: '山田花子',
                 postalCode: '123-4567',
                 address: '東京都渋谷区1-2-3',
-                phone: '090-1234-5678'
+                phone: '090-1234-5678',
+                fax: ''
             },
             billing: {
                 name: '株式会社サンプル',
@@ -921,7 +922,8 @@ function getOrderData(orderNo) {
                 contact: '山田太郎',
                 postalCode: '123-4567',
                 address: '東京都渋谷区1-2-3',
-                phone: '03-1234-5678'
+                phone: '03-1234-5678',
+                fax: '03-1234-5679'
             },
             memo: '特記事項なし'
         }
@@ -1073,7 +1075,9 @@ function generateOrderFormHTML(orderNo, data) {
                 </div>
                 <div class="form-row">
                     <span class="label">(FAX)</span>
-                    <span class="value">-</span>
+                    <span class="value">
+                        <input type="tel" class="form-input" value="${data.client.fax || '-'}" data-field="clientFax" readonly>
+                    </span>
                 </div>
             </div>
             
@@ -1139,7 +1143,7 @@ function generateOrderFormHTML(orderNo, data) {
                 <div class="form-row">
                     <span class="label">(FAX)</span>
                     <span class="value">
-                        <input type="text" class="form-input billing-input" value="-" data-field="billingFax" readonly>
+                        <input type="tel" class="form-input billing-input" value="${data.billing ? (data.billing.fax || '-') : (data.client.fax || '-')}" data-field="billingFax" readonly>
                     </span>
                 </div>
             </div>
@@ -1181,7 +1185,7 @@ function generateOrderFormHTML(orderNo, data) {
                         </div>
                     </div>
                     <div class="funeral-home-info">
-                        <div>担当葬儀社:株式会社 輝(かがやき) 本社: 〒350-0219 埼玉県坂戸市片柳2331-2</div>
+                        <div>担当葬儀社:株式会社 輝(かがやき)<br>本社: 〒350-0219 埼玉県坂戸市片柳2331-2</div>
                     </div>
                 </div>
             </div>
@@ -1400,21 +1404,41 @@ function generateFuneralReceipts(funeralId) {
 
 
 
-function generateFuneralLabels(funeralId) {
+// 請求書用宛名ラベル生成
+function generateFuneralInvoiceLabels(funeralId) {
     const funeralName = getFuneralName(funeralId);
-    const orders = getFuneralOrders(funeralId, 'transfer'); // 振込払いのみ（宛名ラベル必要）
+    const orders = getFuneralOrders(funeralId, 'transfer'); // 振込払いのみ（請求書送付対象）
     
     if (orders.length === 0) {
         alert('請求書送付対象の注文がありません。');
         return;
     }
     
-    const labelData = getFuneralLabelData(funeralId);
-    showAddressLabelModal(funeralName, labelData);
+    const labelData = getFuneralInvoiceLabelData(funeralId);
+    showAddressLabelModal(funeralName, labelData, 'invoice');
 }
 
-// 宛名ラベルデータ取得
-function getFuneralLabelData(funeralId) {
+// 領収書用宛名ラベル生成
+function generateFuneralReceiptLabels(funeralId) {
+    const funeralName = getFuneralName(funeralId);
+    const orders = getFuneralOrders(funeralId, 'onsite'); // 現地払いのみ（領収書送付対象）
+    
+    if (orders.length === 0) {
+        alert('領収書送付対象の注文がありません。');
+        return;
+    }
+    
+    const labelData = getFuneralReceiptLabelData(funeralId);
+    showAddressLabelModal(funeralName, labelData, 'receipt');
+}
+
+// 既存の関数は後方互換性のため残す
+function generateFuneralLabels(funeralId) {
+    generateFuneralInvoiceLabels(funeralId);
+}
+
+// 請求書用宛名ラベルデータ取得
+function getFuneralInvoiceLabelData(funeralId) {
     // 請求書〔要〕の注文から宛名情報を抽出
     const orders = getFuneralOrders(funeralId, 'transfer'); // 振込のみ（請求書対象）
     const labelData = [];
@@ -1436,12 +1460,50 @@ function getFuneralLabelData(funeralId) {
                 address: mockBillingData.address,
                 company: mockBillingData.company,
                 contact: mockBillingData.contact,
-                phone: mockBillingData.phone
+                phone: mockBillingData.phone,
+                documentType: '請求書'
             });
         }
     });
     
     return labelData;
+}
+
+// 領収書用宛名ラベルデータ取得
+function getFuneralReceiptLabelData(funeralId) {
+    // 領収書〔要〕の注文から宛名情報を抽出
+    const orders = getFuneralOrders(funeralId, 'onsite'); // 現地払いのみ（領収書対象）
+    const labelData = [];
+    
+    orders.forEach(order => {
+        // モックデータから請求先情報を生成
+        const mockBillingData = generateMockBillingData(order);
+        
+        // 重複チェック（同じ請求先は1つのラベルのみ）
+        const existingLabel = labelData.find(label => 
+            label.company === mockBillingData.company && 
+            label.contact === mockBillingData.contact
+        );
+        
+        if (!existingLabel) {
+            labelData.push({
+                orderNo: order.orderNo,
+                postalCode: mockBillingData.postalCode,
+                address: mockBillingData.address,
+                company: mockBillingData.company,
+                contact: mockBillingData.contact,
+                phone: mockBillingData.phone,
+                documentType: '領収書'
+            });
+        }
+    });
+    
+    return labelData;
+}
+
+// 既存の関数は後方互換性のため残す
+function getFuneralLabelData(funeralId) {
+    return getFuneralInvoiceLabelData(funeralId);
 }
 
 // モック請求先データ生成
@@ -1476,11 +1538,11 @@ function generateMockBillingData(order) {
 }
 
 // 宛名ラベルモーダル表示
-function showAddressLabelModal(funeralName, labelData) {
+function showAddressLabelModal(funeralName, labelData, documentType = 'invoice') {
     const modal = document.getElementById('addressLabelModal');
     const modalBody = modal.querySelector('.modal-body');
     
-    modalBody.innerHTML = generateAddressLabelHTML(funeralName, labelData);
+    modalBody.innerHTML = generateAddressLabelHTML(funeralName, labelData, documentType);
     modal.style.display = 'block';
     
     // 初期プレビュー更新
@@ -1488,11 +1550,14 @@ function showAddressLabelModal(funeralName, labelData) {
 }
 
 // 宛名ラベルHTML生成
-function generateAddressLabelHTML(funeralName, labelData) {
+function generateAddressLabelHTML(funeralName, labelData, documentType = 'invoice') {
+    const documentTypeText = documentType === 'invoice' ? '請求書用' : '領収書用';
+    const iconClass = documentType === 'invoice' ? 'fa-file-invoice-dollar' : 'fa-receipt';
+    
     return `
         <div class="address-label-container">
             <div class="address-label-header">
-                <div class="address-label-title"><i class="fas fa-tags"></i> 宛名ラベル印刷プレビュー</div>
+                <div class="address-label-title"><i class="fas ${iconClass}"></i> ${documentTypeText}宛名ラベル印刷プレビュー</div>
                 <div class="address-label-subtitle">${funeralName} - ${labelData.length}件の宛名ラベル</div>
             </div>
             
@@ -1515,27 +1580,6 @@ function generateAddressLabelHTML(funeralName, labelData) {
                 </div>
             </div>
             
-            <div class="sender-info">
-                <h4><i class="fas fa-user"></i> 差出人情報</h4>
-                <div class="sender-form">
-                    <div class="form-row">
-                        <label>郵便番号:</label>
-                        <input type="text" id="senderPostal" value="100-0001" placeholder="例: 100-0001" onchange="updateEnvelopePreview()">
-                    </div>
-                    <div class="form-row">
-                        <label>住所:</label>
-                        <input type="text" id="senderAddress" value="東京都千代田区千代田1-1" placeholder="差出人住所" onchange="updateEnvelopePreview()">
-                    </div>
-                    <div class="form-row">
-                        <label>会社名:</label>
-                        <input type="text" id="senderCompany" value="○○生花店" placeholder="会社・店舗名" onchange="updateEnvelopePreview()">
-                    </div>
-                    <div class="form-row">
-                        <label>担当者:</label>
-                        <input type="text" id="senderContact" value="" placeholder="担当者名（任意）" onchange="updateEnvelopePreview()">
-                    </div>
-                </div>
-            </div>
             
             <div class="address-label-preview" id="addressLabelPreview">
                 ${labelData.map((label, index) => generateSingleLabelHTML(label, index + 1)).join('')}
@@ -1591,12 +1635,12 @@ function updateEnvelopePreview() {
     
     if (!preview) return;
     
-    // 差出人情報取得
+    // 差出人情報（固定値）
     const senderData = {
-        postal: document.getElementById('senderPostal')?.value || '',
-        address: document.getElementById('senderAddress')?.value || '',
-        company: document.getElementById('senderCompany')?.value || '',
-        contact: document.getElementById('senderContact')?.value || ''
+        postal: '350-0219',
+        address: '埼玉県坂戸市片柳2331‐2',
+        company: '株式会社輝',
+        contact: ''
     };
     
     // 封筒サイズクラス適用
@@ -2656,7 +2700,7 @@ function printFloristOrder() {
                 .florist-orders-table tr:nth-child(even) { background-color: #f9f9f9; }
                 .order-number { font-weight: bold; color: #2E7D32; }
                 .nameplate-content { font-weight: bold; }
-                .order-memo { font-style: italic; color: #666; }
+                .order-memo { color: #666; }
                 .order-memo.empty { color: #999; font-size: 0.9rem; }
                 .email-status-cell { display: flex; align-items: center; gap: 8px; }
                 .email-status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; text-align: center; min-width: 70px; }
@@ -3259,18 +3303,28 @@ function getFuneralInvoiceData(funeralId) {
             totalAmount: totalAmount,
             totalFee: totalFee,
             paymentMethod: '銀行振込',
+            companyInfo: {
+                name: '株式会社 輝',
+                address: '埼玉県坂戸市片柳2331-2',
+                representative: '代表取締役 松崎充彦',
+                phone: 'TEL 049-298-5089',
+                registrationNumber: '登録番号 T3030001070615'
+            },
             bankInfo: {
-                bankName: 'みずほ銀行',
-                branchName: '青山支店',
+                bankName: '埼玉りそな銀行',
+                branchName: '坂戸支店',
+                branchCode: '(398)',
                 accountType: '普通',
-                accountNumber: '1234567',
-                accountName: '株式会社花慶'
+                accountNumber: '5262488',
+                accountName: '株式会社 輝'
             },
             notes: [
-                '下記の通りご請求申し上げます。',
-                'お支払期限: ' + dueDate.toLocaleDateString('ja-JP'),
-                '※お振込手数料はお客様負担でお願いいたします。',
-                'ご不明な点がございましたらお気軽にお問い合わせください。'
+                'このたびは、様ご葬儀に生花のご寄贈をご用命いただきありがとうございます。',
+                '下記の通りご生花寄贈代金をご請求申し上げます。',
+                'お振込みは、請求日から15日以内に振込手数料をご負担の上、お手配くださるよう宜しくお願い申し上げます。',
+                '* 既にお振込みいただいておりましたら、失礼をご容赦ください。',
+                'お振込みの際は、お振込人名の前に請求書の番号を入れてください。',
+                '例) アS-123456-1 カガヤキ ハナコ'
             ]
         };
         
@@ -3316,11 +3370,16 @@ function getFuneralReceiptData(funeralId) {
             totalAmount: totalAmount,
             totalFee: totalFee,
             paymentMethod: '現金',
+            companyInfo: {
+                name: '株式会社 輝',
+                nameKana: '(かがやき)',
+                address: '埼玉県坂戸市片柳2331-2',
+                representative: '代表取締役 松崎充彦',
+                phone: 'TEL049-298-5089',
+                registrationNumber: '登録番号 T3030001070615'
+            },
             notes: [
-                '上記金額を確かにお受け取りいたしました。',
-                '受領日: ' + funeralInfo.funeralDate,
-                '但し、生花代として',
-                'ありがとうございました。'
+                '上記正に領収いたしました。'
             ]
         };
         
@@ -3481,10 +3540,187 @@ function generateDocumentSelectionHTML(data, type) {
     `;
 }
 
+// 請求書HTML生成（画像レイアウト準拠）
+function generateInvoiceHTML(data) {
+    const totalAmount = data.totalAmount || 0;
+    const taxAmount = Math.floor(totalAmount * 0.1);
+    const subtotal = totalAmount - taxAmount;
+    
+    return `
+        <div class="invoice-container">
+            <!-- 日付 -->
+            <div class="invoice-date">${data.issueDate}</div>
+            
+            <!-- 会社情報（右上） -->
+            <div class="company-info-section">
+                <div class="company-details">
+                    <div class="company-name">${data.companyInfo.name}</div>
+                    <div class="company-address">${data.companyInfo.address}</div>
+                    <div class="company-representative">${data.companyInfo.representative}</div>
+                    <div class="company-phone">${data.companyInfo.phone}</div>
+                    <div class="company-registration">${data.companyInfo.registrationNumber}</div>
+                </div>
+                <div class="company-stamp">
+                    <img src="image/印.png" alt="株式会社 輝 之印" class="stamp-image">
+                </div>
+            </div>
+            
+            <!-- メッセージセクション -->
+            <div class="message-section">
+                <div class="message-content">
+                    <p>このたびは、${data.funeralInfo.deceased}様ご葬儀に生花のご寄贈をご用命いただきありがとうございます。</p>
+                    <p>下記の通りご生花寄贈代金をご請求申し上げます。</p>
+                    <p>お振込みは、請求日から15日以内に振込手数料をご負担の上、お手配くださるよう宜しくお願い申し上げます。</p>
+                    <p class="apology-note">* 既にお振込みいただいておりましたら、失礼をご容赦ください。</p>
+                </div>
+            </div>
+            
+            <!-- 請求書タイトルセクション -->
+            <div class="invoice-title-section">
+                <div class="invoice-title">
+                    <div class="title-mark">記</div>
+                    <div class="title-text">請求書</div>
+                    <div class="invoice-number-field">No. _____________</div>
+                </div>
+            </div>
+            
+            <!-- 請求詳細セクション -->
+            <div class="billing-details-section">
+                <div class="billing-amount">
+                    <span class="amount-label">ご請求額</span>
+                    <div class="amount-line"></div>
+                </div>
+                
+                <div class="price-breakdown">
+                    <div class="breakdown-box">
+                        <div class="breakdown-row">
+                            <span class="breakdown-label">内訳</span>
+                            <span class="unit-price-label">本体価格</span>
+                            <span class="unit-price-value">¥${subtotal.toLocaleString()}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span class="tax-label">消費税10%</span>
+                            <span class="tax-value">¥${taxAmount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="item-description">
+                    <span class="description-prefix">但し、</span>
+                    <span class="description-content">${data.funeralInfo.deceased} 様葬儀、生花寄贈 1 件分として</span>
+                </div>
+                
+                <div class="nameplate-section">
+                    <span class="nameplate-label">芳名板記載内容:</span>
+                    <div class="nameplate-content">${data.orders.map(order => order.nameplate).join(', ')}</div>
+                </div>
+            </div>
+            
+            <!-- 銀行情報（枠付き） -->
+            <div class="bank-info-section">
+                <div class="bank-details">
+                    <div class="bank-name">${data.bankInfo.bankName} ${data.bankInfo.branchName} ${data.bankInfo.branchCode} ${data.bankInfo.accountType}
+                    <br>口座番号:${data.bankInfo.accountNumber} ${data.bankInfo.accountName}</div>
+                </div>
+            </div>
+            
+            <!-- 支払い指示 -->
+            <div class="payment-instructions">
+                <p>お振込みの際は、お振込人名の前に請求書の番号を入れてください。</p>
+                <p class="payment-example">例) アS-123456-1 カガヤキ ハナコ</p>
+            </div>
+        </div>
+    `;
+}
+
+// 領収書HTML生成（画像レイアウト準拠）
+function generateReceiptHTML(data) {
+    const totalAmount = data.totalAmount || 0;
+    const taxAmount = Math.floor(totalAmount * 0.1);
+    const subtotal = totalAmount - taxAmount;
+    
+    // 日付の曜日を取得
+    const receiptDate = new Date(data.receiptDate);
+    const dayOfWeek = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'][receiptDate.getDay()];
+    const formattedDate = `${receiptDate.getFullYear()}年${receiptDate.getMonth() + 1}月${receiptDate.getDate()}日 ${dayOfWeek}`;
+    
+    return `
+        <div class="receipt-container">
+            <!-- ヘッダー部分 -->
+            <div class="receipt-header">
+                <div class="receipt-title">領収書</div>
+                <div class="receipt-number-section">
+                    <span class="recipient-label">様</span>
+                    <span class="receipt-number">No ${data.documentNumber}</span>
+                </div>
+                <div class="tax-banner">
+                    <span class="tax-text">(消費税10%込)</span>
+                </div>
+            </div>
+            
+            <!-- メインコンテンツ -->
+            <div class="receipt-content">
+                <!-- 左側：受領内容 -->
+                <div class="receipt-left">
+                    <div class="amount-section">
+                        <span class="amount-label">但</span>
+                        <span class="amount-value">¥${totalAmount.toLocaleString()}-</span>
+                    </div>
+                    
+                    <div class="date-section">
+                        ${formattedDate}
+                    </div>
+                    
+                    <div class="description-section">
+                        ${data.funeralInfo.deceased}様葬儀、生花寄贈代として
+                    </div>
+                    
+                    <div class="receipt-confirmation">
+                        ${data.notes[0]}
+                    </div>
+                    
+                    <div class="breakdown-section">
+                        <div class="breakdown-table">
+                            <div class="breakdown-row">
+                                <div class="breakdown-cell">消費税10%対象本体価格</div>
+                                <div class="breakdown-cell amount">¥${subtotal.toLocaleString()}-</div>
+                                <div class="breakdown-cell">消費税</div>
+                                <div class="breakdown-cell amount">¥${taxAmount.toLocaleString()}-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右側：会社情報 -->
+                <div class="receipt-right">
+                    <div class="company-info">
+                        <div class="company-name">${data.companyInfo.name}${data.companyInfo.nameKana}</div>
+                        <div class="company-address">${data.companyInfo.address}</div>
+                        <div class="company-representative">${data.companyInfo.representative}</div>
+                        <div class="company-phone">${data.companyInfo.phone}</div>
+                        <div class="company-registration">${data.companyInfo.registrationNumber}</div>
+                    </div>
+                    <div class="company-stamp">
+                        <img src="image/印.png" alt="株式会社 輝 之印" class="stamp-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // 書類HTML生成
 function generateDocumentHTML(data, type) {
     const isInvoice = type === 'invoice';
     const isReceipt = type === 'receipt';
+    
+    if (isInvoice) {
+        return generateInvoiceHTML(data);
+    }
+    
+    if (isReceipt) {
+        return generateReceiptHTML(data);
+    }
     
     return `
         <div class="document-container">
@@ -4331,6 +4567,8 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
         toggleDropdown: toggleDropdown,
         generateFloristOrder: generateFloristOrder,
         generateFuneralLabels: generateFuneralLabels,
+        generateFuneralInvoiceLabels: generateFuneralInvoiceLabels,
+        generateFuneralReceiptLabels: generateFuneralReceiptLabels,
 
         showAddressLabelModal: showAddressLabelModal,
         showDocumentModal: showDocumentModal,
@@ -4545,8 +4783,11 @@ function createFuneralGroupHTML(funeralId) {
                             <button class="dropdown-item" onclick="generateFuneralReceipts(${funeralId})">
                                 <i class="fas fa-receipt"></i> 領収書作成
                             </button>
-                            <button class="dropdown-item" onclick="generateFuneralLabels(${funeralId})">
-                                <i class="fas fa-tags"></i> 宛名ラベル
+                            <button class="dropdown-item" onclick="generateFuneralInvoiceLabels(${funeralId})">
+                                <i class="fas fa-file-invoice-dollar"></i> 請求書用宛名ラベル
+                            </button>
+                            <button class="dropdown-item" onclick="generateFuneralReceiptLabels(${funeralId})">
+                                <i class="fas fa-receipt"></i> 領収書用宛名ラベル
                             </button>
                             <button class="dropdown-item" onclick="generateFuneralSummary(${funeralId})">
                                 <i class="fas fa-chart-bar"></i> 一覧表
@@ -4686,7 +4927,9 @@ function setupOrderEditModalEvents() {
             prefecture: document.getElementById('editInvoicePrefecture'),
             city: document.getElementById('editInvoiceCity'),
             address1: document.getElementById('editInvoiceAddress1'),
-            address2: document.getElementById('editInvoiceAddress2')
+            address2: document.getElementById('editInvoiceAddress2'),
+            phone: document.getElementById('editInvoicePhone'),
+            fax: document.getElementById('editInvoiceFax')
         };
         
         const applicantFields = {
@@ -4696,7 +4939,9 @@ function setupOrderEditModalEvents() {
             prefecture: document.getElementById('editPrefecture'),
             city: document.getElementById('editCity'),
             address1: document.getElementById('editAddress1'),
-            address2: document.getElementById('editAddress2')
+            address2: document.getElementById('editAddress2'),
+            phone: document.getElementById('editPhone'),
+            fax: document.getElementById('editFax')
         };
         
         sameAsApplicantCheckbox.addEventListener('change', function() {
@@ -4709,6 +4954,8 @@ function setupOrderEditModalEvents() {
                 invoiceFields.city.value = applicantFields.city.value;
                 invoiceFields.address1.value = applicantFields.address1.value;
                 invoiceFields.address2.value = applicantFields.address2.value;
+                invoiceFields.phone.value = applicantFields.phone.value;
+                invoiceFields.fax.value = applicantFields.fax.value;
                 
                 // フィールドを非活性化
                 invoiceFields.name.disabled = true;
@@ -4717,6 +4964,8 @@ function setupOrderEditModalEvents() {
                 invoiceFields.city.disabled = true;
                 invoiceFields.address1.disabled = true;
                 invoiceFields.address2.disabled = true;
+                invoiceFields.phone.disabled = true;
+                invoiceFields.fax.disabled = true;
                 const invoiceContactPersonRow = document.getElementById('editInvoiceContactPersonRow');
                 if (invoiceContactPersonRow && invoiceContactPersonRow.style.display !== 'none') {
                     invoiceFields.contactPerson.disabled = true;
@@ -4729,6 +4978,8 @@ function setupOrderEditModalEvents() {
                 invoiceFields.city.disabled = false;
                 invoiceFields.address1.disabled = false;
                 invoiceFields.address2.disabled = false;
+                invoiceFields.phone.disabled = false;
+                invoiceFields.fax.disabled = false;
                 const invoiceContactPersonRow = document.getElementById('editInvoiceContactPersonRow');
                 if (invoiceContactPersonRow && invoiceContactPersonRow.style.display !== 'none') {
                     invoiceFields.contactPerson.disabled = false;
@@ -5743,4 +5994,211 @@ function updateFuneralGroupsVisibility() {
             group.style.display = '';
         }
     });
+}
+
+// 顧客一覧帳票生成
+function generateCustomerList(funeralId) {
+    // ご葬儀情報を取得
+    const funeralGroup = document.querySelector(`[data-funeral-id="${funeralId}"]`);
+    if (!funeralGroup) {
+        alert('ご葬儀情報が見つかりません。');
+        return;
+    }
+    
+    const funeralTitle = funeralGroup.querySelector('.funeral-title h3').textContent;
+    const deceasedName = funeralGroup.querySelector('.deceased-name').textContent;
+    
+    // 顧客データを取得
+    const customers = getCustomersByFuneralId(funeralId);
+    
+    if (customers.length === 0) {
+        alert('選択されたご葬儀に顧客データがありません。');
+        return;
+    }
+    
+    // モーダルに表示する内容を生成
+    generateCustomerListContent(funeralTitle, deceasedName, customers);
+    
+    // モーダルを表示
+    const modal = document.getElementById('customerListModal');
+    openModal(modal);
+}
+
+// ご葬儀IDに基づいて顧客データを取得
+function getCustomersByFuneralId(funeralId) {
+    const customers = [];
+    const funeralGroup = document.querySelector(`[data-funeral-id="${funeralId}"]`);
+    
+    if (!funeralGroup) return customers;
+    
+    const orders = funeralGroup.querySelectorAll('.orders-table tbody tr');
+    orders.forEach((order, index) => {
+        const orderId = order.dataset.orderId;
+        const status = order.dataset.status;
+        
+        // 有効な注文のみを対象とする
+        if (status === 'active') {
+            const customer = {
+                id: orderId,
+                funeralId: funeralId,
+                orderNumber: order.cells[1].textContent,
+                orderDate: order.cells[2].textContent,
+                nameplate: order.cells[3].textContent,
+                clientName: order.cells[4].textContent,
+                phone: order.cells[5].textContent,
+                amount: parseAmount(order.cells[6].textContent),
+                fee: parseAmount(order.cells[7].textContent),
+                paymentMethod: order.cells[8].textContent,
+                status: status
+            };
+            
+            // 住所情報を取得（実際のシステムでは別途取得が必要）
+            customer.postalCode = '123-4567'; // 仮のデータ
+            customer.address = '東京都渋谷区○○1-2-3'; // 仮のデータ
+            
+            customers.push(customer);
+        }
+    });
+    
+    return customers;
+}
+
+// 金額の解析
+function parseAmount(amountText) {
+    const cleaned = amountText.replace(/[¥,]/g, '');
+    return parseInt(cleaned) || 0;
+}
+
+// 金額のフォーマット
+function formatAmount(amount) {
+    return `¥${amount.toLocaleString()}`;
+}
+
+// 顧客一覧帳票の内容生成
+function generateCustomerListContent(funeralTitle, deceasedName, customers) {
+    const content = document.getElementById('customerListContent');
+    const funeralNameDisplay = document.getElementById('funeralNameDisplay');
+    
+    // ご葬儀名を表示
+    funeralNameDisplay.textContent = `${funeralTitle} ${deceasedName}`;
+    
+    // 合計金額の計算
+    const totalAmount = customers.reduce((sum, customer) => sum + customer.amount, 0);
+    const totalFee = customers.reduce((sum, customer) => sum + customer.fee, 0);
+    const totalSettlement = totalAmount + totalFee;
+    
+    // 帳票のHTMLを生成
+    content.innerHTML = `
+        <div class="customer-list-container">
+            <div class="customer-list-header">
+                <div class="header-left">
+                    <div class="implementation-date">【実施日】${getCurrentDate()}</div>
+                    <div class="church-name">【教会名】</div>
+                    <div class="funeral-name">${funeralTitle}様ご葬儀</div>
+                    <div class="amount-summary">
+                        <div class="amount-item">
+                            <span class="amount-label">領収金額 合計</span>
+                            <span class="amount-value">${formatAmount(totalAmount)}</span>
+                        </div>
+                        <div class="amount-item">
+                            <span class="amount-label">事務手数料 合計</span>
+                            <span class="amount-value">${formatAmount(totalFee)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="settlement-summary">
+                        精算額合計 付け花合計<br>
+                        ${formatAmount(totalSettlement)}
+                    </div>
+                </div>
+            </div>
+            
+            <table class="customer-list-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>受注<br>月日</th>
+                        <th>芳名板記載内容</th>
+                        <th>依頼者名<br>(敬称略)</th>
+                        <th>郵便番号</th>
+                        <th>住所</th>
+                        <th>電話番号</th>
+                        <th>領収<br>金額</th>
+                        <th>事務<br>手数料</th>
+                        <th>精算額</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${customers.map((customer, index) => `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${customer.orderDate}</td>
+                            <td>${customer.nameplate}</td>
+                            <td>${customer.clientName}</td>
+                            <td>${customer.postalCode}</td>
+                            <td>${customer.address}</td>
+                            <td>${customer.phone}</td>
+                            <td class="amount-cell">${formatAmount(customer.amount)}</td>
+                            <td class="amount-cell">${formatAmount(customer.fee)}</td>
+                            <td class="amount-cell">${formatAmount(customer.amount + customer.fee)}</td>
+                        </tr>
+                    `).join('')}
+                    <tr class="total-row">
+                        <td colspan="7">合計</td>
+                        <td class="amount-cell">${formatAmount(totalAmount)}</td>
+                        <td class="amount-cell">${formatAmount(totalFee)}</td>
+                        <td class="amount-cell">${formatAmount(totalSettlement)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// 現在の日付を取得
+function getCurrentDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+}
+
+// 印刷機能
+function printCustomerList() {
+    const printContent = document.getElementById('customerListContent').innerHTML;
+    const printWindow = window.open('', '_blank');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>顧客一覧帳票</title>
+            <style>
+                body { font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif; margin: 0; padding: 20px; }
+                .customer-list-container { border: 2px solid #000; padding: 20px; }
+                .customer-list-table { width: 100%; border-collapse: collapse; }
+                .customer-list-table th, .customer-list-table td { border: 1px solid #000; padding: 8px 6px; }
+                .customer-list-table th { background-color: #f0f0f0; font-weight: bold; text-align: center; }
+                .amount-cell { text-align: right; font-weight: bold; }
+                .total-row { background-color: #f8f8f8; font-weight: bold; }
+                @media print { body { margin: 0; padding: 10px; } }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.print();
+}
+
+// PDF保存機能
+function downloadCustomerListPDF() {
+    // 実際の実装では、PDF生成ライブラリ（jsPDF等）を使用
+    alert('PDF保存機能は実装中です。');
 }
