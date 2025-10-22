@@ -161,6 +161,46 @@ const allOrders = [
         flowerMode: null,
         status: 'active',
         memo: '自動振り分けテスト用（個人申込、名前なし）'
+    },
+    {
+        id: 11,
+        funeralName: null,
+        deceasedName: null,
+        deceasedLastName: '伊藤',
+        deceasedFirstName: '秋子',
+        funeralDate: '2024-03-15',
+        orderDate: '2024-02-20',
+        nameplate: '伊藤家親族一同',
+        applicant: '伊藤太郎', // 代表者（申込者）
+        contactPerson: null, // 担当者（個人申込なのでなし）
+        requester: '伊藤太郎', // ご依頼者（表示用）
+        contact: '090-5555-6666',
+        amount: 20000,
+        fee: 2200,
+        paymentMethod: '振込',
+        flowerMode: null,
+        status: 'active',
+        memo: 'ご葬家未振り分け（新規追加1）'
+    },
+    {
+        id: 12,
+        funeralName: '',
+        deceasedName: '',
+        deceasedLastName: '中村',
+        deceasedFirstName: '冬樹',
+        funeralDate: '2024-03-20',
+        orderDate: '2024-02-22',
+        nameplate: '株式会社サンプル商事',
+        applicant: '株式会社サンプル商事', // 代表者（申込者）
+        contactPerson: '中島花子', // 担当者（企業の場合）
+        requester: '中島花子', // ご依頼者（表示用）
+        contact: '080-7777-8888',
+        amount: 35000,
+        fee: 2200,
+        paymentMethod: '振込',
+        flowerMode: null,
+        status: 'active',
+        memo: 'ご葬家未振り分け（新規追加2・企業申込）'
     }
 ];
 

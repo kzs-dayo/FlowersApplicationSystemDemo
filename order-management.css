@@ -883,15 +883,15 @@
 /* 日本語注文書スタイル */
 .japanese-order-form {
     font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-    max-width: 800px;
+    max-width: 700px;
     margin: 0 auto;
     background: white;
     border: 2px solid #000;
     border-right: 2px dashed #0066cc;
     border-bottom: 2px dashed #0066cc;
     border-left: 2px solid #0066cc;
-    padding: 20px;
-    line-height: 1.6;
+    padding: 15px;
+    line-height: 1.5;
 }
 
 .japanese-order-form .form-header {
@@ -3979,6 +3979,60 @@
    顧客一覧帳票のスタイル
    ================================ */
 
+/* 顧客一覧帳票モーダルの幅調整 */
+#customerListModal .modal-content {
+    max-width: 980px;
+    width: 95vw;
+}
+
+#customerListModal .modal-body {
+    padding: 20px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* 注文書モーダルの幅調整 */
+#orderFormModal .modal-content {
+    max-width: 780px;
+    width: 90vw;
+}
+
+#orderFormModal .modal-body {
+    padding: 20px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* 書類モーダル（請求書・領収書）の幅調整 */
+#documentModal .modal-content {
+    max-width: 780px;
+    width: 90vw;
+}
+
+#documentModal .modal-body {
+    padding: 20px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* 大画面用 */
+@media (min-width: 1200px) {
+    #customerListModal .modal-content {
+        max-width: 1100px;
+    }
+}
+
+/* 中画面用 */
+@media (min-width: 1400px) {
+    #customerListModal .modal-content {
+        max-width: 1200px;
+    }
+    
+    .customer-list-container {
+        max-width: 1050px;
+    }
+}
+
 /* 顧客一覧帳票のレイアウト（画像に基づく） */
 .customer-list-container {
     font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
@@ -3987,9 +4041,9 @@
     border-right: 2px dashed #0066cc;
     border-bottom: 2px dashed #0066cc;
     border-left: 2px solid #0066cc;
-    padding: 20px;
-    line-height: 1.6;
-    max-width: 1000px;
+    padding: 15px;
+    line-height: 1.5;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -3998,9 +4052,9 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 30px;
+    margin-bottom: 18px;
     border-bottom: 2px solid #000;
-    padding-bottom: 15px;
+    padding-bottom: 12px;
 }
 
 .header-left {
@@ -4009,40 +4063,40 @@
 
 .header-right {
     text-align: right;
-    min-width: 200px;
+    min-width: 160px;
 }
 
 .implementation-date {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .church-name {
-    font-size: 16px;
+    font-size: 13px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .funeral-name {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .amount-summary {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 15px;
+    gap: 6px;
+    margin-bottom: 12px;
 }
 
 .amount-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .amount-label {
@@ -4056,7 +4110,7 @@
 
 .settlement-summary {
     text-align: right;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: bold;
     color: #333;
 }
@@ -4065,14 +4119,14 @@
 .customer-list-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 14px;
+    margin-top: 15px;
+    font-size: 11px;
 }
 
 .customer-list-table th,
 .customer-list-table td {
     border: 1px solid #000;
-    padding: 8px 6px;
+    padding: 6px 5px;
     text-align: left;
     vertical-align: top;
 }
@@ -4081,54 +4135,54 @@
     background-color: #f0f0f0;
     font-weight: bold;
     text-align: center;
-    font-size: 13px;
+    font-size: 11px;
 }
 
 .customer-list-table td {
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1.4;
 }
 
 /* 特定の列のスタイル */
 .customer-list-table th:nth-child(1),
 .customer-list-table td:nth-child(1) {
-    width: 40px;
+    width: 35px;
     text-align: center;
 }
 
 .customer-list-table th:nth-child(2),
 .customer-list-table td:nth-child(2) {
-    width: 80px;
+    width: 65px;
     text-align: center;
 }
 
 .customer-list-table th:nth-child(3),
 .customer-list-table td:nth-child(3) {
-    width: 150px;
-    min-width: 120px;
-}
-
-.customer-list-table th:nth-child(4),
-.customer-list-table td:nth-child(4) {
     width: 120px;
     min-width: 100px;
 }
 
+.customer-list-table th:nth-child(4),
+.customer-list-table td:nth-child(4) {
+    width: 95px;
+    min-width: 80px;
+}
+
 .customer-list-table th:nth-child(5),
 .customer-list-table td:nth-child(5) {
-    width: 100px;
+    width: 75px;
     text-align: center;
 }
 
 .customer-list-table th:nth-child(6),
 .customer-list-table td:nth-child(6) {
-    width: 200px;
-    min-width: 150px;
+    width: 160px;
+    min-width: 130px;
 }
 
 .customer-list-table th:nth-child(7),
 .customer-list-table td:nth-child(7) {
-    width: 120px;
+    width: 95px;
     text-align: center;
 }
 
@@ -4138,7 +4192,7 @@
 .customer-list-table td:nth-child(9),
 .customer-list-table th:nth-child(10),
 .customer-list-table td:nth-child(10) {
-    width: 100px;
+    width: 70px;
     text-align: right;
 }
 
@@ -4194,6 +4248,129 @@
         font-size: 10px;
     }
 }
+
+/* 印刷時のスタイル - 顧客一覧帳票（A4横向き） */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
+    }
+    
+    .customer-list-container {
+        max-width: 100%;
+        width: 277mm;
+        padding: 8mm;
+        border: 1px solid #000;
+        page-break-after: avoid;
+    }
+    
+    .customer-list-header {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+    }
+    
+    .implementation-date,
+    .church-name {
+        font-size: 11px;
+    }
+    
+    .funeral-name {
+        font-size: 13px;
+    }
+    
+    .amount-item {
+        font-size: 10px;
+    }
+    
+    .settlement-summary {
+        font-size: 11px;
+    }
+    
+    .customer-list-table {
+        page-break-inside: avoid;
+        font-size: 10px !important;
+        margin-top: 10px;
+    }
+    
+    .customer-list-table th,
+    .customer-list-table td {
+        padding: 5px 4px !important;
+        font-size: 10px !important;
+    }
+    
+    .customer-list-table th {
+        font-size: 10px !important;
+    }
+    
+    .customer-list-table thead {
+        display: table-header-group;
+    }
+    
+    .customer-list-table tr {
+        page-break-inside: avoid;
+    }
+    
+    /* 列幅を広めに調整 */
+    .customer-list-table th:nth-child(1),
+    .customer-list-table td:nth-child(1) {
+        width: 35px;
+    }
+    
+    .customer-list-table th:nth-child(2),
+    .customer-list-table td:nth-child(2) {
+        width: 65px;
+    }
+    
+    .customer-list-table th:nth-child(3),
+    .customer-list-table td:nth-child(3) {
+        width: 120px;
+    }
+    
+    .customer-list-table th:nth-child(4),
+    .customer-list-table td:nth-child(4) {
+        width: 95px;
+    }
+    
+    .customer-list-table th:nth-child(5),
+    .customer-list-table td:nth-child(5) {
+        width: 75px;
+    }
+    
+    .customer-list-table th:nth-child(6),
+    .customer-list-table td:nth-child(6) {
+        width: 160px;
+    }
+    
+    .customer-list-table th:nth-child(7),
+    .customer-list-table td:nth-child(7) {
+        width: 95px;
+    }
+    
+    .customer-list-table th:nth-child(8),
+    .customer-list-table td:nth-child(8),
+    .customer-list-table th:nth-child(9),
+    .customer-list-table td:nth-child(9),
+    .customer-list-table th:nth-child(10),
+    .customer-list-table td:nth-child(10) {
+        width: 70px;
+    }
+    
+    /* モーダルのヘッダー・フッターを非表示 */
+    .modal-header,
+    .modal-footer {
+        display: none !important;
+    }
+    
+    .modal-body {
+        padding: 0 !important;
+    }
+    
+    /* 背景を白に */
+    body, .modal, .modal-content {
+        background: white !important;
+    }
+}
+
 /* ================================
    注文編集フォーム用スタイル
    ================================ */
@@ -4221,12 +4398,12 @@
    ================================ */
 
 .invoice-container {
-    max-width: 800px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
     background: white;
     font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-    line-height: 1.6;
+    line-height: 1.5;
     position: relative;
     background-image: 
         linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
@@ -4486,12 +4663,12 @@
    ================================ */
 
 .receipt-container {
-    max-width: 800px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
     background: white;
     font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
-    line-height: 1.6;
+    line-height: 1.5;
     position: relative;
     background-image: 
         linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
@@ -4671,4 +4848,247 @@
     height: 100%;
     object-fit: contain;
     border-radius: 5px;
+}
+
+/* ================================
+   印刷時のスタイル - 注文書・請求書・領収書（A4縦向き）
+   ================================ */
+
+@media print {
+    /* A4縦向き設定 */
+    @page {
+        size: A4 portrait;
+        margin: 12mm 10mm;
+    }
+    
+    /* 注文書の印刷スタイル */
+    .japanese-order-form {
+        max-width: 100%;
+        width: 190mm;
+        padding: 8mm;
+        border: 1px solid #000;
+        page-break-after: avoid;
+    }
+    
+    .japanese-order-form .form-header {
+        margin-bottom: 5mm;
+    }
+    
+    .japanese-order-form .form-title {
+        font-size: 1.5rem;
+    }
+    
+    .japanese-order-form .form-section {
+        margin-bottom: 4mm;
+        padding: 3mm;
+    }
+    
+    .japanese-order-form .form-row {
+        margin-bottom: 2mm;
+        font-size: 11px;
+    }
+    
+    .japanese-order-form .label {
+        font-size: 11px;
+    }
+    
+    .japanese-order-form .value {
+        font-size: 11px;
+    }
+    
+    /* 請求書の印刷スタイル */
+    .invoice-container {
+        max-width: 100%;
+        width: 190mm;
+        padding: 8mm;
+        page-break-after: avoid;
+        background-image: none;
+    }
+    
+    .invoice-container::after {
+        display: none;
+    }
+    
+    .invoice-date {
+        font-size: 12px;
+        margin-bottom: 4mm;
+    }
+    
+    .company-info-section {
+        margin-bottom: 6mm;
+    }
+    
+    .company-name {
+        font-size: 14px;
+    }
+    
+    .company-address,
+    .company-representative,
+    .company-phone,
+    .company-registration {
+        font-size: 11px;
+    }
+    
+    .company-stamp {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .message-section {
+        padding: 4mm 0;
+        margin-bottom: 4mm;
+    }
+    
+    .message-content p {
+        font-size: 12px;
+        margin: 2mm 0;
+    }
+    
+    .billing-info {
+        margin-bottom: 4mm;
+    }
+    
+    .billing-row {
+        font-size: 11px;
+        margin-bottom: 2mm;
+    }
+    
+    .total-amount {
+        font-size: 18px;
+    }
+    
+    .item-details table {
+        font-size: 10px;
+        margin-bottom: 4mm;
+    }
+    
+    .item-details th,
+    .item-details td {
+        padding: 2mm;
+    }
+    
+    .payment-info {
+        margin-top: 4mm;
+    }
+    
+    .bank-name {
+        font-size: 13px;
+    }
+    
+    .account-number {
+        font-size: 18px;
+    }
+    
+    .account-name {
+        font-size: 14px;
+    }
+    
+    .payment-instructions {
+        font-size: 11px;
+    }
+    
+    /* 領収書の印刷スタイル */
+    .receipt-container {
+        max-width: 100%;
+        width: 190mm;
+        padding: 8mm;
+        page-break-after: avoid;
+        background-image: none;
+    }
+    
+    .receipt-container::after {
+        display: none;
+    }
+    
+    .receipt-header {
+        margin-bottom: 6mm;
+    }
+    
+    .receipt-title {
+        font-size: 24px;
+    }
+    
+    .receipt-number-section {
+        font-size: 12px;
+    }
+    
+    .tax-banner {
+        padding: 2mm 4mm;
+    }
+    
+    .tax-text {
+        font-size: 11px;
+    }
+    
+    .receipt-content {
+        font-size: 11px;
+    }
+    
+    .amount-section {
+        margin-bottom: 4mm;
+    }
+    
+    .amount-label {
+        font-size: 14px;
+    }
+    
+    .amount-value {
+        font-size: 24px;
+    }
+    
+    .amount-details {
+        font-size: 11px;
+    }
+    
+    .payment-method {
+        font-size: 11px;
+        margin-bottom: 4mm;
+    }
+    
+    .issuer-section {
+        margin-top: 6mm;
+    }
+    
+    .issuer-title {
+        font-size: 12px;
+    }
+    
+    .issuer-company {
+        font-size: 13px;
+    }
+    
+    .issuer-details {
+        font-size: 10px;
+    }
+    
+    /* モーダルのヘッダー・フッターを非表示 */
+    .modal-header,
+    .modal-footer {
+        display: none !important;
+    }
+    
+    .modal-body {
+        padding: 0 !important;
+    }
+    
+    /* 背景を白に */
+    body, .modal, .modal-content {
+        background: white !important;
+    }
+    
+    /* ページ区切り制御 */
+    .japanese-order-form,
+    .invoice-container,
+    .receipt-container {
+        page-break-inside: avoid;
+    }
+    
+    /* 改ページ調整 */
+    h3, h4 {
+        page-break-after: avoid;
+    }
+    
+    table {
+        page-break-inside: avoid;
+    }
 }
