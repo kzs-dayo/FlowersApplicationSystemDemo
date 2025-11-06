@@ -955,20 +955,9 @@ function applyRoleBasedRestrictionsForList() {
     
     console.log('注文一覧: 現在のユーザー権限:', role);
     
-    if (role === 'approver') {
-        applyApproverRestrictionsForList();
-    } else if (role === 'staff') {
+    if (role === 'staff') {
         applyStaffRestrictionsForList();
     }
-}
-
-// 承認者用の制限を適用（注文一覧ページ）
-function applyApproverRestrictionsForList() {
-    console.log('承認者モード: 承認依頼が来ている注文のみ表示');
-    
-    // 注文一覧ページでは、承認処理が完了していない注文のみ表示
-    // 実際の実装では、allOrdersデータをフィルタリング
-    filterOrdersForApprover();
 }
 
 // 担当者用の制限を適用（注文一覧ページ）
@@ -980,25 +969,6 @@ function applyStaffRestrictionsForList() {
     
     // すべての編集機能を無効化
     disableAllEditFunctionsForList();
-}
-
-// 承認者用の注文フィルタリング
-function filterOrdersForApprover() {
-    const currentUser = getCurrentUser();
-    
-    // テーブルの各行をチェック
-    const tableRows = document.querySelectorAll('#ordersTableBody tr');
-    let visibleCount = 0;
-    
-    tableRows.forEach(row => {
-        // 承認依頼があるかチェック（実装に応じて調整）
-        // 仮実装: すべて表示
-        row.style.display = '';
-        visibleCount++;
-    });
-    
-    console.log(`承認者として表示する注文: ${visibleCount}件`);
-    updateFilteredSummary();
 }
 
 // 担当者用の注文フィルタリング

@@ -85,7 +85,6 @@ body {
     color: white;
     margin: 0;
     font-weight: 600;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     z-index: 2;
     white-space: nowrap;
 }

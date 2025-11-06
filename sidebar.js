@@ -53,8 +53,8 @@ function applyRoleBasedMenuRestrictions() {
     
     const role = getCurrentUserRole();
     
-    // 承認者または担当者の場合、申し込みフォームと注文一覧を非表示
-    if (role === 'approver' || role === 'staff') {
+    // 担当者の場合、申し込みフォームと注文一覧を非表示
+    if (role === 'staff') {
         // 申し込みフォームのメニュー項目を非表示
         const applicationFormItem = document.querySelector('.nav-item[data-page="application-form"]');
         if (applicationFormItem) {

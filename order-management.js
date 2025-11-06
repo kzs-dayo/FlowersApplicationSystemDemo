@@ -36,6 +36,20 @@ function initializeOrderManagement() {
     
     // チェックボックス機能の初期化
     initializeCheckboxes();
+    
+    // ご葬家情報の表示を更新（花屋情報を含む）
+    updateAllFuneralInfoDisplay();
+}
+
+// すべてのご葬家情報の表示を更新
+function updateAllFuneralInfoDisplay() {
+    const funeralGroups = document.querySelectorAll('.funeral-group');
+    funeralGroups.forEach(group => {
+        const funeralId = group.getAttribute('data-funeral-id');
+        if (funeralId) {
+            updateFuneralInfoDisplay(parseInt(funeralId));
+        }
+    });
 }
 
 // ご葬家グループ初期化
@@ -990,7 +1004,8 @@ function generateOrderFormHTML(orderNo, data) {
                 <div class="form-row">
                     <span class="label">葬儀開式日時</span>
                     <div class="datetime-group">
-                        <input type="date" class="form-date-input" value="${currentDate.toISOString().split('T')[0]}" data-field="funeralDate">
+                        <input type="date" class="form-date-input" value="${data.funeralDate ? data.funeralDate.split(' ')[0] : currentDate.toISOString().split('T')[0]}" data-field="funeralDate">
+                        <input type="time" class="form-time-input" value="${data.funeralTime || (data.funeralDate && data.funeralDate.includes(' ') ? data.funeralDate.split(' ')[1] : '13:00')}" data-field="funeralTime">
                         <span class="time-part">開式</span>
                     </div>
                 </div>
@@ -2629,8 +2644,6 @@ function generateFloristOrderHTML(funeralData, orders) {
                 <tr>
                     <th>No.</th>
                     <th>芳名板記載内容</th>
-                    <th>ご依頼者</th>
-                    <th>金額</th>
                     <th>備考・特記事項</th>
                     <th>花屋送信状況</th>
                 </tr>
@@ -2643,16 +2656,9 @@ function generateFloristOrderHTML(funeralData, orders) {
                     <tr data-order-id="${order.orderNo}">
                         <td><span class="order-number">${order.orderNo}</span></td>
                         <td><div class="nameplate-content">${order.nameplate}</div></td>
-                        <td>${order.client}</td>
-                        <td>${order.amount}</td>
                         <td><div class="order-memo ${order.memo === '特記事項なし' ? 'empty' : ''}">${order.memo}</div></td>
                         <td>
-                            <div class="email-status-cell">
-                                <span class="email-status-badge ${emailStatus}" id="email-status-${order.orderNo}">${statusBadge}</span>
-                                <button class="btn-status-toggle" onclick="toggleEmailStatus(${order.orderNo})" title="ステータスを変更">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
+                            <span class="email-status-badge ${emailStatus}" id="email-status-${order.orderNo}">${statusBadge}</span>
                         </td>
                     </tr>
                 `}).join('')}
@@ -2873,23 +2879,6 @@ function getEmailStatusBadge(status) {
         'pending': '送信中'
     };
     return badges[status] || '未送信';
-}
-
-// メール送信ステータスを切り替え
-function toggleEmailStatus(orderNo) {
-    const currentStatus = getOrderEmailStatus(orderNo);
-    const statusCycle = {
-        'unsent': 'sent',
-        'sent': 'unsent',
-        'error': 'unsent',
-        'pending': 'unsent'
-    };
-    
-    const newStatus = statusCycle[currentStatus] || 'unsent';
-    setOrderEmailStatus(orderNo, newStatus);
-    
-    // UIを更新
-    updateEmailStatusUI(orderNo, newStatus);
 }
 
 // メール送信ステータスのUIを更新
@@ -3293,11 +3282,19 @@ function getFuneralInvoiceData(funeralId) {
             return sum + fee;
         }, 0);
         
+        // 日付を「YYYY年MM月DD日」形式にフォーマット
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${year}年${month}月${day}日`;
+        };
+        
         const result = {
             documentType: '請求書',
             documentNumber: `I-${new Date().getFullYear()}-${String(funeralId).padStart(4, '0')}`,
-            issueDate: issueDate.toLocaleDateString('ja-JP'),
-            dueDate: dueDate.toLocaleDateString('ja-JP'),
+            issueDate: formatDate(issueDate),
+            dueDate: formatDate(dueDate),
             funeralInfo: funeralInfo,
             orders: orders,
             totalAmount: totalAmount,
@@ -3543,25 +3540,30 @@ function generateDocumentSelectionHTML(data, type) {
 // 請求書HTML生成（画像レイアウト準拠）
 function generateInvoiceHTML(data) {
     const totalAmount = data.totalAmount || 0;
-    const taxAmount = Math.floor(totalAmount * 0.1);
+    const taxAmount = Math.floor(totalAmount / 11);
     const subtotal = totalAmount - taxAmount;
+    
+    // 全注文の芳名板を結合
+    const nameplateText = data.orders && data.orders.length > 0 
+        ? data.orders.map(order => order.nameplate || '').filter(n => n).join(', ')
+        : '';
     
     return `
         <div class="invoice-container">
             <!-- 日付 -->
             <div class="invoice-date">${data.issueDate}</div>
             
-            <!-- 会社情報（右上） -->
+            <!-- 会社情報（右上ブロック内で左寄せ） -->
             <div class="company-info-section">
+                <div class="company-stamp">
+                    <img src="image/印.png" alt="株式会社 輝 之印" class="stamp-image">
+                </div>
                 <div class="company-details">
                     <div class="company-name">${data.companyInfo.name}</div>
                     <div class="company-address">${data.companyInfo.address}</div>
                     <div class="company-representative">${data.companyInfo.representative}</div>
                     <div class="company-phone">${data.companyInfo.phone}</div>
                     <div class="company-registration">${data.companyInfo.registrationNumber}</div>
-                </div>
-                <div class="company-stamp">
-                    <img src="image/印.png" alt="株式会社 輝 之印" class="stamp-image">
                 </div>
             </div>
             
@@ -3575,52 +3577,59 @@ function generateInvoiceHTML(data) {
                 </div>
             </div>
             
+            <!-- 「記」マーク -->
+            <div class="title-mark-section">
+                <div class="title-mark">記</div>
+            </div>
+            
             <!-- 請求書タイトルセクション -->
             <div class="invoice-title-section">
                 <div class="invoice-title">
-                    <div class="title-mark">記</div>
                     <div class="title-text">請求書</div>
-                    <div class="invoice-number-field">No. _____________</div>
+                    <div class="invoice-title-right">
+                        <span class="invoice-number-field">No.カS-130401-1</span>
+                    </div>
                 </div>
             </div>
             
             <!-- 請求詳細セクション -->
             <div class="billing-details-section">
-                <div class="billing-amount">
-                    <span class="amount-label">ご請求額</span>
-                    <div class="amount-line"></div>
-                </div>
-                
-                <div class="price-breakdown">
-                    <div class="breakdown-box">
-                        <div class="breakdown-row">
-                            <span class="breakdown-label">内訳</span>
-                            <span class="unit-price-label">本体価格</span>
-                            <span class="unit-price-value">¥${subtotal.toLocaleString()}</span>
-                        </div>
-                        <div class="breakdown-row">
-                            <span class="tax-label">消費税10%</span>
-                            <span class="tax-value">¥${taxAmount.toLocaleString()}</span>
+                <div class="billing-details-row">
+                    <div class="billing-amount">
+                        <span class="amount-label">ご請求額 10,000円</span>
+                    </div>
+                    
+                    <div class="price-breakdown">
+                        <span class="breakdown-label-vertical">内訳</span>
+                        <div class="breakdown-box">
+                            <div class="breakdown-row header-row">
+                                <span class="unit-price-label">本体価格</span>
+                                <span class="unit-price-value">¥${subtotal.toLocaleString()}</span>
+                            </div>
+                            <div class="breakdown-row tax-row">
+                                <span class="tax-label">消費税10%</span>
+                                <span class="tax-value">¥${taxAmount.toLocaleString()}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="item-description">
-                    <span class="description-prefix">但し、</span>
-                    <span class="description-content">${data.funeralInfo.deceased} 様葬儀、生花寄贈 1 件分として</span>
+                    <span class="description-content">但し、${data.funeralInfo.deceased}様葬儀、生花寄贈1件分として</span>
                 </div>
                 
                 <div class="nameplate-section">
                     <span class="nameplate-label">芳名板記載内容:</span>
-                    <div class="nameplate-content">${data.orders.map(order => order.nameplate).join(', ')}</div>
+                    <span class="nameplate-content">${nameplateText || ' '}</span>
                 </div>
             </div>
             
             <!-- 銀行情報（枠付き） -->
             <div class="bank-info-section">
                 <div class="bank-details">
-                    <div class="bank-name">${data.bankInfo.bankName} ${data.bankInfo.branchName} ${data.bankInfo.branchCode} ${data.bankInfo.accountType}
-                    <br>口座番号:${data.bankInfo.accountNumber} ${data.bankInfo.accountName}</div>
+                    <div class="bank-name">${data.bankInfo.bankName} ${data.bankInfo.branchName} ${data.bankInfo.branchCode} ${data.bankInfo.accountType}<br>
+                        口座番号: ${data.bankInfo.accountNumber}   ${data.bankInfo.accountName}
+                    </div>
                 </div>
             </div>
             
@@ -3646,16 +3655,19 @@ function generateReceiptHTML(data) {
     
     return `
         <div class="receipt-container">
+            
             <!-- ヘッダー部分 -->
             <div class="receipt-header">
                 <div class="receipt-title">領収書</div>
                 <div class="receipt-number-section">
-                    <span class="recipient-label">様</span>
+                    <span class="recipient-label">輝 太郎様</span>
                     <span class="receipt-number">No ${data.documentNumber}</span>
                 </div>
-                <div class="tax-banner">
-                    <span class="tax-text">(消費税10%込)</span>
-                </div>
+            </div>
+
+            <!-- 消費税バナー（上部中央） -->
+            <div class="tax-banner-container">
+                <div class="tax-banner-text">(消費税10%込)</div>
             </div>
             
             <!-- メインコンテンツ -->
@@ -3665,18 +3677,15 @@ function generateReceiptHTML(data) {
                     <div class="amount-section">
                         <span class="amount-label">但</span>
                         <span class="amount-value">¥${totalAmount.toLocaleString()}-</span>
+                        <span class="amount-description">${data.funeralInfo.deceased}様葬儀、生花寄贈代として</span>
                     </div>
                     
                     <div class="date-section">
                         ${formattedDate}
                     </div>
                     
-                    <div class="description-section">
-                        ${data.funeralInfo.deceased}様葬儀、生花寄贈代として
-                    </div>
-                    
                     <div class="receipt-confirmation">
-                        ${data.notes[0]}
+                        上記正に領収いたしました
                     </div>
                     
                     <div class="breakdown-section">
@@ -4383,6 +4392,7 @@ function editFuneralInfo(funeralId, event) {
     document.getElementById('editFuneralName').textContent = `${funeralInfo.name}のご葬儀`;
     document.getElementById('editStaffName').value = funeralInfo.staff;
     document.getElementById('editConfirmedDate').value = funeralInfo.confirmedDate;
+    document.getElementById('editFlorist').value = funeralInfo.florist || '';
     
     // 参考情報を表示
     document.getElementById('editFuneralDate').textContent = funeralInfo.funeralDate;
@@ -4408,6 +4418,7 @@ function saveFuneralInfo() {
     
     const staffName = document.getElementById('editStaffName').value.trim();
     const confirmedDate = document.getElementById('editConfirmedDate').value;
+    const florist = document.getElementById('editFlorist').value || '';
     
     // バリデーション
     if (!staffName) {
@@ -4425,6 +4436,7 @@ function saveFuneralInfo() {
     // データを更新
     funeralInfoData[currentEditingFuneralId].staff = staffName;
     funeralInfoData[currentEditingFuneralId].confirmedDate = confirmedDate;
+    funeralInfoData[currentEditingFuneralId].florist = florist;
     
     // 画面の表示を更新
     updateFuneralInfoDisplay(currentEditingFuneralId);
@@ -4441,6 +4453,17 @@ function saveFuneralInfo() {
 }
 
 // ご葬家情報表示更新
+// 花屋IDから花屋名を取得
+function getFloristName(floristId) {
+    const floristMap = {
+        'florist1': '花屋A',
+        'florist2': '花屋B',
+        'florist3': '花屋C',
+        'florist4': '花屋D'
+    };
+    return floristId ? (floristMap[floristId] || floristId) : '-';
+}
+
 function updateFuneralInfoDisplay(funeralId) {
     const funeralInfo = funeralInfoData[funeralId];
     if (!funeralInfo) return;
@@ -4455,6 +4478,12 @@ function updateFuneralInfoDisplay(funeralId) {
     const confirmedElement = document.getElementById(`confirmed-${funeralId}`);
     if (confirmedElement) {
         confirmedElement.textContent = funeralInfo.confirmedDate;
+    }
+    
+    // 花屋の更新
+    const floristElement = document.getElementById(`florist-${funeralId}`);
+    if (floristElement) {
+        floristElement.textContent = getFloristName(funeralInfo.florist);
     }
 }
 
@@ -4661,6 +4690,7 @@ function saveNewFuneral() {
     const venue = document.getElementById('newVenue').value.trim();
     const staff = document.getElementById('newStaff').value.trim() || '未設定';
     const confirmedDate = document.getElementById('newConfirmedDate').value || new Date().toISOString().split('T')[0];
+    const florist = document.getElementById('newFlorist').value || '';
     const flowerMode = document.querySelector('input[name="newFlowerMode"]:checked').value;
     const builtinLimit = parseInt(document.getElementById('newBuiltinLimit').value) || 50000;
     
@@ -4675,6 +4705,7 @@ function saveNewFuneral() {
         venue: venue,
         staff: staff,
         confirmedDate: confirmedDate,
+        florist: florist,
         flowerPayment: {
             mode: flowerMode,
             builtinLimit: builtinLimit
@@ -4725,6 +4756,7 @@ function createFuneralGroupHTML(funeralId) {
                         <div class="funeral-management-info">
                             <span class="funeral-staff">担当者: <span class="staff-name" id="staff-${funeralId}">${info.staff}</span></span>
                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-${funeralId}">${info.confirmedDate}</span></span>
+                            <span class="funeral-florist">花屋: <span class="florist-name" id="florist-${funeralId}">${getFloristName(info.florist)}</span></span>
                         </div>
                         <button class="btn-edit-funeral" onclick="editFuneralInfo(${funeralId}, event)"></button>
                     </div>
@@ -5057,7 +5089,31 @@ const approverData = {
     3: true  // 鈴木 一郎
 };
 
-const MAX_APPROVERS = 3; // 最大承認者数
+const MAX_APPROVERS = 5; // 最大承認者数
+
+// 承認依頼メール送信設定（デフォルト: true = メール送信する）
+let approvalEmailEnabled = true;
+
+// 承認依頼メール送信設定をローカルストレージから読み込み
+function loadApprovalEmailSetting() {
+    try {
+        const saved = localStorage.getItem('approvalEmailEnabled');
+        if (saved !== null) {
+            approvalEmailEnabled = saved === 'true';
+        }
+    } catch (e) {
+        console.error('承認依頼メール送信設定の読み込みに失敗しました:', e);
+    }
+}
+
+// 承認依頼メール送信設定をローカルストレージに保存
+function saveApprovalEmailSetting() {
+    try {
+        localStorage.setItem('approvalEmailEnabled', approvalEmailEnabled.toString());
+    } catch (e) {
+        console.error('承認依頼メール送信設定の保存に失敗しました:', e);
+    }
+}
 
 // 注文の承認状況データ
 // status: 'pending' (承認待ち), 'approved' (承認済み), 'rejected' (却下), 'partial' (一部承認)
@@ -5111,7 +5167,27 @@ function showApproverSettings() {
     // 承認者数の表示を更新
     updateApproverCountDisplay();
     
+    // メール送信設定を更新
+    updateApprovalEmailSettingUI();
+    
     openModal(modal);
+}
+
+// メール送信設定UIを更新
+function updateApprovalEmailSettingUI() {
+    const checkbox = document.getElementById('approvalEmailEnabled');
+    if (checkbox) {
+        checkbox.checked = approvalEmailEnabled;
+    }
+}
+
+// メール送信設定を変更
+function toggleApprovalEmailSetting() {
+    const checkbox = document.getElementById('approvalEmailEnabled');
+    if (checkbox) {
+        approvalEmailEnabled = checkbox.checked;
+        saveApprovalEmailSetting();
+    }
 }
 
 // ユーザー選択ドロップダウンを更新
@@ -5412,9 +5488,14 @@ function resendToApprover(orderNo, approverId) {
         return;
     }
     
-    if (confirm(`${approver.approverName}に承認依頼を再送信しますか？\n\nメール送信先: ${approver.approverEmail}`)) {
+    const emailNote = approvalEmailEnabled ? `\n\nメール送信先: ${approver.approverEmail}` : '\n\n※メール送信は無効です（設定画面で変更可能）';
+    if (confirm(`${approver.approverName}に承認依頼を再送信しますか？${emailNote}`)) {
         // 実装時はメール送信APIを呼び出し
-        console.log(`承認依頼を再送信: 注文No.${orderNo}, 承認者: ${approver.approverName}`);
+        if (approvalEmailEnabled) {
+            console.log(`承認依頼を再送信（メール送信あり）: 注文No.${orderNo}, 承認者: ${approver.approverName}, メール: ${approver.approverEmail}`);
+        } else {
+            console.log(`承認依頼を再送信（メール送信なし）: 注文No.${orderNo}, 承認者: ${approver.approverName}`);
+        }
         
         // 再送信のタイムスタンプを更新（承認状況はリセットしない）
         const approverIndex = approvalData.approvers.findIndex(a => a.approverId === approverId);
@@ -5425,7 +5506,10 @@ function resendToApprover(orderNo, approverId) {
         // ローカルストレージに保存
         saveApprovalStatusData();
         
-        alert(`${approver.approverName}に承認依頼を再送信しました。\n\nメール送信: ${approver.approverEmail}`);
+        const successMessage = approvalEmailEnabled 
+            ? `${approver.approverName}に承認依頼を再送信しました。\n\nメール送信: ${approver.approverEmail}`
+            : `${approver.approverName}に承認依頼を再送信しました。\n\n※メール送信は無効です`;
+        alert(successMessage);
         
         // モーダルの表示を更新
         requestApproval(orderNo);
@@ -5444,10 +5528,15 @@ function resendToAllApprovers() {
     
     const approverNames = approvalData.approvers.map(a => a.approverName).join('\n  • ');
     const approverEmails = approvalData.approvers.map(a => a.approverEmail).join('\n');
+    const emailNote = approvalEmailEnabled ? `\n\nメール送信先:\n${approverEmails}` : '\n\n※メール送信は無効です（設定画面で変更可能）';
     
-    if (confirm(`すべての承認者に承認依頼を再送信しますか？\n\n承認者（${approvalData.approvers.length}名）:\n  • ${approverNames}\n\nメール送信先:\n${approverEmails}`)) {
+    if (confirm(`すべての承認者に承認依頼を再送信しますか？\n\n承認者（${approvalData.approvers.length}名）:\n  • ${approverNames}${emailNote}`)) {
         // 実装時はメール送信APIを呼び出し
-        console.log(`全承認者に再送信: 注文No.${orderNo}`);
+        if (approvalEmailEnabled) {
+            console.log(`全承認者に再送信（メール送信あり）: 注文No.${orderNo}`);
+        } else {
+            console.log(`全承認者に再送信（メール送信なし）: 注文No.${orderNo}`);
+        }
         
         // すべての承認者の再送信タイムスタンプを更新
         const now = new Date().toISOString();
@@ -5458,7 +5547,10 @@ function resendToAllApprovers() {
         // ローカルストレージに保存
         saveApprovalStatusData();
         
-        alert(`${approvalData.approvers.length}名の承認者に承認依頼を再送信しました。`);
+        const successMessage = approvalEmailEnabled
+            ? `${approvalData.approvers.length}名の承認者に承認依頼を再送信しました。`
+            : `${approvalData.approvers.length}名の承認者に承認依頼を再送信しました。\n\n※メール送信は無効です`;
+        alert(successMessage);
         
         // モーダルの表示を更新
         requestApproval(orderNo);
@@ -5744,6 +5836,7 @@ function loadApprovalStatusData() {
 // ページ読み込み時に承認データを読み込む
 document.addEventListener('DOMContentLoaded', function() {
     loadApproverData();
+    loadApprovalEmailSetting();
     loadApprovalStatusData();
     
     // すべての注文の承認状況UIを更新
@@ -5771,8 +5864,6 @@ function applyRoleBasedRestrictions() {
     
     if (role === 'admin') {
         applyAdminRestrictions();
-    } else if (role === 'approver') {
-        applyApproverRestrictions();
     } else if (role === 'staff') {
         applyStaffRestrictions();
     }
@@ -5780,59 +5871,10 @@ function applyRoleBasedRestrictions() {
 
 // 管理者用の制限を適用
 function applyAdminRestrictions() {
-    console.log('管理者モード: 承認ボタンを非表示');
+    console.log('管理者モード: すべての機能にアクセス可能');
     
-    // 承認処理ボタンを非表示
-    hideApprovalActionButtons();
-}
-
-// 承認者用の制限を適用
-function applyApproverRestrictions() {
-    console.log('承認者モード: 承認依頼が来ている注文のみ表示');
-    
-    const currentUser = getCurrentUser();
-    
-    // すべての注文行を取得
-    const allOrders = document.querySelectorAll('tbody tr[data-order-id]');
-    let visibleCount = 0;
-    
-    allOrders.forEach(row => {
-        const orderNo = row.getAttribute('data-order-id');
-        const approvalData = approvalStatusData[orderNo];
-        
-        // 承認依頼があり、かつ現在のユーザーが承認者に含まれているかチェック
-        let shouldShow = false;
-        if (approvalData && approvalData.approvers) {
-            const isAssignedApprover = approvalData.approvers.some(a => 
-                a.approverEmail === currentUser.email && a.status === 'pending'
-            );
-            shouldShow = isAssignedApprover;
-        }
-        
-        if (shouldShow) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
-    });
-    
-    // ご葬家グループの表示も制御
-    updateFuneralGroupsVisibility();
-    
-    // 編集・削除機能を無効化
-    disableEditDeleteButtons();
-    
-    // 新規作成ボタンを非表示
-    hideNewFuneralButton();
-    
-    // 承認者設定ボタンを非表示
-    hideApproverSettingsButton();
-    
-    console.log(`承認者として表示する注文: ${visibleCount}件`);
-    
-    // 統計サマリーを更新
-    updateOrderSummary();
+    // 管理者は承認機能を含むすべての機能にアクセス可能
+    // 承認処理ボタンは表示されたまま
 }
 
 // 担当者用の制限を適用
@@ -6201,4 +6243,45 @@ function printCustomerList() {
 function downloadCustomerListPDF() {
     // 実際の実装では、PDF生成ライブラリ（jsPDF等）を使用
     alert('PDF保存機能は実装中です。');
+}
+
+// 注文書テンプレートPDFダウンロード機能
+function downloadOrderTemplatePDF() {
+    try {
+        // PDFファイルのパス
+        const pdfPath = 'template/注文書.pdf';
+        
+        // fetch APIを使用してPDFファイルを取得
+        fetch(pdfPath)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('PDFファイルの取得に失敗しました。');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // BlobからURLを作成
+                const url = window.URL.createObjectURL(blob);
+                
+                // ダウンロード用のa要素を作成
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '注文書.pdf'; // ダウンロード時のファイル名
+                document.body.appendChild(a);
+                
+                // クリックイベントを発火してダウンロード
+                a.click();
+                
+                // クリーンアップ
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('PDFダウンロードエラー:', error);
+                alert('PDFファイルのダウンロードに失敗しました。\nファイルが存在するか確認してください。');
+            });
+    } catch (error) {
+        console.error('PDFダウンロードエラー:', error);
+        alert('PDFファイルのダウンロードに失敗しました。');
+    }
 }

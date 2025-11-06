@@ -8,12 +8,6 @@ const DEMO_ACCOUNTS = {
         email: 'yamada@example.com',
         roleKey: 'admin'
     },
-    approver: {
-        name: '佐藤 花子',
-        role: '承認者',
-        email: 'sato@example.com',
-        roleKey: 'approver'
-    },
     staff: {
         name: '鈴木 一郎',
         role: '担当者',
@@ -88,19 +82,6 @@ const headerHTML = `
                         <div class="account-card-email">yamada@example.com</div>
                     </div>
                     <div class="account-card-check" id="check-admin">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                </div>
-                <div class="account-card" onclick="switchAccount('approver')">
-                    <div class="account-card-icon approver">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="account-card-info">
-                        <div class="account-card-name">佐藤 花子</div>
-                        <div class="account-card-role">承認者</div>
-                        <div class="account-card-email">sato@example.com</div>
-                    </div>
-                    <div class="account-card-check" id="check-approver">
                         <i class="fas fa-check-circle"></i>
                     </div>
                 </div>
@@ -184,9 +165,7 @@ function customizeHeader() {
             
             // 権限に応じてタイトルにバッジを追加
             const role = getCurrentUserRole();
-            if (role === 'approver') {
-                title += ' <span style="font-size: 0.7em; color: #28a745; font-weight: normal;">[承認者モード]</span>';
-            } else if (role === 'staff') {
+            if (role === 'staff') {
                 title += ' <span style="font-size: 0.7em; color: #1976d2; font-weight: normal;">[担当者モード・閲覧のみ]</span>';
             }
             
@@ -434,8 +413,7 @@ function hasPermission(permission) {
     const role = getCurrentUserRole();
     
     const permissions = {
-        admin: ['view', 'edit', 'delete', 'approve_settings', 'all'],
-        approver: ['view', 'approve'],
+        admin: ['view', 'edit', 'delete', 'approve', 'approve_settings', 'all'],
         staff: ['view']
     };
     
@@ -445,11 +423,6 @@ function hasPermission(permission) {
 // 管理者かどうか
 function isAdmin() {
     return getCurrentUserRole() === 'admin';
-}
-
-// 承認者かどうか
-function isApprover() {
-    return getCurrentUserRole() === 'approver';
 }
 
 // 担当者かどうか

@@ -40,6 +40,13 @@
                     </div>
                 </div>
 
+                <!-- テンプレートダウンロード -->
+                <div class="template-download-section">
+                    <button class="btn btn-primary" onclick="downloadOrderTemplatePDF()">
+                        <i class="fas fa-download"></i> 注文書テンプレートをダウンロード
+                    </button>
+                </div>
+
                 <!-- フィルター・検索 -->
                 <div class="filter-section">
                     <div class="filter-row">
@@ -103,6 +110,7 @@
                                         <div class="funeral-management-info">
                                             <span class="funeral-staff">担当者: <span class="staff-name" id="staff-1">鈴木 一郎</span></span>
                                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-1">2024/01/20</span></span>
+                                            <span class="funeral-florist">花屋: <span class="florist-name" id="florist-1">-</span></span>
                                         </div>
                                         <button class="btn-edit-funeral" onclick="editFuneralInfo(1, event)"></button>
                                     </div>
@@ -194,6 +202,7 @@
                                             <th>連絡先</th>
                                             <th>金額</th>
                                             <th>手数料</th>
+                                            <th>総額（手数料込み）</th>
                                             <th>支払方法</th>
                                             <th>ステータス</th>
                                             <th>承認状況</th>
@@ -209,8 +218,9 @@
                                             <td>株式会社サンプル</td>
                                             <td>山田花子</td>
                                             <td>090-1234-5678</td>
-                                            <td class="amount">¥16,500</td>
+                                            <td class="amount">¥14,300</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -224,9 +234,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-12">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(12)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -246,8 +253,9 @@
                                             <td>輝商事株式会社</td>
                                             <td>輝 次郎</td>
                                             <td>080-1111-2222</td>
-                                            <td class="amount">¥16,500</td>
+                                            <td class="amount">¥14,300</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -261,9 +269,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-13">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(13)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -285,6 +290,7 @@
                                             <td>070-3333-4444</td>
                                             <td class="amount">¥30,000</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥32,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -298,9 +304,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-14">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(14)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -320,8 +323,9 @@
                                             <td>輝同窓会一同</td>
                                             <td>輝 友子</td>
                                             <td>090-5555-6666</td>
-                                            <td class="amount">¥16,500</td>
+                                            <td class="amount">¥14,300</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -335,9 +339,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-15">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(15)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -372,6 +373,7 @@
                                         <div class="funeral-management-info">
                                             <span class="funeral-staff">担当者: <span class="staff-name" id="staff-2">山田 太郎</span></span>
                                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-2">2024/01/19</span></span>
+                                            <span class="funeral-florist">花屋: <span class="florist-name" id="florist-2">-</span></span>
                                         </div>
                                         <button class="btn-edit-funeral" onclick="editFuneralInfo(2, event)"></button>
                                     </div>
@@ -463,6 +465,7 @@
                                             <th>連絡先</th>
                                             <th>金額</th>
                                             <th>手数料</th>
+                                            <th>総額（手数料込み）</th>
                                             <th>支払方法</th>
                                             <th>ステータス</th>
                                             <th>承認状況</th>
@@ -480,6 +483,7 @@
                                             <td>080-9876-5432</td>
                                             <td class="amount">¥20,000</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥22,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -493,9 +497,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-11">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(11)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -515,8 +516,9 @@
                                             <td>田中商事労働組合</td>
                                             <td>田中 健</td>
                                             <td>090-7777-8888</td>
-                                            <td class="amount">¥16,500</td>
+                                            <td class="amount">¥14,300</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥16,500</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -530,9 +532,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-16">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(16)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -567,6 +566,7 @@
                                         <div class="funeral-management-info">
                                             <span class="funeral-staff">担当者: <span class="staff-name" id="staff-3">佐藤 花子</span></span>
                                             <span class="funeral-confirmed-date">確定日: <span class="confirmed-date" id="confirmed-3">2024/01/22</span></span>
+                                            <span class="funeral-florist">花屋: <span class="florist-name" id="florist-3">-</span></span>
                                         </div>
                                         <button class="btn-edit-funeral" onclick="editFuneralInfo(3, event)"></button>
                                     </div>
@@ -659,6 +659,7 @@
                                             <th>連絡先</th>
                                             <th>金額</th>
                                             <th>手数料</th>
+                                            <th>総額（手数料込み）</th>
                                             <th>支払方法</th>
                                             <th>ステータス</th>
                                             <th>承認状況</th>
@@ -674,8 +675,9 @@
                                             <td>佐藤工業株式会社</td>
                                             <td>佐藤太郎</td>
                                             <td>070-1111-2222</td>
-                                            <td class="amount">¥16,500</td>
+                                            <td class="amount">¥14,300</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
                                             <td><span class="status-badge cancelled">キャンセル</span></td>
                                             <td>
@@ -689,9 +691,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-10">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(10)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -709,8 +708,9 @@
                                             <td>佐藤建設協力会</td>
                                             <td>佐藤 恵</td>
                                             <td>080-2222-3333</td>
-                                            <td class="amount">¥16,500</td>
+                                            <td class="amount">¥14,300</td>
                                             <td class="fee">¥2,200</td>
+                                            <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
                                             <td><span class="status-badge active">有効</span></td>
                                             <td>
@@ -724,9 +724,6 @@
                                             <td>
                                                 <div class="email-status-cell">
                                                     <span class="email-status-badge unsent" id="email-status-17">未送信</span>
-                                                    <button class="btn-status-toggle" onclick="toggleEmailStatus(17)" title="ステータスを変更">
-                                                        <i class="fas fa-sync-alt"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                             <td>
@@ -962,6 +959,18 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="editFlorist" class="form-label">花屋</label>
+                        <select id="editFlorist" class="form-input">
+                            <option value="">選択してください</option>
+                            <option value="florist1">花屋A</option>
+                            <option value="florist2">花屋B</option>
+                            <option value="florist3">花屋C</option>
+                            <option value="florist4">花屋D</option>
+                        </select>
+                        <p class="form-note">このご葬儀で使用する花屋を選択してください（任意）</p>
+                    </div>
+                    
+                    <div class="form-group">
                         <label class="form-label">ご葬儀情報（参考）</label>
                         <div class="funeral-ref-info">
                             <div class="ref-item">
@@ -1150,6 +1159,17 @@
                             <label for="newConfirmedDate">葬儀確定日:</label>
                             <input type="date" id="newConfirmedDate">
                             <p class="form-note">葬儀が確定した日付（任意）</p>
+                        </div>
+                        <div class="form-row">
+                            <label for="newFlorist">花屋:</label>
+                            <select id="newFlorist" class="form-input">
+                                <option value="">選択してください</option>
+                                <option value="florist1">花屋A</option>
+                                <option value="florist2">花屋B</option>
+                                <option value="florist3">花屋C</option>
+                                <option value="florist4">花屋D</option>
+                            </select>
+                            <p class="form-note">このご葬儀で使用する花屋を選択してください（任意）</p>
                         </div>
                     </div>
 
@@ -1462,6 +1482,20 @@
                         </div>
                     </div>
                     
+                    <div class="email-settings-section">
+                        <h3><i class="fas fa-envelope"></i> 承認依頼メール送信設定</h3>
+                        <div class="form-row">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="approvalEmailEnabled" onchange="toggleApprovalEmailSetting()">
+                                <span class="checkbox-text">承認依頼をメールで送付する</span>
+                            </label>
+                            <p class="form-note" style="margin-top: 8px; color: #666; font-size: 0.9em;">
+                                <i class="fas fa-info-circle"></i>
+                                この設定は承認依頼送信時に全員に一括適用されます。
+                            </p>
+                        </div>
+                    </div>
+                    
                     <div class="current-approvers">
                         <h3><i class="fas fa-users"></i> 登録済み承認者</h3>
                         <div id="approverList" class="approver-list">
@@ -1473,7 +1507,7 @@
                         <h3><i class="fas fa-user-plus"></i> 承認者を追加</h3>
                         <p class="form-note">
                             登録済みのユーザーアカウントから承認者を選択してください。<br>
-                            <small>※最大3人まで設定可能です</small>
+                            <small>※最大5人まで設定可能です</small>
                         </p>
                         <div class="form-row">
                             <label for="selectUserForApprover">ユーザーを選択:</label>
