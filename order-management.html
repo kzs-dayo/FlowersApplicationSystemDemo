@@ -28,7 +28,7 @@
                         <div class="summary-icon"><i class="fas fa-edit"></i></div>
                         <div class="summary-content">
                             <div class="summary-value" id="activeTotalOrders">12</div>
-                            <div class="summary-label">有効注文数</div>
+                            <div class="summary-label">未請求注文数</div>
                         </div>
                     </div>
                     <div class="summary-card">
@@ -40,13 +40,6 @@
                     </div>
                 </div>
 
-                <!-- テンプレートダウンロード -->
-                <div class="template-download-section">
-                    <button class="btn btn-primary" onclick="downloadOrderTemplatePDF()">
-                        <i class="fas fa-download"></i> 注文書テンプレートをダウンロード
-                    </button>
-                </div>
-
                 <!-- フィルター・検索 -->
                 <div class="filter-section">
                     <div class="filter-row">
@@ -54,10 +47,10 @@
                             <label for="statusFilter">ステータス:</label>
                             <select id="statusFilter" onchange="filterOrders()">
                                 <option value="">すべて</option>
-                                <option value="active">有効</option>
+                                <option value="active">未請求</option>
+                                <option value="invoiced">入金確認中</option>
+                                <option value="paid">入金済み</option>
                                 <option value="cancelled">キャンセル</option>
-                                <option value="invoiced">請求済み</option>
-                                <option value="paid">支払済み</option>
                             </select>
                         </div>
                         <div class="filter-group">
@@ -116,39 +109,13 @@
                                     </div>
                                 </div>
                                 <div class="funeral-summary">
-                                    <div class="summary-item flower-calc">
-                                        <div class="flower-calc-header">
-                                            <span class="summary-label">
-                                                <i class="fas fa-calculator"></i> 花代処理: 
-                                                <span class="mode-badge-small builtin" id="mode-badge-1">組込式</span>
-                                            </span>
-                                            <button class="btn-edit-inline" onclick="editFlowerSettings(1, event)" title="設定変更">
-                                                <i class="fas fa-edit"></i> 設定
-                                            </button>
-                                        </div>
-                                        <div class="flower-calc-details">
-                                            <div class="calc-detail-item">
-                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
-                                                    <span class="calc-detail-value deduct" id="inline-deduct-1">-¥50,000</span>
-                                                    <span class="calc-detail-tax" id="inline-deduct-tax-1" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥4,545)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-divider"></div>
-                                            <div class="calc-detail-item" id="addon-item-1">
-                                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">つけ花（超過分・税込）</span>
-                                                    <span class="calc-detail-value addon" id="inline-addon-1">¥38,500</span>
-                                                    <span class="calc-detail-tax" id="inline-addon-tax-1" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥3,500)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="summary-item">
                                         <span class="summary-label">注文数:</span>
                                         <span class="summary-value">4件</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">ステータス:</span>
+                                        <span class="funeral-status-badge" id="funeral-status-1">-</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="summary-label">支払方法:</span>
@@ -190,6 +157,101 @@
                                 </div>
                             </div>
                             
+                            <!-- 花代処理セクション -->
+                            <div class="funeral-flower-calc">
+                                <div class="summary-item flower-calc">
+                                    <div class="flower-calc-header">
+                                        <span class="summary-label">
+                                            <i class="fas fa-calculator"></i> 花代処理: 
+                                            <span class="mode-badge-small builtin" id="mode-badge-1">組込式</span>
+                                        </span>
+                                        <button class="btn-edit-inline" onclick="editFlowerSettings(1, event)" title="設定変更">
+                                            <i class="fas fa-edit"></i> 設定
+                                        </button>
+                                    </div>
+                                    <div class="flower-calc-details">
+                                        <div class="calc-detail-column">
+                                            <div class="calc-detail-item-group-top">
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-calculator calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">精算額（税抜き）</span>
+                                                        <span class="calc-detail-value" id="inline-settlement-1">¥45,455</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-receipt calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">精算額の消費税</span>
+                                                        <span class="calc-detail-value" id="inline-settlement-tax-1">¥4,545</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item" id="addon-item-1">
+                                                    <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">付け花分（税込）</span>
+                                                        <span class="calc-detail-value addon" id="inline-addon-1">¥22,900</span>
+                                                        <span class="calc-detail-tax" id="inline-addon-tax-1">(内税¥2,082)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item-group-bottom">
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-yen-sign calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">領収額合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-received-total-1">¥81,700</span>
+                                                        <span class="calc-detail-tax">(内税¥7,427)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-hand-holding-usd calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">手数料合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-fee-total-1">¥8,800</span>
+                                                        <span class="calc-detail-tax">(内税¥800)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-minus calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">領収額 - 手数料合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-received-minus-fee-1">¥72,900</span>
+                                                        <span class="calc-detail-tax">(内税¥6,627)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="calc-detail-column">
+                                            <div class="calc-detail-item">
+                                                <i class="fas fa-calculator calc-icon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">精算額（税抜き）</span>
+                                                    <span class="calc-detail-value" id="inline-settlement-total-1">¥45,455</span>
+                                                    <span class="calc-detail-tax">(消費税¥4,545)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item" id="addon-item-right-1">
+                                                <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">付け花分（税込）</span>
+                                                    <span class="calc-detail-value addon" id="inline-addon-right-1">¥22,900</span>
+                                                    <span class="calc-detail-tax" id="inline-addon-tax-right-1">(内税¥2,082)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item">
+                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">合計額分（葬儀代から減額）</span>
+                                                    <span class="calc-detail-value deduct" id="inline-deduct-1">¥50,000</span>
+                                                    <span class="calc-detail-tax" id="inline-deduct-tax-1">(内税¥4,545)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="funeral-orders">
                                 <table class="orders-table">
                                     <thead>
@@ -207,6 +269,8 @@
                                             <th>ステータス</th>
                                             <th>承認状況</th>
                                             <th>花屋送信状況</th>
+                                            <th>請求書発送日</th>
+                                            <th>入金確認日</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
@@ -222,7 +286,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-12">承認待ち</span>
@@ -237,12 +301,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-12">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-12">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(12)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(12)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(12)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(12)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(12)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(12)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -257,7 +334,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-13">承認待ち</span>
@@ -272,12 +349,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-13">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-13">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(13)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(13)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(13)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(13)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(13)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(13)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -292,7 +382,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥32,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-14">承認待ち</span>
@@ -307,12 +397,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-14">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-14">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(14)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(14)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(14)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(14)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(14)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(14)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -327,7 +430,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-15">承認待ち</span>
@@ -342,12 +445,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-15">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-15">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(15)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(15)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(15)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(15)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(15)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(15)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -379,39 +495,13 @@
                                     </div>
                                 </div>
                                 <div class="funeral-summary">
-                                    <div class="summary-item flower-calc">
-                                        <div class="flower-calc-header">
-                                            <span class="summary-label">
-                                                <i class="fas fa-calculator"></i> 花代処理: 
-                                                <span class="mode-badge-small addon" id="mode-badge-2">つけ花</span>
-                                            </span>
-                                            <button class="btn-edit-inline" onclick="editFlowerSettings(2, event)" title="設定変更">
-                                                <i class="fas fa-edit"></i> 設定
-                                            </button>
-                                        </div>
-                                        <div class="flower-calc-details">
-                                            <div class="calc-detail-item" id="deduct-item-2" style="display: none;">
-                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
-                                                    <span class="calc-detail-value deduct" id="inline-deduct-2">¥0</span>
-                                                    <span class="calc-detail-tax" id="inline-deduct-tax-2" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-divider" id="divider-2" style="display: none;"></div>
-                                            <div class="calc-detail-item" id="addon-item-2">
-                                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">つけ花（全額・税込）</span>
-                                                    <span class="calc-detail-value addon" id="inline-addon-2">¥40,900</span>
-                                                    <span class="calc-detail-tax" id="inline-addon-tax-2" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥3,718)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="summary-item">
                                         <span class="summary-label">注文数:</span>
                                         <span class="summary-value">2件</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">ステータス:</span>
+                                        <span class="funeral-status-badge" id="funeral-status-2">-</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="summary-label">支払方法:</span>
@@ -453,6 +543,101 @@
                                 </div>
                             </div>
                             
+                            <!-- 花代処理セクション -->
+                            <div class="funeral-flower-calc">
+                                <div class="summary-item flower-calc">
+                                    <div class="flower-calc-header">
+                                        <span class="summary-label">
+                                            <i class="fas fa-calculator"></i> 花代処理: 
+                                            <span class="mode-badge-small addon" id="mode-badge-2">つけ花</span>
+                                        </span>
+                                        <button class="btn-edit-inline" onclick="editFlowerSettings(2, event)" title="設定変更">
+                                            <i class="fas fa-edit"></i> 設定
+                                        </button>
+                                    </div>
+                                    <div class="flower-calc-details">
+                                        <div class="calc-detail-column">
+                                            <div class="calc-detail-item-group-top">
+                                                <div class="calc-detail-item" id="settlement-item-2">
+                                                    <i class="fas fa-calculator calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">精算額（税抜き）</span>
+                                                        <span class="calc-detail-value" id="inline-settlement-2">-</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item" id="settlement-tax-item-2">
+                                                    <i class="fas fa-receipt calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">精算額の消費税</span>
+                                                        <span class="calc-detail-value" id="inline-settlement-tax-2">-</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item" id="addon-item-2">
+                                                    <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">付け花分（税込）</span>
+                                                        <span class="calc-detail-value addon" id="inline-addon-2">¥34,300</span>
+                                                        <span class="calc-detail-tax" id="inline-addon-tax-2">(内税¥3,118)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item-group-bottom">
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-yen-sign calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">領収額合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-received-total-2">¥38,700</span>
+                                                        <span class="calc-detail-tax">(内税¥3,518)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-hand-holding-usd calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">手数料合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-fee-total-2">¥4,400</span>
+                                                        <span class="calc-detail-tax">(内税¥400)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-minus calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">領収額 - 手数料合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-received-minus-fee-2">¥34,300</span>
+                                                        <span class="calc-detail-tax">(内税¥3,118)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="calc-detail-column">
+                                            <div class="calc-detail-item" id="settlement-total-item-2">
+                                                <i class="fas fa-calculator calc-icon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">精算額（税抜き）</span>
+                                                    <span class="calc-detail-value" id="inline-settlement-total-2">-</span>
+                                                    <span class="calc-detail-tax">(消費税-)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item" id="addon-item-right-2">
+                                                <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">付け花分（税込）</span>
+                                                    <span class="calc-detail-value addon" id="inline-addon-right-2">¥34,300</span>
+                                                    <span class="calc-detail-tax" id="inline-addon-tax-right-2">(内税¥3,118)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item" id="deduct-item-2">
+                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">合計額分（葬儀代から減額）</span>
+                                                    <span class="calc-detail-value deduct" id="inline-deduct-2">-</span>
+                                                    <span class="calc-detail-tax" id="inline-deduct-tax-2">(内税-)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="funeral-orders">
                                 <table class="orders-table">
                                     <thead>
@@ -470,6 +655,8 @@
                                             <th>ステータス</th>
                                             <th>承認状況</th>
                                             <th>花屋送信状況</th>
+                                            <th>請求書発送日</th>
+                                            <th>入金確認日</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
@@ -485,7 +672,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥22,200</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-11">承認待ち</span>
@@ -500,12 +687,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-11">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-11">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(11)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(11)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(11)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(11)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(11)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(11)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -520,7 +720,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥16,500</td>
                                             <td><span class="payment-badge onsite">現地</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-16">承認待ち</span>
@@ -535,12 +735,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-16">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-16">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(16)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(16)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(16)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(16)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(16)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(16)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -572,39 +785,13 @@
                                     </div>
                                 </div>
                                 <div class="funeral-summary">
-                                    <div class="summary-item flower-calc">
-                                        <div class="flower-calc-header">
-                                            <span class="summary-label">
-                                                <i class="fas fa-calculator"></i> 花代処理: 
-                                                <span class="mode-badge-small builtin" id="mode-badge-3">組込式</span>
-                                            </span>
-                                            <button class="btn-edit-inline" onclick="editFlowerSettings(3, event)" title="設定変更">
-                                                <i class="fas fa-edit"></i> 設定
-                                            </button>
-                                        </div>
-                                        <div class="flower-calc-details">
-                                            <div class="calc-detail-item" id="deduct-item-3">
-                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
-                                                    <span class="calc-detail-value deduct" id="inline-deduct-3">-¥18,700</span>
-                                                    <span class="calc-detail-tax" id="inline-deduct-tax-3" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥1,700)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-divider" id="divider-3" style="display: none;"></div>
-                                            <div class="calc-detail-item" id="addon-item-3" style="display: none;">
-                                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">つけ花（超過分・税込）</span>
-                                                    <span class="calc-detail-value addon" id="inline-addon-3">¥0</span>
-                                                    <span class="calc-detail-tax" id="inline-addon-tax-3" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="summary-item">
                                         <span class="summary-label">注文数:</span>
                                         <span class="summary-value">2件</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">ステータス:</span>
+                                        <span class="funeral-status-badge" id="funeral-status-3">-</span>
                                     </div>
                                     <div class="summary-item">
                                         <span class="summary-label">支払方法:</span>
@@ -647,6 +834,101 @@
                                 </div>
                             </div>
                             
+                            <!-- 花代処理セクション -->
+                            <div class="funeral-flower-calc">
+                                <div class="summary-item flower-calc">
+                                    <div class="flower-calc-header">
+                                        <span class="summary-label">
+                                            <i class="fas fa-calculator"></i> 花代処理: 
+                                            <span class="mode-badge-small builtin" id="mode-badge-3">組込式</span>
+                                        </span>
+                                        <button class="btn-edit-inline" onclick="editFlowerSettings(3, event)" title="設定変更">
+                                            <i class="fas fa-edit"></i> 設定
+                                        </button>
+                                    </div>
+                                    <div class="flower-calc-details">
+                                        <div class="calc-detail-column">
+                                            <div class="calc-detail-item-group-top">
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-calculator calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">精算額（税抜き）</span>
+                                                        <span class="calc-detail-value" id="inline-settlement-3">¥13,000</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-receipt calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">精算額の消費税</span>
+                                                        <span class="calc-detail-value" id="inline-settlement-tax-3">¥1,300</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item" id="addon-item-3">
+                                                    <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">付け花分（税込）</span>
+                                                        <span class="calc-detail-value addon" id="inline-addon-3">-</span>
+                                                        <span class="calc-detail-tax" id="inline-addon-tax-3">(内税-)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item-group-bottom">
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-yen-sign calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">領収額合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-received-total-3">¥16,500</span>
+                                                        <span class="calc-detail-tax">(内税¥1,500)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-hand-holding-usd calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">手数料合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-fee-total-3">¥2,200</span>
+                                                        <span class="calc-detail-tax">(内税¥200)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="calc-detail-item">
+                                                    <i class="fas fa-minus calc-icon"></i>
+                                                    <div class="calc-detail-content">
+                                                        <span class="calc-detail-label">領収額 - 手数料合計（税込）</span>
+                                                        <span class="calc-detail-value" id="inline-received-minus-fee-3">¥14,300</span>
+                                                        <span class="calc-detail-tax">(内税¥1,300)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="calc-detail-column">
+                                            <div class="calc-detail-item">
+                                                <i class="fas fa-calculator calc-icon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">精算額（税抜き）</span>
+                                                    <span class="calc-detail-value" id="inline-settlement-total-3">¥14,300</span>
+                                                    <span class="calc-detail-tax">(消費税¥1,300)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item" id="addon-item-right-3">
+                                                <i class="fas fa-plus-circle calc-icon addon"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">付け花分（税込）</span>
+                                                    <span class="calc-detail-value addon" id="inline-addon-right-3">-</span>
+                                                    <span class="calc-detail-tax" id="inline-addon-tax-right-3">(内税-)</span>
+                                                </div>
+                                            </div>
+                                            <div class="calc-detail-item" id="deduct-item-3">
+                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
+                                                <div class="calc-detail-content">
+                                                    <span class="calc-detail-label">合計額分（葬儀代から減額）</span>
+                                                    <span class="calc-detail-value deduct" id="inline-deduct-3">¥14,300</span>
+                                                    <span class="calc-detail-tax" id="inline-deduct-tax-3">(内税¥1,300)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="funeral-orders">
                                 <table class="orders-table">
                                     <thead>
@@ -664,6 +946,8 @@
                                             <th>ステータス</th>
                                             <th>承認状況</th>
                                             <th>花屋送信状況</th>
+                                            <th>請求書発送日</th>
+                                            <th>入金確認日</th>
                                             <th>操作</th>
                                         </tr>
                                     </thead>
@@ -694,6 +978,12 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-10">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-10">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm btn-outline" onclick="reviveOrder(10)">復活</button>
                                                     <button class="btn btn-sm btn-outline" onclick="viewOrderDetail(10)">詳細</button>
@@ -712,7 +1002,7 @@
                                             <td class="fee">¥2,200</td>
                                             <td class="total">¥16,500</td>
                                             <td><span class="payment-badge transfer">振込</span></td>
-                                            <td><span class="status-badge active">有効</span></td>
+                                            <td><span class="status-badge active">未請求</span></td>
                                             <td>
                                                 <div class="approval-status-cell">
                                                     <span class="approval-badge pending" id="approval-status-17">承認待ち</span>
@@ -727,12 +1017,25 @@
                                                 </div>
                                             </td>
                                             <td>
+                                                <span class="invoice-sent-date" id="invoice-sent-date-17">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="payment-confirmed-date" id="payment-confirmed-date-17">-</span>
+                                            </td>
+                                            <td>
                                                 <div class="action-buttons">
                                                     <button class="btn btn-sm" onclick="editOrder(17)">修正</button>
                                                     <button class="btn btn-sm btn-warning" onclick="requestApproval(17)" title="承認依頼を再送信">
                                                         <i class="fas fa-redo"></i> 承認依頼（再送）
                                                     </button>
                                                     <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(17)"><i class="fas fa-file-alt"></i> 注文書</button>
+                                                    <button class="btn btn-sm btn-info" onclick="showInvoiceSendModal(17)" title="請求書発送">
+                                                        <i class="fas fa-envelope"></i> 請求書発送
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" onclick="showPaymentConfirmModal(17)" title="入金確認">
+                                                        <i class="fas fa-check-circle"></i> 入金確認
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline" onclick="cancelOrder(17)">キャンセル</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1128,7 +1431,7 @@
                         <div class="form-row">
                             <label for="newFuneralFamily">ご葬家名:</label>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <input type="text" id="newFuneralFamily" required placeholder="例: 山田" style="flex: 1;">
+                                <input type="text" id="newFuneralFamily" required placeholder="例: 山田" >
                                 <span style="font-size: 16px; font-weight: 500;">家</span>
                             </div>
                             <p class="form-note">姓のみを入力してください（「家」は自動で付きます）</p>
@@ -1624,6 +1927,70 @@
                 <button class="btn btn-secondary" onclick="closeModal('customerListModal')">閉じる</button>
                 <button class="btn btn-outline" onclick="printCustomerList()">印刷</button>
                 <button class="btn btn-primary" onclick="downloadCustomerListPDF()">PDF保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 請求書発送モーダル -->
+    <div id="invoiceSendModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>請求書発送 - 注文No.<span id="invoiceSendOrderNumber"></span></h2>
+                <span class="close" onclick="closeModal('invoiceSendModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="invoice-send-form">
+                    <div class="form-section">
+                        <h3>郵送日を設定</h3>
+                        <div class="form-row">
+                            <label for="invoiceSendDate">請求書発送日（郵送日）:</label>
+                            <input type="date" id="invoiceSendDate" class="form-input" required>
+                            <p class="form-note">請求書を郵送した日付を選択してください。設定後、注文ステータスが「入金確認中」に変更されます。</p>
+                        </div>
+                        <div class="form-row">
+                            <div class="info-box">
+                                <i class="fas fa-info-circle"></i>
+                                <span>郵送日を設定すると、この注文のステータスが自動的に「入金確認中」に変更されます。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('invoiceSendModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveInvoiceSendDate()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 入金確認モーダル -->
+    <div id="paymentConfirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>入金確認 - 注文No.<span id="paymentConfirmOrderNumber"></span></h2>
+                <span class="close" onclick="closeModal('paymentConfirmModal')"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="modal-body">
+                <div class="payment-confirm-form">
+                    <div class="form-section">
+                        <h3>入金日を設定</h3>
+                        <div class="form-row">
+                            <label for="paymentConfirmDate">入金確認日:</label>
+                            <input type="date" id="paymentConfirmDate" class="form-input" required>
+                            <p class="form-note">入金を確認した日付を選択してください。設定後、注文ステータスが「入金済み」に変更されます。</p>
+                        </div>
+                        <div class="form-row">
+                            <div class="info-box">
+                                <i class="fas fa-info-circle"></i>
+                                <span>入金日を設定すると、この注文のステータスが自動的に「入金済み」に変更されます。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('paymentConfirmModal')">キャンセル</button>
+                <button class="btn btn-primary" onclick="savePaymentConfirmDate()">保存</button>
             </div>
         </div>
     </div>

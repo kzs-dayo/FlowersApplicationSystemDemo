@@ -109,6 +109,10 @@ const headerConfigs = {
     'order-management': {
         title: '注文一覧・管理',
         actions: `
+            <button class="btn btn-primary" onclick="downloadOrderTemplatePDF()">
+                <span class="btn-icon"><i class="fas fa-download"></i></span>
+                注文書テンプレートをダウンロード
+            </button>
             <button class="btn btn-success" onclick="showNewFuneralForm()">
                 <span class="btn-icon"><i class="fas fa-plus"></i></span>
                 新規ご葬家

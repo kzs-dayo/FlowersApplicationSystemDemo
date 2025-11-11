@@ -124,6 +124,7 @@ body {
 /* フォームグループ */
 .form-group {
     margin-bottom: 25px;
+    margin-top: 25px;
 }
 
 /* ラベル */

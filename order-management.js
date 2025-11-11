@@ -13,6 +13,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // 花代計算の初期化
     updateAllFlowerCalculations();
     
+    // 請求書発送日を復元
+    restoreInvoiceSentDates();
+    
+    // 入金確認日を復元
+    restorePaymentConfirmedDates();
+    
+    // ステータス復元後にサマリーを再更新
+    updateOrderSummary();
+    
+    // 料金の色付けを適用
+    highlightNonStandardAmounts();
+    
     // 設定モーダルの入力変更イベントリスナー
     const builtinLimitInput = document.getElementById('builtinLimitInput');
     if (builtinLimitInput) {
@@ -262,6 +274,9 @@ function updateOrderSummary() {
     });
     
     updateOverallSummary();
+    
+    // 料金の色付けを適用
+    highlightNonStandardAmounts();
 }
 
 // グループサマリー更新
@@ -272,6 +287,7 @@ function updateGroupSummary(group) {
     let transferCount = 0;
     let onsiteCount = 0;
     let cancelledCount = 0;
+    const statuses = [];
     
     orders.forEach(order => {
         const status = order.getAttribute('data-status');
@@ -281,6 +297,11 @@ function updateGroupSummary(group) {
         const paymentMethod = paymentBadge ? paymentBadge.textContent : '';
         
         orderCount++;
+        
+        // ステータスを収集（キャンセル以外）
+        if (status && status !== 'cancelled') {
+            statuses.push(status);
+        }
         
         if (status === 'active') {
             totalAmount += amount;
@@ -321,6 +342,58 @@ function updateGroupSummary(group) {
             badgeHTML += `<span class="payment-badge cancelled">キャンセル${cancelledCount}件</span>`;
         }
         paymentBadges.innerHTML = badgeHTML;
+    }
+    
+    // ステータスバッジを更新
+    updateFuneralStatusBadge(group, statuses, cancelledCount, orderCount);
+}
+
+// ご葬家のステータスバッジを更新
+function updateFuneralStatusBadge(group, statuses, cancelledCount, orderCount) {
+    const funeralId = group.getAttribute('data-funeral-id');
+    const statusBadge = document.getElementById(`funeral-status-${funeralId}`);
+    
+    if (!statusBadge) return;
+    
+    // すべてキャンセルの場合
+    if (cancelledCount === orderCount && orderCount > 0) {
+        statusBadge.className = 'funeral-status-badge status-badge cancelled';
+        statusBadge.textContent = 'キャンセル';
+        return;
+    }
+    
+    // ステータスの優先順位: active > invoiced > paid
+    let highestStatus = null;
+    let highestPriority = 0;
+    
+    // 優先順位を定義
+    const priorityMap = {
+        'active': 3,      // 未請求 - 最優先
+        'invoiced': 2,    // 入金確認中
+        'paid': 1         // 入金済み
+    };
+    
+    statuses.forEach(status => {
+        const priority = priorityMap[status] || 0;
+        if (priority > highestPriority) {
+            highestPriority = priority;
+            highestStatus = status;
+        }
+    });
+    
+    // ステータスバッジを更新
+    if (highestStatus) {
+        const statusTextMap = {
+            'active': '未請求',
+            'invoiced': '入金確認中',
+            'paid': '入金済み'
+        };
+        
+        statusBadge.className = `funeral-status-badge status-badge ${highestStatus}`;
+        statusBadge.textContent = statusTextMap[highestStatus] || '-';
+    } else {
+        statusBadge.className = 'funeral-status-badge';
+        statusBadge.textContent = '-';
     }
 }
 
@@ -379,6 +452,7 @@ function cancelOrder(orderNo) {
                 actionButtons.innerHTML = `
                     <button class="btn btn-sm btn-outline" onclick="reviveOrder(${orderNo})">復活</button>
                     <button class="btn btn-sm btn-outline" onclick="viewOrderDetail(${orderNo})">詳細</button>
+                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(${orderNo})"><i class="fas fa-file-alt"></i> 注文書</button>
                 `;
             }
             
@@ -410,7 +484,7 @@ function reviveOrder(orderNo) {
             const statusBadge = row.querySelector('.status-badge');
             if (statusBadge) {
                 statusBadge.className = 'status-badge active';
-                statusBadge.textContent = '有効';
+                statusBadge.textContent = '未請求';
             }
             
             // アクションボタンを更新
@@ -418,6 +492,10 @@ function reviveOrder(orderNo) {
             if (actionButtons) {
                 actionButtons.innerHTML = `
                     <button class="btn btn-sm" onclick="editOrder(${orderNo})">修正</button>
+                    <button class="btn btn-sm btn-warning" onclick="requestApproval(${orderNo})" title="承認依頼を再送信">
+                        <i class="fas fa-redo"></i> 承認依頼（再送）
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(${orderNo})"><i class="fas fa-file-alt"></i> 注文書</button>
                     <button class="btn btn-sm btn-outline" onclick="cancelOrder(${orderNo})">キャンセル</button>
                 `;
             }
@@ -568,6 +646,7 @@ function cancelOrderSilent(orderNo) {
             actionButtons.innerHTML = `
                 <button class="btn btn-sm btn-outline" onclick="reviveOrder(${orderNo})">復活</button>
                 <button class="btn btn-sm btn-outline" onclick="viewOrderDetail(${orderNo})">詳細</button>
+                <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(${orderNo})"><i class="fas fa-file-alt"></i> 注文書</button>
             `;
         }
         
@@ -595,6 +674,10 @@ function reviveOrderSilent(orderNo) {
         if (actionButtons) {
             actionButtons.innerHTML = `
                 <button class="btn btn-sm" onclick="editOrder(${orderNo})">修正</button>
+                <button class="btn btn-sm btn-warning" onclick="requestApproval(${orderNo})" title="承認依頼を再送信">
+                    <i class="fas fa-redo"></i> 承認依頼（再送）
+                </button>
+                <button class="btn btn-sm btn-secondary" onclick="generateOrderForm(${orderNo})"><i class="fas fa-file-alt"></i> 注文書</button>
                 <button class="btn btn-sm btn-outline" onclick="cancelOrder(${orderNo})">キャンセル</button>
             `;
         }
@@ -665,82 +748,304 @@ function showOrderEditModal(orderNo) {
 
 // 編集用注文データ取得
 function getOrderDataForEdit(orderNo) {
-    // 実際のアプリケーションではAPIからデータを取得
-    // ここではサンプルデータを返す
+    // テーブルからデータを取得
+    const row = document.querySelector(`tr[data-order-id="${orderNo}"]`);
+    if (!row) {
+        // 行が見つからない場合はデフォルト値を返す
+        return {
+            orderDate: new Date().toISOString().split('T')[0],
+            applicantType: 'individual',
+            applicantName: '',
+            contactPerson: '',
+            phone: '',
+            email: '',
+            fax: '',
+            postalCode: '',
+            prefecture: '',
+            city: '',
+            address1: '',
+            address2: '',
+            nameplate: '',
+            amount: 0,
+            paymentMethod: 'transfer',
+            sameAsApplicant: true,
+            invoiceName: '',
+            invoiceContactPerson: '',
+            invoicePostalCode: '',
+            invoicePrefecture: '',
+            invoiceCity: '',
+            invoiceAddress1: '',
+            invoiceAddress2: '',
+            invoicePhone: '',
+            invoiceFax: '',
+            memo: ''
+        };
+    }
+    
+    const cells = row.querySelectorAll('td');
+    
+    // テーブルから取得できる情報
+    const orderDateText = cells[2]?.textContent?.trim() || '';
+    const orderDate = orderDateText ? convertDateToInputFormat(orderDateText) : new Date().toISOString().split('T')[0];
+    const nameplate = cells[3]?.textContent?.trim() || '';
+    const applicantName = cells[4]?.textContent?.trim() || '';
+    const phone = cells[5]?.textContent?.trim() || '';
+    const amountText = cells[6]?.querySelector('.amount')?.textContent || '¥0';
+    const amount = parseAmount(amountText);
+    const feeText = cells[7]?.querySelector('.fee')?.textContent || '¥0';
+    const fee = parseAmount(feeText);
+    const paymentBadge = cells[9]?.querySelector('.payment-badge');
+    const paymentMethodText = paymentBadge?.textContent?.trim() || '振込';
+    const paymentMethod = paymentMethodText === '振込' ? 'transfer' : 'onsite';
+    
+    // モックデータ（実際のシステムではAPIから取得）
     const mockData = {
         12: {
-            orderDate: '2024-01-16',
-            nameplate: '株式会社サンプル',
-            requester: '山田花子',
-            contact: '090-1234-5678',
-            amount: 16500,
-            fee: 2200,
-            paymentMethod: '振込',
-            memo: '特記事項なし',
-            billing: {
-                name: '株式会社サンプル',
-                company: '株式会社サンプル',
-                contact: '山田太郎',
-                address: '東京都渋谷区1-2-3'
-            }
+            applicantType: 'company',
+            contactPerson: '山田太郎',
+            email: 'yamada@example.com',
+            fax: '03-1234-5678',
+            postalCode: '150-0001',
+            prefecture: '東京都',
+            city: '渋谷区',
+            address1: '1-2-3',
+            address2: 'サンプルビル101',
+            sameAsApplicant: false,
+            invoiceName: '株式会社サンプル',
+            invoiceContactPerson: '山田太郎',
+            invoicePostalCode: '150-0001',
+            invoicePrefecture: '東京都',
+            invoiceCity: '渋谷区',
+            invoiceAddress1: '1-2-3',
+            invoiceAddress2: 'サンプルビル101',
+            invoicePhone: '03-1234-5678',
+            invoiceFax: '03-1234-5678',
+            memo: '特記事項なし'
         },
         13: {
-            orderDate: '2024-01-16',
-            nameplate: '有限会社テスト商事',
-            requester: '佐藤次郎',
-            contact: '090-9876-5432',
-            amount: 22000,
-            fee: 0,
-            paymentMethod: '現地',
-            memo: '胡蝶蘭希望',
-            billing: null
+            applicantType: 'individual',
+            contactPerson: '',
+            email: 'sato@example.com',
+            fax: '',
+            postalCode: '100-0001',
+            prefecture: '東京都',
+            city: '千代田区',
+            address1: '1-1-1',
+            address2: '',
+            sameAsApplicant: true,
+            invoiceName: '佐藤次郎',
+            invoiceContactPerson: '',
+            invoicePostalCode: '100-0001',
+            invoicePrefecture: '東京都',
+            invoiceCity: '千代田区',
+            invoiceAddress1: '1-1-1',
+            invoiceAddress2: '',
+            invoicePhone: '090-9876-5432',
+            invoiceFax: '',
+            memo: '胡蝶蘭希望'
         }
     };
     
-    return mockData[orderNo] || {
-        orderDate: new Date().toISOString().split('T')[0],
-        nameplate: '',
-        requester: '',
-        contact: '',
-        amount: 0,
-        fee: 0,
-        paymentMethod: '振込',
-        memo: '',
-        billing: {
-            name: '',
-            company: '',
-            contact: '',
-            address: ''
-        }
+    const mock = mockData[orderNo] || {
+        applicantType: 'individual',
+        contactPerson: '',
+        email: '',
+        fax: '',
+        postalCode: '',
+        prefecture: '',
+        city: '',
+        address1: '',
+        address2: '',
+        sameAsApplicant: true,
+        invoiceName: applicantName,
+        invoiceContactPerson: '',
+        invoicePostalCode: '',
+        invoicePrefecture: '',
+        invoiceCity: '',
+        invoiceAddress1: '',
+        invoiceAddress2: '',
+        invoicePhone: phone,
+        invoiceFax: '',
+        memo: ''
     };
+    
+    return {
+        orderDate,
+        applicantType: mock.applicantType,
+        applicantName,
+        contactPerson: mock.contactPerson,
+        phone,
+        email: mock.email,
+        fax: mock.fax,
+        postalCode: mock.postalCode,
+        prefecture: mock.prefecture,
+        city: mock.city,
+        address1: mock.address1,
+        address2: mock.address2,
+        nameplate,
+        amount,
+        paymentMethod,
+        sameAsApplicant: mock.sameAsApplicant,
+        invoiceName: mock.invoiceName,
+        invoiceContactPerson: mock.invoiceContactPerson,
+        invoicePostalCode: mock.invoicePostalCode,
+        invoicePrefecture: mock.invoicePrefecture,
+        invoiceCity: mock.invoiceCity,
+        invoiceAddress1: mock.invoiceAddress1,
+        invoiceAddress2: mock.invoiceAddress2,
+        invoicePhone: mock.invoicePhone,
+        invoiceFax: mock.invoiceFax,
+        memo: mock.memo
+    };
+}
+
+// 日付フォーマット変換（YYYY/MM/DD → YYYY-MM-DD）
+function convertDateToInputFormat(dateString) {
+    if (!dateString) return '';
+    const parts = dateString.split('/');
+    if (parts.length === 3) {
+        return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+    }
+    return dateString;
 }
 
 // 編集フォームにデータを設定
 function populateOrderEditForm(data) {
-    document.getElementById('editOrderDate').value = data.orderDate;
-    document.getElementById('editNameplate').value = data.nameplate;
-    document.getElementById('editRequester').value = data.requester;
-    document.getElementById('editContact').value = data.contact;
-    document.getElementById('editAmount').value = data.amount;
-    document.getElementById('editFee').value = data.fee;
-    document.getElementById('editPaymentMethod').value = data.paymentMethod;
-    document.getElementById('editMemo').value = data.memo;
+    // 基本情報
+    const editOrderDate = document.getElementById('editOrderDate');
+    if (editOrderDate) editOrderDate.value = data.orderDate || '';
     
-    if (data.billing) {
-        document.getElementById('editBillingName').value = data.billing.name || '';
-        document.getElementById('editBillingCompany').value = data.billing.company || '';
-        document.getElementById('editBillingContact').value = data.billing.contact || '';
-        document.getElementById('editBillingAddress').value = data.billing.address || '';
+    // ご依頼者情報
+    const applicantTypeRadios = document.querySelectorAll('input[name="editApplicantType"]');
+    applicantTypeRadios.forEach(radio => {
+        if (radio.value === data.applicantType) {
+            radio.checked = true;
+        }
+    });
+    
+    // 依頼者区分変更イベントを発火
+    if (data.applicantType === 'company') {
+        const companyRadio = document.querySelector('input[name="editApplicantType"][value="company"]');
+        if (companyRadio) {
+            companyRadio.dispatchEvent(new Event('change'));
+        }
     }
+    
+    const editApplicantName = document.getElementById('editApplicantName');
+    if (editApplicantName) editApplicantName.value = data.applicantName || '';
+    
+    const editContactPerson = document.getElementById('editContactPerson');
+    if (editContactPerson) {
+        editContactPerson.value = data.contactPerson || '';
+        const contactPersonRow = document.getElementById('editContactPersonRow');
+        if (contactPersonRow) {
+            contactPersonRow.style.display = data.applicantType === 'company' ? 'block' : 'none';
+        }
+    }
+    
+    const editPhone = document.getElementById('editPhone');
+    if (editPhone) editPhone.value = data.phone || '';
+    
+    const editEmail = document.getElementById('editEmail');
+    if (editEmail) editEmail.value = data.email || '';
+    
+    const editFax = document.getElementById('editFax');
+    if (editFax) editFax.value = data.fax || '';
+    
+    // ご依頼者の住所
+    const editPostalCode = document.getElementById('editPostalCode');
+    if (editPostalCode) editPostalCode.value = data.postalCode || '';
+    
+    const editPrefecture = document.getElementById('editPrefecture');
+    if (editPrefecture) editPrefecture.value = data.prefecture || '';
+    
+    const editCity = document.getElementById('editCity');
+    if (editCity) editCity.value = data.city || '';
+    
+    const editAddress1 = document.getElementById('editAddress1');
+    if (editAddress1) editAddress1.value = data.address1 || '';
+    
+    const editAddress2 = document.getElementById('editAddress2');
+    if (editAddress2) editAddress2.value = data.address2 || '';
+    
+    // 芳名板・金額
+    const editNameplate = document.getElementById('editNameplate');
+    if (editNameplate) editNameplate.value = data.nameplate || '';
+    
+    const editAmount = document.getElementById('editAmount');
+    if (editAmount) editAmount.value = data.amount || 0;
+    
+    const editPaymentMethod = document.getElementById('editPaymentMethod');
+    if (editPaymentMethod) editPaymentMethod.value = data.paymentMethod || 'transfer';
+    
+    // 請求書ご送付先
+    const editSameAsApplicant = document.getElementById('editSameAsApplicant');
+    if (editSameAsApplicant) {
+        editSameAsApplicant.checked = data.sameAsApplicant || false;
+        editSameAsApplicant.dispatchEvent(new Event('change'));
+    }
+    
+    const editInvoiceName = document.getElementById('editInvoiceName');
+    if (editInvoiceName) editInvoiceName.value = data.invoiceName || '';
+    
+    const editInvoiceContactPerson = document.getElementById('editInvoiceContactPerson');
+    if (editInvoiceContactPerson) {
+        editInvoiceContactPerson.value = data.invoiceContactPerson || '';
+        const invoiceContactPersonRow = document.getElementById('editInvoiceContactPersonRow');
+        if (invoiceContactPersonRow) {
+            invoiceContactPersonRow.style.display = data.applicantType === 'company' ? 'block' : 'none';
+        }
+    }
+    
+    const editInvoicePostalCode = document.getElementById('editInvoicePostalCode');
+    if (editInvoicePostalCode) editInvoicePostalCode.value = data.invoicePostalCode || '';
+    
+    const editInvoicePrefecture = document.getElementById('editInvoicePrefecture');
+    if (editInvoicePrefecture) editInvoicePrefecture.value = data.invoicePrefecture || '';
+    
+    const editInvoiceCity = document.getElementById('editInvoiceCity');
+    if (editInvoiceCity) editInvoiceCity.value = data.invoiceCity || '';
+    
+    const editInvoiceAddress1 = document.getElementById('editInvoiceAddress1');
+    if (editInvoiceAddress1) editInvoiceAddress1.value = data.invoiceAddress1 || '';
+    
+    const editInvoiceAddress2 = document.getElementById('editInvoiceAddress2');
+    if (editInvoiceAddress2) editInvoiceAddress2.value = data.invoiceAddress2 || '';
+    
+    const editInvoicePhone = document.getElementById('editInvoicePhone');
+    if (editInvoicePhone) editInvoicePhone.value = data.invoicePhone || '';
+    
+    const editInvoiceFax = document.getElementById('editInvoiceFax');
+    if (editInvoiceFax) editInvoiceFax.value = data.invoiceFax || '';
+    
+    // 備考
+    const editMemo = document.getElementById('editMemo');
+    if (editMemo) editMemo.value = data.memo || '';
 }
 
 // 請求先セクションの表示/非表示切り替え
 function toggleBillingSection(paymentMethod) {
-    const billingSection = document.getElementById('billingSection');
-    if (paymentMethod === '振込') {
+    // 請求書ご送付先セクションを探す
+    const modal = document.getElementById('orderEditModal');
+    if (!modal) return;
+    
+    const sections = modal.querySelectorAll('.form-section');
+    let billingSection = null;
+    
+    sections.forEach(section => {
+        const h3 = section.querySelector('h3');
+        if (h3 && h3.textContent.includes('請求書ご送付先')) {
+            billingSection = section;
+        }
+    });
+    
+    if (billingSection) {
+        // 支払方法が「transfer」（振込）の場合は表示、「onsite」（現地）の場合は非表示
+        if (paymentMethod === 'transfer' || paymentMethod === '振込') {
         billingSection.style.display = 'block';
     } else {
         billingSection.style.display = 'none';
+        }
     }
 }
 
@@ -749,28 +1054,34 @@ function saveOrderEdit() {
     const orderNo = document.getElementById('editOrderNumber').textContent;
     
     // フォームデータを取得
-    const formData = {
-        orderDate: document.getElementById('editOrderDate').value,
-        nameplate: document.getElementById('editNameplate').value,
-        requester: document.getElementById('editRequester').value,
-        contact: document.getElementById('editContact').value,
-        amount: parseInt(document.getElementById('editAmount').value),
-        fee: parseInt(document.getElementById('editFee').value),
-        paymentMethod: document.getElementById('editPaymentMethod').value,
-        memo: document.getElementById('editMemo').value,
-        billing: {
-            name: document.getElementById('editBillingName').value,
-            company: document.getElementById('editBillingCompany').value,
-            contact: document.getElementById('editBillingContact').value,
-            address: document.getElementById('editBillingAddress').value
-        }
-    };
+    const orderDate = document.getElementById('editOrderDate').value;
+    const nameplate = document.getElementById('editNameplate').value;
+    const applicantName = document.getElementById('editApplicantName').value;
+    const phone = document.getElementById('editPhone').value;
+    const amount = parseInt(document.getElementById('editAmount').value) || 0;
+    const paymentMethod = document.getElementById('editPaymentMethod').value;
+    const paymentMethodText = paymentMethod === 'transfer' ? '振込' : '現地';
+    
+    // 手数料は固定（¥2,200）
+    const fee = 2200;
     
     // バリデーション
-    if (!formData.nameplate || !formData.requester || formData.amount <= 0) {
+    if (!nameplate || !applicantName || amount <= 0) {
         alert('必須項目を入力してください。');
         return;
     }
+    
+    // テーブル更新用のデータ
+    const formData = {
+        orderDate: orderDate,
+        nameplate: nameplate,
+        requester: applicantName,
+        contact: phone,
+        amount: amount,
+        fee: fee,
+        paymentMethod: paymentMethodText,
+        memo: document.getElementById('editMemo')?.value || ''
+    };
     
     // 実際のアプリケーションではAPIにデータを送信
     console.log('注文編集データ:', formData);
@@ -792,21 +1103,33 @@ function updateOrderRow(orderNo, data) {
     
     // 各セルの値を更新
     const cells = row.querySelectorAll('td');
-    if (cells.length >= 7) {
-        // 受注日
+    if (cells.length >= 10) {
+        // 受注日 (cells[2])
         cells[2].textContent = formatDate(data.orderDate);
-        // 芳名板
+        // 芳名板 (cells[3])
         cells[3].textContent = data.nameplate;
-        // 依頼者
+        // 依頼者 (cells[4])
         cells[4].textContent = data.requester;
-        // 連絡先
+        // 連絡先 (cells[5])
         cells[5].textContent = data.contact;
-        // 金額
-        cells[6].querySelector('.amount').textContent = `¥${data.amount.toLocaleString()}`;
-        // 手数料
-        cells[7].querySelector('.fee').textContent = `¥${data.fee.toLocaleString()}`;
-        // 支払方法
-        const paymentBadge = cells[8].querySelector('.payment-badge');
+        // 金額 (cells[6])
+        const amountElement = cells[6].querySelector('.amount');
+        if (amountElement) {
+            amountElement.textContent = `¥${data.amount.toLocaleString()}`;
+        }
+        // 手数料 (cells[7])
+        const feeElement = cells[7].querySelector('.fee');
+        if (feeElement) {
+            feeElement.textContent = `¥${data.fee.toLocaleString()}`;
+        }
+        // 総額（手数料込み）(cells[8])
+        const totalElement = cells[8].querySelector('.total');
+        if (totalElement) {
+            const total = data.amount + data.fee;
+            totalElement.textContent = `¥${total.toLocaleString()}`;
+        }
+        // 支払方法 (cells[9])
+        const paymentBadge = cells[9].querySelector('.payment-badge');
         if (paymentBadge) {
             paymentBadge.className = `payment-badge ${data.paymentMethod === '振込' ? 'transfer' : 'onsite'}`;
             paymentBadge.textContent = data.paymentMethod;
@@ -860,14 +1183,140 @@ function refreshOrderList() {
     alert('注文一覧を更新しました。');
 }
 
+// ご葬家のステータスを取得
+function getFuneralStatus(group) {
+    const funeralId = group.getAttribute('data-funeral-id');
+    const statusBadge = document.getElementById(`funeral-status-${funeralId}`);
+    
+    if (!statusBadge) return null;
+    
+    // ステータスバッジのクラス名からステータスを取得
+    // クラス名は "funeral-status-badge status-badge {status}" の形式
+    const classList = statusBadge.className.split(' ');
+    
+    // status-badge の後に続くステータスクラスを探す
+    if (classList.includes('cancelled')) {
+        return 'cancelled';
+    } else if (classList.includes('active')) {
+        return 'active';
+    } else if (classList.includes('invoiced')) {
+        return 'invoiced';
+    } else if (classList.includes('paid')) {
+        return 'paid';
+    }
+    
+    return null;
+}
+
 function filterOrders() {
     console.log('注文をフィルタリング中...');
-    // フィルタ機能の実装
+    
+    // フィルター値を取得
+    const statusFilter = document.getElementById('statusFilter')?.value || '';
+    const paymentFilter = document.getElementById('paymentFilter')?.value || '';
+    const searchInput = document.getElementById('searchInput')?.value.toLowerCase() || '';
+    
+    // すべてのご葬家グループを取得
+    const funeralGroups = document.querySelectorAll('.funeral-group');
+    
+    funeralGroups.forEach(group => {
+        let groupShouldShow = true;
+        
+        // ステータスフィルター（ご葬家のステータスで判定）
+        if (statusFilter) {
+            const funeralStatus = getFuneralStatus(group);
+            if (funeralStatus !== statusFilter) {
+                groupShouldShow = false;
+            }
+        }
+        
+        // グループが表示対象でない場合は非表示にしてスキップ
+        if (!groupShouldShow) {
+            group.style.display = 'none';
+            return;
+        }
+        
+        // グループ内のすべての注文行を取得
+        const orders = group.querySelectorAll('tbody tr[data-order-id]');
+        let visibleOrderCount = 0;
+        
+        orders.forEach(order => {
+            let shouldShow = true;
+            
+            // 支払方法フィルター
+            if (paymentFilter) {
+                const paymentBadge = order.querySelector('.payment-badge');
+                if (paymentBadge) {
+                    const paymentType = paymentBadge.classList.contains('transfer') ? 'transfer' : 
+                                      paymentBadge.classList.contains('onsite') ? 'onsite' : '';
+                    if (paymentType !== paymentFilter) {
+                        shouldShow = false;
+                    }
+                }
+            }
+            
+            // 検索フィルター
+            if (shouldShow && searchInput) {
+                const nameplate = order.cells[3]?.textContent.toLowerCase() || '';
+                const clientName = order.cells[4]?.textContent.toLowerCase() || '';
+                
+                if (!nameplate.includes(searchInput) && !clientName.includes(searchInput)) {
+                    shouldShow = false;
+                }
+            }
+            
+            // 行の表示/非表示を制御
+            if (shouldShow) {
+                order.style.display = '';
+                visibleOrderCount++;
+            } else {
+                order.style.display = 'none';
+            }
+        });
+        
+        // グループの表示/非表示を制御（支払方法や検索で一致する注文がない場合）
+        if (visibleOrderCount === 0) {
+            group.style.display = 'none';
+        } else {
+            group.style.display = '';
+        }
+    });
+    
+    console.log('フィルタリング完了');
 }
 
 function searchOrders() {
-    console.log('注文を検索中...');
-    // 検索機能の実装
+    // 検索もfilterOrders関数で処理
+    filterOrders();
+}
+
+// 料金が16500円以外の注文を色付け
+function highlightNonStandardAmounts() {
+    const STANDARD_TOTAL = 16500; // 標準料金（総額）
+    
+    // 一覧テーブルの料金を色付け
+    const orderRows = document.querySelectorAll('tbody tr[data-order-id]');
+    
+    orderRows.forEach(row => {
+        const amountCell = row.querySelector('td.amount');
+        const feeCell = row.querySelector('td.fee');
+        const totalCell = row.querySelector('td.total');
+        
+        if (amountCell && feeCell && totalCell) {
+            // 総額を取得
+            const totalText = totalCell.textContent.replace(/[¥,]/g, '');
+            const totalAmount = parseInt(totalText);
+            
+            // 16500円でない場合、色付けクラスを追加
+            if (totalAmount !== STANDARD_TOTAL && !isNaN(totalAmount)) {
+                amountCell.classList.add('non-standard');
+                totalCell.classList.add('non-standard');
+            } else {
+                amountCell.classList.remove('non-standard');
+                totalCell.classList.remove('non-standard');
+            }
+        }
+    });
 }
 
 
@@ -910,40 +1359,98 @@ function generateOrderForm(orderNo) {
     showOrderFormModal(orderNo, orderData);
 }
 
-// 注文データ取得（サンプル）
+// 注文データ取得（テーブルから取得）
 function getOrderData(orderNo) {
-    const mockData = {
-        12: {
-            orderDate: '2024/01/16',
-            funeralFamily: '輝家',
-            deceased: '輝 太郎',
-            funeralDate: '2024/01/20',
-            venue: 'セレモニーホール青山',
-            nameplate: '株式会社サンプル',
-            amount: 16500,
-            fee: 2200,
-            paymentMethod: '振込',
-            client: {
-                name: '山田花子',
-                postalCode: '123-4567',
-                address: '東京都渋谷区1-2-3',
-                phone: '090-1234-5678',
-                fax: ''
-            },
-            billing: {
-                name: '株式会社サンプル',
-                company: '株式会社サンプル',
-                contact: '山田太郎',
-                postalCode: '123-4567',
-                address: '東京都渋谷区1-2-3',
-                phone: '03-1234-5678',
-                fax: '03-1234-5679'
-            },
-            memo: '特記事項なし'
-        }
-    };
+    // テーブルからデータを取得
+    const row = document.querySelector(`tr[data-order-id="${orderNo}"]`);
+    if (!row) {
+        // 行が見つからない場合はデフォルト値を返す
+        return getDefaultOrderData();
+    }
     
-    return mockData[orderNo] || mockData[12]; // デフォルトデータ
+    const cells = row.querySelectorAll('td');
+    
+    // テーブルから取得できる情報
+    const orderDateText = cells[2]?.textContent?.trim() || '';
+    const orderDate = orderDateText ? convertDateToInputFormat(orderDateText) : new Date().toISOString().split('T')[0];
+    const nameplate = cells[3]?.textContent?.trim() || '';
+    const applicantName = cells[4]?.textContent?.trim() || '';
+    const phone = cells[5]?.textContent?.trim() || '';
+    const amountText = cells[6]?.querySelector('.amount')?.textContent || '¥0';
+    const amount = parseAmount(amountText);
+    const feeText = cells[7]?.querySelector('.fee')?.textContent || '¥0';
+    const fee = parseAmount(feeText);
+    const paymentBadge = cells[9]?.querySelector('.payment-badge');
+    const paymentMethodText = paymentBadge?.textContent?.trim() || '振込';
+    const paymentMethod = paymentMethodText === '振込' ? '振込' : '現地';
+    
+    // ご葬家情報を取得
+    const group = row.closest('.funeral-group');
+    const funeralId = group ? group.getAttribute('data-funeral-id') : null;
+    const funeralInfo = funeralId ? getFuneralInfoById(funeralId) : null;
+    
+    return {
+        orderDate: orderDate,
+        funeralFamily: funeralInfo ? funeralInfo.family : '不明',
+        deceased: funeralInfo ? funeralInfo.deceased : '不明',
+        funeralDate: funeralInfo ? funeralInfo.funeralDate : new Date().toISOString().split('T')[0],
+        venue: funeralInfo ? funeralInfo.venue : '不明',
+        nameplate: nameplate,
+        amount: amount,
+        fee: fee,
+        paymentMethod: paymentMethod,
+        client: {
+            name: applicantName,
+            postalCode: '123-4567', // 実際のシステムでは別途取得
+            address: '東京都渋谷区1-2-3', // 実際のシステムでは別途取得
+            phone: phone,
+            fax: '',
+            type: 'individual'
+        },
+        billing: {
+            name: applicantName,
+            company: '',
+            contact: '',
+            postalCode: '123-4567',
+            address: '東京都渋谷区1-2-3',
+            phone: phone,
+            fax: ''
+        },
+        memo: '特記事項なし'
+    };
+}
+
+// デフォルト注文データ
+function getDefaultOrderData() {
+    return {
+        orderDate: new Date().toISOString().split('T')[0],
+        funeralFamily: '不明',
+        deceased: '不明',
+        funeralDate: new Date().toISOString().split('T')[0],
+        venue: '不明',
+        nameplate: '',
+        amount: 16500,
+        fee: 2200,
+        paymentMethod: '振込',
+        client: {
+            name: '',
+            postalCode: '123-4567',
+            address: '東京都渋谷区1-2-3',
+            phone: '',
+            fax: '',
+            type: 'individual'
+        },
+        billing: {
+            name: '',
+            company: '',
+            contact: '',
+            postalCode: '123-4567',
+            address: '東京都渋谷区1-2-3',
+            phone: '',
+            fax: ''
+        },
+        memo: '特記事項なし'
+    };
 }
 
 // 注文書モーダル表示
@@ -967,6 +1474,12 @@ function showOrderFormModal(orderNo, orderData) {
 function generateOrderFormHTML(orderNo, data) {
     const currentDate = new Date();
     const orderDate = new Date(data.orderDate);
+    
+    // 総額を計算（金額+手数料）
+    const totalAmount = (data.amount || 0) + (data.fee || 0);
+    const STANDARD_TOTAL = 16500;
+    const isNonStandard = totalAmount !== STANDARD_TOTAL;
+    const nonStandardClass = isNonStandard ? 'non-standard' : '';
     
     return `
         <div class="japanese-order-form">
@@ -1027,8 +1540,8 @@ function generateOrderFormHTML(orderNo, data) {
                 </div>
                 <div class="form-row amount-row">
                     <span class="label">金額</span>
-                    <div class="amount-details">
-                        <div class="amount-main">1件 ${data.amount.toLocaleString()}円</div>
+                    <div class="amount-details ${nonStandardClass}">
+                        <div class="amount-main ${nonStandardClass}">1件 ${data.amount.toLocaleString()}円</div>
                         <div class="amount-breakdown">
                             内訳:本体価格${(data.amount / 1.1).toFixed(0)}円、消費税(10%) ${(data.amount - data.amount / 1.1).toFixed(0)}円
                         </div>
@@ -3654,63 +4167,65 @@ function generateReceiptHTML(data) {
     const formattedDate = `${receiptDate.getFullYear()}年${receiptDate.getMonth() + 1}月${receiptDate.getDate()}日 ${dayOfWeek}`;
     
     return `
-        <div class="receipt-container">
-            
-            <!-- ヘッダー部分 -->
-            <div class="receipt-header">
-                <div class="receipt-title">領収書</div>
-                <div class="receipt-number-section">
-                    <span class="recipient-label">輝 太郎様</span>
-                    <span class="receipt-number">No ${data.documentNumber}</span>
+        <div class="document-container receipt-document">
+            <div class="receipt-container">
+                
+                <!-- ヘッダー部分 -->
+                <div class="receipt-header">
+                    <div class="receipt-title">領収書</div>
+                    <div class="receipt-number-section">
+                        <span class="recipient-label">輝 太郎 様</span>
+                        <span class="receipt-number">No ${data.documentNumber}</span>
+                    </div>
                 </div>
-            </div>
 
-            <!-- 消費税バナー（上部中央） -->
-            <div class="tax-banner-container">
-                <div class="tax-banner-text">(消費税10%込)</div>
-            </div>
-            
-            <!-- メインコンテンツ -->
-            <div class="receipt-content">
-                <!-- 左側：受領内容 -->
-                <div class="receipt-left">
-                    <div class="amount-section">
-                        <span class="amount-label">但</span>
-                        <span class="amount-value">¥${totalAmount.toLocaleString()}-</span>
-                        <span class="amount-description">${data.funeralInfo.deceased}様葬儀、生花寄贈代として</span>
-                    </div>
-                    
-                    <div class="date-section">
-                        ${formattedDate}
-                    </div>
-                    
-                    <div class="receipt-confirmation">
-                        上記正に領収いたしました
-                    </div>
-                    
-                    <div class="breakdown-section">
-                        <div class="breakdown-table">
-                            <div class="breakdown-row">
-                                <div class="breakdown-cell">消費税10%対象本体価格</div>
-                                <div class="breakdown-cell amount">¥${subtotal.toLocaleString()}-</div>
-                                <div class="breakdown-cell">消費税</div>
-                                <div class="breakdown-cell amount">¥${taxAmount.toLocaleString()}-</div>
+                <!-- 消費税バナー（上部中央） -->
+                <div class="tax-banner-container">
+                    <div class="tax-banner-text">(消費税10%込)</div>
+                </div>
+                
+                <!-- メインコンテンツ -->
+                <div class="receipt-content">
+                    <!-- 左側：受領内容 -->
+                    <div class="receipt-left">
+                        <div class="amount-section">
+                            <span class="amount-label">但</span>
+                            <span class="amount-value">¥${totalAmount.toLocaleString()}-</span>
+                            <span class="amount-description">${data.funeralInfo.deceased}様葬儀、生花寄贈代として</span>
+                        </div>
+                        
+                        <div class="date-section">
+                            ${formattedDate}
+                        </div>
+                        
+                        <div class="receipt-confirmation">
+                            上記正に領収いたしました
+                        </div>
+                        
+                        <div class="breakdown-section">
+                            <div class="breakdown-table">
+                                <div class="breakdown-row">
+                                    <div class="breakdown-cell">消費税10%対象本体価格</div>
+                                    <div class="breakdown-cell amount">¥${subtotal.toLocaleString()}-</div>
+                                    <div class="breakdown-cell">消費税</div>
+                                    <div class="breakdown-cell amount">¥${taxAmount.toLocaleString()}-</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 右側：会社情報 -->
-                <div class="receipt-right">
-                    <div class="company-info">
-                        <div class="company-name">${data.companyInfo.name}${data.companyInfo.nameKana}</div>
-                        <div class="company-address">${data.companyInfo.address}</div>
-                        <div class="company-representative">${data.companyInfo.representative}</div>
-                        <div class="company-phone">${data.companyInfo.phone}</div>
-                        <div class="company-registration">${data.companyInfo.registrationNumber}</div>
-                    </div>
-                    <div class="company-stamp">
-                        <img src="image/印.png" alt="株式会社 輝 之印" class="stamp-image">
+                    
+                    <!-- 右側：会社情報 -->
+                    <div class="receipt-right">
+                        <div class="company-info">
+                            <div class="company-name">${data.companyInfo.name}${data.companyInfo.nameKana}</div>
+                            <div class="company-address">${data.companyInfo.address}</div>
+                            <div class="company-representative">${data.companyInfo.representative}</div>
+                            <div class="company-phone">${data.companyInfo.phone}</div>
+                            <div class="company-registration">${data.companyInfo.registrationNumber}</div>
+                        </div>
+                        <div class="company-stamp">
+                            <img src="image/印.png" alt="株式会社 輝 之印" class="stamp-image">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4055,7 +4570,7 @@ function printIndividualDocument(type, orderNo) {
     printWindow.document.write(`
         <html>
             <head>
-                <title>印刷 - ${type} - 注文No.${orderNo}</title>
+                <title></title>
                 <style>
                     ${getDocumentPrintCSS(type)}
                     .document-separator { display: none; }
@@ -4087,7 +4602,7 @@ function printSelectedDocument(type) {
     }
     
     // 個別帳票をまとめて印刷用HTMLを生成
-    const individualDocuments = Array.from(checkboxes).map(checkbox => {
+    const individualDocumentsArray = Array.from(checkboxes).map(checkbox => {
         const orderNo = checkbox.dataset.orderIndex;
         const documentElement = document.querySelector(`[data-order-no]`);
         // 実際の注文番号で検索
@@ -4102,22 +4617,35 @@ function printSelectedDocument(type) {
             return documentContainer ? documentContainer.outerHTML : '';
         }
         return '';
-    }).filter(html => html).join('<div style="page-break-after: always;"></div>');
+    }).filter(html => html);
+    
+    const pageBreakDivider = type === 'receipt' ? '' : '<div style="page-break-after: always;"></div>';
+    const individualDocuments = individualDocumentsArray.join(pageBreakDivider);
     
     const printWindow = window.open('', '_blank');
+    const additionalPrintRules = type === 'receipt'
+        ? `
+                .document-separator { display: none; }
+                .no-selection-message { display: none; }
+                .multiple-documents-container { display: none; }
+        `
+        : `
+                .document-separator { display: none; }
+                .no-selection-message { display: none; }
+                .multiple-documents-container { display: none; }
+                @media print {
+                    .document-container { page-break-after: always; }
+                    .document-container:last-child { page-break-after: avoid; }
+                }
+        `;
+    
     printWindow.document.write(`
         <html>
             <head>
-                <title>印刷 - ${type} - ${selectedCount}件の個別帳票</title>
+                <title></title>
                 <style>
                     ${getDocumentPrintCSS(type)}
-                    .document-separator { display: none; }
-                    .no-selection-message { display: none; }
-                    .multiple-documents-container { display: none; }
-                    @media print {
-                        .document-container { page-break-after: always; }
-                        .document-container:last-child { page-break-after: avoid; }
-                    }
+                    ${additionalPrintRules}
                 </style>
             </head>
             <body onload="window.print(); window.close();">
@@ -4175,7 +4703,7 @@ function printDocument(type) {
         <!DOCTYPE html>
         <html lang="ja">
         <head>
-            <title>書類印刷</title>
+            <title></title>
             <meta charset="UTF-8">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
             <style>
@@ -4206,6 +4734,225 @@ function emailDocument(type) {
 
 // 書類印刷用CSS
 function getDocumentPrintCSS(type) {
+    if (type === 'receipt') {
+        return `
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', 'Yu Mincho', 'MS PMincho', 'Times New Roman', serif;
+            background: #fff;
+            color: #000;
+        }
+        
+        .receipt-document {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: none;
+            border-bottom: 0.35mm dashed #999;
+            height: calc(297mm / 4);
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            page-break-inside: avoid;
+        }
+        
+        .receipt-document:nth-child(4n + 1):not(:first-child) {
+            break-before: page;
+            page-break-before: always;
+        }
+        
+        .receipt-container {
+            width: 210mm;
+            max-width: 210mm;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .tax-banner-container {
+            position: relative;
+            margin: 0;
+            width: 210mm;
+            height: 48px;
+            background: rgb(187,211,150);
+            text-align: center;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        .tax-banner-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .receipt-header {
+            padding: 3mm;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 6mm;
+            margin-bottom: 4mm;
+        }
+        
+        .receipt-title {
+            font-size: 32px;
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        
+        .recipient-label,
+        .receipt-number {
+            font-size: 11px;
+        }
+        
+        .receipt-number-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-end;
+            margin-left: 20px;
+            font-size: 10px;
+            gap: 2mm;
+        }
+        
+        .receipt-content {
+            padding: 3mm;
+            font-size: 10px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 58mm);
+            column-gap: 6mm;
+            align-items: flex-start;
+        }
+        
+        .receipt-left {
+            min-width: 0;
+        }
+        
+        .receipt-right {
+            position: relative;
+            max-width: 58mm;
+            width: 100%;
+        }
+        
+        .amount-section {
+            margin-bottom: 3mm;
+        }
+        
+        .amount-label {
+            font-size: 11px;
+            margin-right: 4mm;
+        }
+        
+        .amount-value {
+            font-size: 18px;
+            margin-right: 8mm;
+        }
+        
+        .amount-description,
+        .date-section,
+        .receipt-confirmation {
+            font-size: 11px;
+            margin-bottom: 3mm;
+        }
+        
+        .breakdown-table {
+            width: 100%;
+            border: 0.3mm solid #333;
+            border-radius: 1mm;
+            overflow: hidden;
+        }
+        
+        .breakdown-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            border-bottom: 0.3mm solid #333;
+        }
+        
+        .breakdown-row:last-child {
+            border-bottom: none;
+        }
+        
+        .breakdown-cell {
+            font-size: 10px;
+            padding: 2.5mm 3mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 0.3mm solid #333;
+        }
+        
+        .breakdown-cell:first-child {
+            justify-content: flex-start;
+            text-align: left;
+            padding: 2.5mm 5mm;
+        }
+        
+        .breakdown-cell:last-child {
+            border-right: none;
+        }
+        
+        .company-name {
+            font-size: 12px;
+        }
+        
+        .company-address,
+        .company-representative,
+        .company-phone,
+        .company-registration {
+            font-size: 10px;
+            word-break: break-word;
+        }
+        
+        .company-stamp {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 22mm;
+            height: 22mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .stamp-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .stamp-image {
+            max-width: 24mm;
+        }
+        
+        .document-actions,
+        .document-separator,
+        .documents-summary,
+        .multiple-documents-container,
+        .no-selection-message {
+            display: none !important;
+        }
+        `;
+    }
+
     return `
         @page {
             size: A4;
@@ -4762,36 +5509,6 @@ function createFuneralGroupHTML(funeralId) {
                     </div>
                 </div>
                 <div class="funeral-summary">
-                    <div class="summary-item flower-calc">
-                        <div class="flower-calc-header">
-                            <span class="summary-label">
-                                <i class="fas fa-calculator"></i> 花代処理: 
-                                <span class="mode-badge-small ${modeBadgeClass}" id="mode-badge-${funeralId}">${modeBadgeText}</span>
-                            </span>
-                            <button class="btn-edit-inline" onclick="editFlowerSettings(${funeralId}, event)" title="設定変更">
-                                <i class="fas fa-edit"></i> 設定
-                            </button>
-                        </div>
-                        <div class="flower-calc-details">
-                            <div class="calc-detail-item" id="deduct-item-${funeralId}" style="display: none;">
-                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                <div class="calc-detail-content">
-                                    <span class="calc-detail-label">葬儀代金から減額（税込）</span>
-                                    <span class="calc-detail-value deduct" id="inline-deduct-${funeralId}">¥0</span>
-                                    <span class="calc-detail-tax" id="inline-deduct-tax-${funeralId}" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
-                                </div>
-                            </div>
-                            <div class="calc-detail-divider" id="divider-${funeralId}" style="display: none;"></div>
-                            <div class="calc-detail-item" id="addon-item-${funeralId}" style="display: none;">
-                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                <div class="calc-detail-content">
-                                    <span class="calc-detail-label">つけ花（${mode === 'builtin' ? '超過分・税込' : '全額・税込'}）</span>
-                                    <span class="calc-detail-value addon" id="inline-addon-${funeralId}">¥0</span>
-                                    <span class="calc-detail-tax" id="inline-addon-tax-${funeralId}" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="summary-item">
                         <span class="summary-label">注文数:</span>
                         <span class="summary-value">0件</span>
@@ -4827,6 +5544,40 @@ function createFuneralGroupHTML(funeralId) {
                             <button class="dropdown-item" onclick="generateFloristOrder(${funeralId})">
                                 <i class="fas fa-seedling"></i> 花屋送信用一覧
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 花代処理セクション -->
+            <div class="funeral-flower-calc">
+                <div class="summary-item flower-calc">
+                    <div class="flower-calc-header">
+                        <span class="summary-label">
+                            <i class="fas fa-calculator"></i> 花代処理: 
+                            <span class="mode-badge-small ${modeBadgeClass}" id="mode-badge-${funeralId}">${modeBadgeText}</span>
+                        </span>
+                        <button class="btn-edit-inline" onclick="editFlowerSettings(${funeralId}, event)" title="設定変更">
+                            <i class="fas fa-edit"></i> 設定
+                        </button>
+                    </div>
+                    <div class="flower-calc-details">
+                        <div class="calc-detail-item" id="deduct-item-${funeralId}" style="display: none;">
+                            <i class="fas fa-arrow-down calc-icon deduct"></i>
+                            <div class="calc-detail-content">
+                                <span class="calc-detail-label">葬儀代金から減額（税込）</span>
+                                <span class="calc-detail-value deduct" id="inline-deduct-${funeralId}">¥0</span>
+                                <span class="calc-detail-tax" id="inline-deduct-tax-${funeralId}" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
+                            </div>
+                        </div>
+                        <div class="calc-detail-divider" id="divider-${funeralId}" style="display: none;"></div>
+                        <div class="calc-detail-item" id="addon-item-${funeralId}" style="display: none;">
+                            <i class="fas fa-plus-circle calc-icon addon"></i>
+                            <div class="calc-detail-content">
+                                <span class="calc-detail-label">つけ花（${mode === 'builtin' ? '超過分・税込' : '全額・税込'}）</span>
+                                <span class="calc-detail-value addon" id="inline-addon-${funeralId}">¥0</span>
+                                <span class="calc-detail-tax" id="inline-addon-tax-${funeralId}" style="font-size: 0.85em; color: #666; margin-left: 8px;">(内税¥0)</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -6284,4 +7035,292 @@ function downloadOrderTemplatePDF() {
         console.error('PDFダウンロードエラー:', error);
         alert('PDFファイルのダウンロードに失敗しました。');
     }
+}
+
+// 請求書発送モーダルを表示
+let currentInvoiceOrderNo = null;
+
+function showInvoiceSendModal(orderNo) {
+    currentInvoiceOrderNo = orderNo;
+    const modal = document.getElementById('invoiceSendModal');
+    const orderNumberSpan = document.getElementById('invoiceSendOrderNumber');
+    const dateInput = document.getElementById('invoiceSendDate');
+    
+    if (!modal || !orderNumberSpan || !dateInput) {
+        console.error('請求書発送モーダルの要素が見つかりません');
+        return;
+    }
+    
+    // 注文番号を設定
+    orderNumberSpan.textContent = orderNo;
+    
+    // 日付入力を今日の日付に設定（デフォルト）
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    dateInput.value = todayStr;
+    
+    // 既存の郵送日があれば表示
+    const existingDate = getInvoiceSentDate(orderNo);
+    if (existingDate) {
+        dateInput.value = existingDate;
+    }
+    
+    // モーダルを開く
+    openModal(modal);
+}
+
+// 請求書発送日を保存
+function saveInvoiceSendDate() {
+    if (!currentInvoiceOrderNo) {
+        console.error('注文番号が設定されていません');
+        return;
+    }
+    
+    const dateInput = document.getElementById('invoiceSendDate');
+    if (!dateInput || !dateInput.value) {
+        alert('郵送日を選択してください。');
+        return;
+    }
+    
+    const sendDate = dateInput.value;
+    
+    // 郵送日を保存
+    setInvoiceSentDate(currentInvoiceOrderNo, sendDate);
+    
+    // ステータスを「入金確認中」に更新
+    updateOrderStatusToInvoiced(currentInvoiceOrderNo, sendDate);
+    
+    // モーダルを閉じる
+    closeModal('invoiceSendModal');
+    
+    // サマリーを更新
+    updateOrderSummary();
+    
+    alert(`注文No.${currentInvoiceOrderNo}の請求書発送日を設定しました。\nステータスを「入金確認中」に変更しました。`);
+    
+    currentInvoiceOrderNo = null;
+}
+
+// 注文ステータスを「入金確認中」に更新
+function updateOrderStatusToInvoiced(orderNo, sendDate) {
+    const row = document.querySelector(`tr[data-order-id="${orderNo}"]`);
+    if (!row) {
+        console.error(`注文No.${orderNo}の行が見つかりません`);
+        return;
+    }
+    
+    // ステータスを更新
+    row.setAttribute('data-status', 'invoiced');
+    
+    // ステータスバッジを更新
+    const statusBadge = row.querySelector('.status-badge');
+    if (statusBadge) {
+        statusBadge.className = 'status-badge invoiced';
+        statusBadge.textContent = '入金確認中';
+    }
+    
+    // 郵送日を表示
+    const dateDisplay = document.getElementById(`invoice-sent-date-${orderNo}`);
+    if (dateDisplay) {
+        const formattedDate = formatDateForDisplay(sendDate);
+        dateDisplay.textContent = formattedDate;
+    }
+    
+    // グループ状態を更新
+    const group = row.closest('.funeral-group');
+    if (group) {
+        updateFuneralGroupStatus(group);
+        updateGroupSummary(group);
+    }
+}
+
+// 日付を表示用フォーマットに変換（YYYY-MM-DD → YYYY/MM/DD）
+function formatDateForDisplay(dateStr) {
+    if (!dateStr) return '-';
+    return dateStr.replace(/-/g, '/');
+}
+
+// 請求書発送日をローカルストレージに保存
+function setInvoiceSentDate(orderNo, date) {
+    try {
+        const key = `invoice_sent_date_${orderNo}`;
+        localStorage.setItem(key, date);
+    } catch (e) {
+        console.error('請求書発送日の保存に失敗しました:', e);
+    }
+}
+
+// 請求書発送日をローカルストレージから取得
+function getInvoiceSentDate(orderNo) {
+    try {
+        const key = `invoice_sent_date_${orderNo}`;
+        return localStorage.getItem(key) || null;
+    } catch (e) {
+        console.error('請求書発送日の取得に失敗しました:', e);
+        return null;
+    }
+}
+
+// ページ読み込み時に請求書発送日を復元
+function restoreInvoiceSentDates() {
+    const rows = document.querySelectorAll('tr[data-order-id]');
+    rows.forEach(row => {
+        const orderNo = row.getAttribute('data-order-id');
+        if (orderNo) {
+            const sentDate = getInvoiceSentDate(orderNo);
+            if (sentDate) {
+                const dateDisplay = document.getElementById(`invoice-sent-date-${orderNo}`);
+                if (dateDisplay) {
+                    dateDisplay.textContent = formatDateForDisplay(sentDate);
+                }
+                
+                // ステータスが「入金確認中」でない場合は更新
+                const status = row.getAttribute('data-status');
+                if (status !== 'invoiced') {
+                    updateOrderStatusToInvoiced(orderNo, sentDate);
+                }
+            }
+        }
+    });
+}
+
+// 入金確認モーダルを表示
+let currentPaymentOrderNo = null;
+
+function showPaymentConfirmModal(orderNo) {
+    currentPaymentOrderNo = orderNo;
+    const modal = document.getElementById('paymentConfirmModal');
+    const orderNumberSpan = document.getElementById('paymentConfirmOrderNumber');
+    const dateInput = document.getElementById('paymentConfirmDate');
+    
+    if (!modal || !orderNumberSpan || !dateInput) {
+        console.error('入金確認モーダルの要素が見つかりません');
+        return;
+    }
+    
+    // 注文番号を設定
+    orderNumberSpan.textContent = orderNo;
+    
+    // 日付入力を今日の日付に設定（デフォルト）
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    dateInput.value = todayStr;
+    
+    // 既存の入金確認日があれば表示
+    const existingDate = getPaymentConfirmedDate(orderNo);
+    if (existingDate) {
+        dateInput.value = existingDate;
+    }
+    
+    // モーダルを開く
+    openModal(modal);
+}
+
+// 入金確認日を保存
+function savePaymentConfirmDate() {
+    if (!currentPaymentOrderNo) {
+        console.error('注文番号が設定されていません');
+        return;
+    }
+    
+    const dateInput = document.getElementById('paymentConfirmDate');
+    if (!dateInput || !dateInput.value) {
+        alert('入金確認日を選択してください。');
+        return;
+    }
+    
+    const confirmDate = dateInput.value;
+    
+    // 入金確認日を保存
+    setPaymentConfirmedDate(currentPaymentOrderNo, confirmDate);
+    
+    // ステータスを「入金済み」に更新
+    updateOrderStatusToPaid(currentPaymentOrderNo, confirmDate);
+    
+    // モーダルを閉じる
+    closeModal('paymentConfirmModal');
+    
+    // サマリーを更新
+    updateOrderSummary();
+    
+    alert(`注文No.${currentPaymentOrderNo}の入金確認日を設定しました。\nステータスを「入金済み」に変更しました。`);
+    
+    currentPaymentOrderNo = null;
+}
+
+// 注文ステータスを「入金済み」に更新
+function updateOrderStatusToPaid(orderNo, confirmDate) {
+    const row = document.querySelector(`tr[data-order-id="${orderNo}"]`);
+    if (!row) {
+        console.error(`注文No.${orderNo}の行が見つかりません`);
+        return;
+    }
+    
+    // ステータスを更新
+    row.setAttribute('data-status', 'paid');
+    
+    // ステータスバッジを更新
+    const statusBadge = row.querySelector('.status-badge');
+    if (statusBadge) {
+        statusBadge.className = 'status-badge paid';
+        statusBadge.textContent = '入金済み';
+    }
+    
+    // 入金確認日を表示
+    const dateDisplay = document.getElementById(`payment-confirmed-date-${orderNo}`);
+    if (dateDisplay) {
+        const formattedDate = formatDateForDisplay(confirmDate);
+        dateDisplay.textContent = formattedDate;
+    }
+    
+    // グループ状態を更新
+    const group = row.closest('.funeral-group');
+    if (group) {
+        updateFuneralGroupStatus(group);
+        updateGroupSummary(group);
+    }
+}
+
+// 入金確認日をローカルストレージに保存
+function setPaymentConfirmedDate(orderNo, date) {
+    try {
+        const key = `payment_confirmed_date_${orderNo}`;
+        localStorage.setItem(key, date);
+    } catch (e) {
+        console.error('入金確認日の保存に失敗しました:', e);
+    }
+}
+
+// 入金確認日をローカルストレージから取得
+function getPaymentConfirmedDate(orderNo) {
+    try {
+        const key = `payment_confirmed_date_${orderNo}`;
+        return localStorage.getItem(key) || null;
+    } catch (e) {
+        console.error('入金確認日の取得に失敗しました:', e);
+        return null;
+    }
+}
+
+// ページ読み込み時に入金確認日を復元
+function restorePaymentConfirmedDates() {
+    const rows = document.querySelectorAll('tr[data-order-id]');
+    rows.forEach(row => {
+        const orderNo = row.getAttribute('data-order-id');
+        if (orderNo) {
+            const confirmDate = getPaymentConfirmedDate(orderNo);
+            if (confirmDate) {
+                const dateDisplay = document.getElementById(`payment-confirmed-date-${orderNo}`);
+                if (dateDisplay) {
+                    dateDisplay.textContent = formatDateForDisplay(confirmDate);
+                }
+                
+                // ステータスが「入金済み」でない場合は更新
+                const status = row.getAttribute('data-status');
+                if (status !== 'paid') {
+                    updateOrderStatusToPaid(orderNo, confirmDate);
+                }
+            }
+        }
+    });
 }

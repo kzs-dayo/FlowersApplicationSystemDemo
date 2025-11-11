@@ -83,6 +83,18 @@ body {
     color: #212529;
 }
 
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+    border: 2px solid #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+    color: white;
+}
+
 .btn-sm {
     padding: 6px 12px;
     font-size: 0.85rem;
@@ -192,10 +204,8 @@ body {
 
 /* テーブルコンテナ */
 .table-container {
-    background: white;
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid #e0e0e0;
     margin-bottom: 20px;
 }
 
@@ -251,6 +261,14 @@ body {
 
 .orders-table tr.cancelled-row:hover {
     background-color: #d0d0d0 !important;
+}
+
+/* 料金の色付け（16500円以外） */
+.orders-table td.amount.non-standard,
+.orders-table td.total.non-standard {
+    background-color: #fff3cd;
+    color: #856404;
+    font-weight: 600;
 }
 
 /* ステータスバッジ */

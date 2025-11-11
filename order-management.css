@@ -153,10 +153,6 @@
     transition: all 0.3s ease;
 }
 
-.funeral-group:hover {
-    border-color: #999;
-}
-
 /* ご葬家ヘッダー */
 .funeral-header {
     background: #f8f9fa;
@@ -166,7 +162,7 @@
     transition: all 0.2s ease;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     overflow: visible;
     position: relative;
     border-radius: 10px 10px 0 0;
@@ -222,50 +218,159 @@
 
 /* ご葬家サマリー */
 .funeral-summary {
-    display: grid;
-    grid-template-columns: auto 2fr auto;
+    display: flex;
     gap: 20px;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .summary-item {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
 }
 
+.funeral-status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+}
+
 .summary-item.flower-calc {
-    align-items: stretch;
-    background: #f8fcff;
-    border: 1px solid #e3f2fd;
-    border-radius: 8px;
-    padding: 12px 16px;
+    background: linear-gradient(135deg, #f8fcff 0%, #ffffff 100%);
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 .flower-calc-header {
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #e3f2fd;
+}
+
+.flower-calc-header .summary-label {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.flower-calc-header .summary-label i {
+    color: #1976d2;
+    font-size: 1rem;
 }
 
 .flower-calc-details {
     display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.calc-detail-column {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
-    align-items: center;
+    flex: 1;
+}
+
+.calc-detail-column:last-child {
+    padding-left: 0;
+}
+
+.calc-detail-column:last-child .calc-detail-item {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-left: 3px solid #e3f2fd;
+}
+
+.calc-detail-column:last-child .calc-detail-item:hover {
+    border-left-color: #1976d2;
+    background: #f8fcff;
+}
+
+.calc-detail-item-group-top {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e8f4f8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.calc-detail-item-group-bottom {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid #e8f4f8;
+    margin-top: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    border-top: 2px solid #e3f2fd;
 }
 
 .calc-detail-item {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+    position: relative;
+    min-width: 180px;
+}
+
+.calc-detail-item:hover {
+    background: #f8fcff;
+}
+
+.calc-detail-item-group-top .calc-detail-item,
+.calc-detail-item-group-bottom .calc-detail-item {
+    background: transparent;
+    border: none;
+    padding: 10px 8px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.calc-detail-item-group-top .calc-detail-item:not(:last-child)::after,
+.calc-detail-item-group-bottom .calc-detail-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 40px;
+    background-color: #d0d0d0;
+}
+
+.calc-detail-item-group-top .calc-detail-item:hover,
+.calc-detail-item-group-bottom .calc-detail-item:hover {
+    background: #f8fcff;
 }
 
 .calc-icon {
-    font-size: 1.2rem;
-    opacity: 0.8;
+    font-size: 1.4rem;
+    opacity: 0.9;
+    margin-top: 2px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+    color: #666;
 }
 
 .calc-icon.deduct {
@@ -279,18 +384,25 @@
 .calc-detail-content {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 .calc-detail-label {
-    font-size: 0.75rem;
-    color: #777;
-    font-weight: 500;
+    font-size: 0.8rem;
+    color: #555;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
 }
 
 .calc-detail-value {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 700;
+    color: #333;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
 }
 
 .calc-detail-value.deduct {
@@ -301,6 +413,51 @@
     color: #f57c00;
 }
 
+.calc-detail-tax {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 4px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1200px) {
+    .flower-calc-details {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .calc-detail-column {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-item.flower-calc {
+        padding: 12px 14px;
+    }
+    
+    .flower-calc-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding-bottom: 10px;
+    }
+    
+    .calc-detail-value {
+        font-size: 1.1rem;
+    }
+    
+    .calc-detail-label {
+        font-size: 0.75rem;
+    }
+    
+    .calc-icon {
+        font-size: 1.2rem;
+    }
+}
+
 .calc-detail-divider {
     width: 1px;
     height: 40px;
@@ -308,13 +465,14 @@
 }
 
 .summary-label {
-    font-size: 0.8rem;
-    color: #666;
-    font-weight: 500;
+    font-size: 0.85rem;
+    color: #444;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin-bottom: 4px;
+    letter-spacing: 0.01em;
 }
 
 .summary-value {
@@ -325,35 +483,42 @@
 
 .mode-badge-small {
     display: inline-block;
-    padding: 3px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.3px;
+    margin-left: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .mode-badge-small.builtin {
     background-color: #e3f2fd;
     color: #1565c0;
-    border: 1px solid #90caf9;
+    border: 1.5px solid #90caf9;
 }
 
 .mode-badge-small.addon {
     background-color: #fff3e0;
     color: #e65100;
-    border: 1px solid #ffb74d;
+    border: 1.5px solid #ffb74d;
 }
 
 .btn-edit-inline {
     background: white;
     border: 2px solid #1976d2;
-    padding: 4px 10px;
+    padding: 5px 12px;
     cursor: pointer;
     color: #1976d2;
-    font-size: 0.75rem;
-    border-radius: 4px;
+    font-size: 0.8rem;
+    border-radius: 6px;
     transition: all 0.2s ease;
     white-space: nowrap;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-edit-inline:hover {
@@ -659,6 +824,17 @@
 .preview-value.addon {
     color: #f57c00;
     font-size: 1.1rem;
+}
+
+/* 花代処理セクション（ヘッダーの外に分離） */
+.funeral-flower-calc {
+    padding: 0;
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.funeral-group.collapsed .funeral-flower-calc {
+    display: none;
 }
 
 /* ご葬家の注文テーブル */
@@ -1060,6 +1236,14 @@
     font-weight: bold;
     font-size: 1.1rem;
     margin-bottom: 5px;
+}
+
+.japanese-order-form .amount-main.non-standard,
+.japanese-order-form .amount-details.non-standard {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 8px 12px;
+    font-weight: 600;
 }
 
 .japanese-order-form .amount-breakdown {
@@ -1712,6 +1896,41 @@
 .form-input:focus {
     outline: none;
     border-color: #656565;
+}
+
+.info-box {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #1565c0;
+}
+
+.info-box i {
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.info-box span {
+    flex: 1;
+    line-height: 1.5;
+}
+
+.invoice-sent-date {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.payment-confirmed-date {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap;
 }
 
 .form-note {
@@ -3731,12 +3950,6 @@
     flex: 1;
 }
 
-.excel-table-container {
-    padding: 20px;
-    background: white;
-    overflow-x: auto; /* 横スクロール対応 */
-}
-
 .table-header {
     margin-bottom: 15px;
 }
@@ -3768,7 +3981,6 @@
 
 .excel-table-container {
     padding: 20px;
-    background: white;
     overflow-x: auto; /* 横スクロール対応 */
 }
 
@@ -3889,7 +4101,6 @@
 .summary-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     padding: 10px 15px;
     background: white;
     border-radius: 5px;
@@ -4845,9 +5056,13 @@
     color: #333;
 }
 
-/* ================================
-   領収書レイアウト（画像準拠）
-   ================================ */
+.receipt-document {
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+}
 
 .receipt-container {
     min-width: 700px;
@@ -4916,13 +5131,15 @@
 
 /* メインコンテンツ */
 .receipt-content {
-    display: flex;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 70mm);
+    column-gap: 20px;
+    align-items: flex-start;
 }
 
 /* 左側：受領内容 */
 .receipt-left {
-    flex: 1;
+    min-width: 0;
 }
 
 .amount-section {
@@ -4968,14 +5185,16 @@
 }
 
 .breakdown-table {
-    border: 1px solid #333;
-    border-collapse: collapse;
     width: 100%;
+    border: 0.4mm solid #333;
+    border-radius: 2px;
+    overflow: hidden;
 }
 
 .breakdown-row {
-    display: flex;
-    border-bottom: 1px solid #333;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    border-bottom: 0.4mm solid #333;
 }
 
 .breakdown-row:last-child {
@@ -4983,17 +5202,20 @@
 }
 
 .breakdown-cell {
-    padding: 8px 12px;
+    padding: 10px 12px;
     font-size: 14px;
-    border-right: 1px solid #333;
-    flex: 1;
-    height: 50px;
+    border-right: 0.4mm solid #333;
     text-align: center;
-    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
 }
 
 .breakdown-cell:first-child {
-    width: 300px;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 10px 18px;
 }
 
 .breakdown-cell:last-child {
@@ -5007,6 +5229,8 @@
 /* 右側：会社情報 */
 .receipt-right {
     position: relative;
+    width: 100%;
+    max-width: 70mm;
 }
 
 .company-name {
@@ -5021,6 +5245,7 @@
 .company-registration {
     font-size: 14px;
     margin-bottom: 3px;
+    word-break: break-word;
 }
 
 /* ================================
@@ -5031,7 +5256,7 @@
     /* A4縦向き設定 */
     @page {
         size: A4 portrait;
-        margin: 12mm 10mm;
+        margin: 0;
     }
     
     /* 注文書の印刷スタイル */
@@ -5156,122 +5381,210 @@
     }
     
     /* 領収書の印刷スタイル */
-    .receipt-container {
-        max-width: 100%;
-        width: 190mm;
-        padding: 8mm;
-        page-break-after: avoid;
-        background-image: none;
+    .receipt-document {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        border: none;
+        border-bottom: 0.35mm dashed #999;
+        height: calc(297mm / 4);
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        page-break-inside: avoid;
     }
     
-    .receipt-container::after {
-        display: none;
+    .receipt-document:nth-child(4n + 1):not(:first-child) {
+        break-before: page;
+        page-break-before: always;
+    }
+    
+    .receipt-container {
+        width: 210mm;
+        max-width: 210mm;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     
     .tax-banner-container {
-        margin-bottom: 6mm;
-        height: 40px;
-    }
-    
-    .tax-banner-line {
-        width: 150px;
-        height: 6px;
-    }
-    
-    .tax-banner-line:nth-child(1) {
-        top: 8px;
-    }
-    
-    .tax-banner-line:nth-child(2) {
-        top: 20px;
+        position: relative;
+        margin: 0;
+        width: 210mm;
+        height: 48px;
+        background: rgb(187,211,150);
+        text-align: center;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
     
     .tax-banner-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         font-size: 11px;
+        font-weight: bold;
+        color: #333;
     }
     
     .receipt-header {
-        margin-bottom: 6mm;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 6mm;
+        margin-bottom: 4mm;
     }
     
     .receipt-title {
-        font-size: 24px;
+        font-size: 16px;
     }
     
     .receipt-number-section {
-        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-end;
+        margin-left: auto;
+        font-size: 10px;
+        gap: 2mm;
     }
+
+    .recipient-label,
+    .receipt-number {
+        font-size: 11px;
+    }    
     
     .receipt-content {
-        font-size: 11px;
+        font-size: 10px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 60mm);
+        column-gap: 6mm;
+        align-items: flex-start;
+    }
+    
+    .receipt-right {
+        position: relative;
+        max-width: 60mm;
+        width: 100%;
     }
     
     .amount-section {
-        margin-bottom: 4mm;
+        margin-bottom: 3mm;
     }
     
     .amount-label {
-        font-size: 14px;
+        font-size: 11px;
+        margin-right: 4mm;
     }
     
     .amount-value {
-        font-size: 20px;
+        font-size: 18px;
+        margin-right: 8mm;
     }
     
     .amount-description {
-        font-size: 12px;
+        font-size: 11px;
     }
     
-    .date-section {
-        font-size: 12px;
-        margin-bottom: 4mm;
-    }
-    
+    .date-section,
     .receipt-confirmation {
-        font-size: 12px;
-        margin-bottom: 4mm;
+        font-size: 11px;
+        margin-bottom: 3mm;
+    }
+    
+    .breakdown-table {
+        width: 100%;
+        border: 0.3mm solid #333;
+        border-radius: 1mm;
+        overflow: hidden;
+    }
+    
+    .breakdown-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        border-bottom: 0.3mm solid #333;
+    }
+    
+    .breakdown-row:last-child {
+        border-bottom: none;
     }
     
     .breakdown-cell {
-        font-size: 11px;
-        padding: 4px 8px;
+        font-size: 10px;
+        padding: 2.5mm 3mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 0.3mm solid #333;
     }
     
-    .issuer-section {
-        margin-top: 6mm;
+    .breakdown-cell:first-child {
+        justify-content: flex-start;
+        text-align: left;
     }
     
-    .issuer-title {
+    .breakdown-cell:last-child {
+        border-right: none;
+    }
+    
+    .company-name {
         font-size: 12px;
     }
     
-    .issuer-company {
-        font-size: 13px;
-    }
-    
-    .issuer-details {
+    .company-address,
+    .company-representative,
+    .company-phone,
+    .company-registration {
         font-size: 10px;
+        word-break: break-word;
     }
     
-    /* モーダルのヘッダー・フッターを非表示 */
+    .company-stamp {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 22mm;
+        height: 22mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .stamp-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    .stamp-image {
+        max-width: 24mm;
+    }
+    
+    /* モーダルや操作ボタン類を非表示 */
     .modal-header,
-    .modal-footer {
+    .modal-footer,
+    .document-actions,
+    .document-separator,
+    .documents-summary,
+    .multiple-documents-container,
+    .no-selection-message {
         display: none !important;
     }
     
-    .modal-body {
-        padding: 0 !important;
-    }
-    
-    /* 背景を白に */
-    body, .modal, .modal-content {
+    body,
+    .modal,
+    .modal-content {
         background: white !important;
     }
     
     /* ページ区切り制御 */
     .japanese-order-form,
     .invoice-container,
-    .receipt-container {
+    .receipt-document {
         page-break-inside: avoid;
     }
     
