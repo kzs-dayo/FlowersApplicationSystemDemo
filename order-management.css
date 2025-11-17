@@ -281,21 +281,6 @@
     flex: 1;
 }
 
-.calc-detail-column:last-child {
-    padding-left: 0;
-}
-
-.calc-detail-column:last-child .calc-detail-item {
-    background: #ffffff;
-    border: 1px solid #f0f0f0;
-    border-left: 3px solid #e3f2fd;
-}
-
-.calc-detail-column:last-child .calc-detail-item:hover {
-    border-left-color: #1976d2;
-    background: #f8fcff;
-}
-
 .calc-detail-item-group-top {
     display: flex;
     flex-direction: row;

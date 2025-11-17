@@ -222,32 +222,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="calc-detail-column">
-                                            <div class="calc-detail-item">
-                                                <i class="fas fa-calculator calc-icon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">精算額（税抜き）</span>
-                                                    <span class="calc-detail-value" id="inline-settlement-total-1">¥45,455</span>
-                                                    <span class="calc-detail-tax">(消費税¥4,545)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-item" id="addon-item-right-1">
-                                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">付け花分（税込）</span>
-                                                    <span class="calc-detail-value addon" id="inline-addon-right-1">¥22,900</span>
-                                                    <span class="calc-detail-tax" id="inline-addon-tax-right-1">(内税¥2,082)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-item">
-                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">合計額分（葬儀代から減額）</span>
-                                                    <span class="calc-detail-value deduct" id="inline-deduct-1">¥50,000</span>
-                                                    <span class="calc-detail-tax" id="inline-deduct-tax-1">(内税¥4,545)</span>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -608,32 +582,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="calc-detail-column">
-                                            <div class="calc-detail-item" id="settlement-total-item-2">
-                                                <i class="fas fa-calculator calc-icon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">精算額（税抜き）</span>
-                                                    <span class="calc-detail-value" id="inline-settlement-total-2">-</span>
-                                                    <span class="calc-detail-tax">(消費税-)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-item" id="addon-item-right-2">
-                                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">付け花分（税込）</span>
-                                                    <span class="calc-detail-value addon" id="inline-addon-right-2">¥34,300</span>
-                                                    <span class="calc-detail-tax" id="inline-addon-tax-right-2">(内税¥3,118)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-item" id="deduct-item-2">
-                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">合計額分（葬儀代から減額）</span>
-                                                    <span class="calc-detail-value deduct" id="inline-deduct-2">-</span>
-                                                    <span class="calc-detail-tax" id="inline-deduct-tax-2">(内税-)</span>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -896,32 +844,6 @@
                                                         <span class="calc-detail-value" id="inline-received-minus-fee-3">¥14,300</span>
                                                         <span class="calc-detail-tax">(内税¥1,300)</span>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="calc-detail-column">
-                                            <div class="calc-detail-item">
-                                                <i class="fas fa-calculator calc-icon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">精算額（税抜き）</span>
-                                                    <span class="calc-detail-value" id="inline-settlement-total-3">¥14,300</span>
-                                                    <span class="calc-detail-tax">(消費税¥1,300)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-item" id="addon-item-right-3">
-                                                <i class="fas fa-plus-circle calc-icon addon"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">付け花分（税込）</span>
-                                                    <span class="calc-detail-value addon" id="inline-addon-right-3">-</span>
-                                                    <span class="calc-detail-tax" id="inline-addon-tax-right-3">(内税-)</span>
-                                                </div>
-                                            </div>
-                                            <div class="calc-detail-item" id="deduct-item-3">
-                                                <i class="fas fa-arrow-down calc-icon deduct"></i>
-                                                <div class="calc-detail-content">
-                                                    <span class="calc-detail-label">合計額分（葬儀代から減額）</span>
-                                                    <span class="calc-detail-value deduct" id="inline-deduct-3">¥14,300</span>
-                                                    <span class="calc-detail-tax" id="inline-deduct-tax-3">(内税¥1,300)</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1340,8 +1262,8 @@
                             <label class="radio-option">
                                 <input type="radio" name="flowerMode" value="builtin" id="modeBuiltin" checked onchange="toggleBuiltinLimit()">
                                 <span class="radio-label">
-                                    <strong>①組み込み式（葬儀代金から引く）</strong>
-                                    <p class="option-desc">固定の花代を葬儀代金から引き、超過分をつけ花として処理します</p>
+                                    <strong>①組み込み式（葬儀代金から減額）</strong>
+                                    <p class="option-desc">設定された金額を付け花として処理し、超過分を葬儀代金から減額します</p>
                                 </span>
                             </label>
                             <label class="radio-option">
@@ -1355,12 +1277,12 @@
                     </div>
 
                     <div class="form-section" id="builtinLimitSection">
-                        <h3>組込上限額の設定</h3>
+                        <h3>付け花処理上限額の設定</h3>
                         <div class="form-row">
-                            <label for="builtinLimitInput">葬儀代金から引く上限額（円）:</label>
+                            <label for="builtinLimitInput">付け花として処理する上限額（円）:</label>
                             <input type="number" id="builtinLimitInput" min="0" step="1000" value="50000" placeholder="例: 50000">
                             <p class="form-note">
-                                この金額までを葬儀代金から引きます。超過分は自動的につけ花として処理されます。<br>
+                                この金額までを付け花として処理します。超過分は自動的に葬儀代金から引きます。<br>
                                 ※手数料も含めた総額で計算されます
                             </p>
                         </div>
@@ -1391,20 +1313,20 @@
                             </div>
                             <hr>
                             <div class="preview-item highlight">
-                                <span class="preview-label">葬儀代から減額（税込）:</span>
-                                <span class="preview-value deduct" id="previewDeduct">¥0</span>
-                            </div>
-                            <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
-                                <span class="preview-label">内税:</span>
-                                <span class="preview-value" id="previewDeductTax">¥0</span>
-                            </div>
-                            <div class="preview-item highlight">
                                 <span class="preview-label">つけ花（税込）:</span>
                                 <span class="preview-value addon" id="previewAddon">¥0</span>
                             </div>
                             <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
                                 <span class="preview-label">内税:</span>
                                 <span class="preview-value" id="previewAddonTax">¥0</span>
+                            </div>
+                            <div class="preview-item highlight">
+                                <span class="preview-label">葬儀代から減額（税込）:</span>
+                                <span class="preview-value deduct" id="previewDeduct">¥0</span>
+                            </div>
+                            <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
+                                <span class="preview-label">内税:</span>
+                                <span class="preview-value" id="previewDeductTax">¥0</span>
                             </div>
                         </div>
                     </div>
@@ -1483,8 +1405,8 @@
                             <label class="radio-option">
                                 <input type="radio" name="newFlowerMode" value="builtin" checked>
                                 <span class="radio-label">
-                                    <strong>組み込み式（葬儀代金から引く）</strong>
-                                    <p class="option-desc">固定の花代を葬儀代金から引き、超過分をつけ花として処理します</p>
+                                    <strong>組み込み式（葬儀代金から減額）</strong>
+                                    <p class="option-desc">設定された金額を付け花として処理し、超過分を葬儀代金から減額します</p>
                                 </span>
                             </label>
                             <label class="radio-option">
@@ -1496,9 +1418,9 @@
                             </label>
                         </div>
                         <div class="form-row" id="newBuiltinLimitRow">
-                            <label for="newBuiltinLimit">組込上限額（円）:</label>
+                            <label for="newBuiltinLimit">付け花として処理する上限額（円）:</label>
                             <input type="number" id="newBuiltinLimit" min="0" step="1000" value="50000" placeholder="50000">
-                            <p class="form-note">葬儀代金から引く上限額（組み込み式の場合のみ）</p>
+                            <p class="form-note">付け花として処理する上限額（組み込み式の場合のみ）</p>
                         </div>
                     </div>
                 </form>

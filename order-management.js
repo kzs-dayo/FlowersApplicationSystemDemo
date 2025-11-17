@@ -3608,9 +3608,9 @@ function updateSettingsPreview(funeralId) {
     let addonAmount = 0;
     
     if (mode === 'builtin') {
-        // 組み込み式：上限額まで葬儀代から引く、超過分はつけ花
-        deductAmount = Math.min(grandTotal, builtinLimit);
-        addonAmount = Math.max(0, grandTotal - builtinLimit);
+        // 組み込み式：上限額までつけ花、超過分は葬儀代から引く
+        addonAmount = Math.min(grandTotal, builtinLimit);
+        deductAmount = Math.max(0, grandTotal - builtinLimit);
     } else {
         // つけ花式：すべてつけ花
         deductAmount = 0;
@@ -3726,9 +3726,9 @@ function updateFlowerCalculation(funeralId) {
     let addonAmount = 0;
     
     if (mode === 'builtin') {
-        // 組み込み式：上限額まで葬儀代から引く、超過分はつけ花
-        deductAmount = Math.min(grandTotal, builtinLimit);
-        addonAmount = Math.max(0, grandTotal - builtinLimit);
+        // 組み込み式：上限額までつけ花、超過分は葬儀代から引く
+        addonAmount = Math.min(grandTotal, builtinLimit);
+        deductAmount = Math.max(0, grandTotal - builtinLimit);
     } else {
         // つけ花式：すべてつけ花
         deductAmount = 0;
@@ -3737,10 +3737,35 @@ function updateFlowerCalculation(funeralId) {
     
     // 税金計算（10%内税）
     const calculateTax = (amount) => Math.floor(amount * 10 / 110);
+    const calculateExcludingTax = (amount) => amount - calculateTax(amount);
     const deductTax = calculateTax(deductAmount);
     const addonTax = calculateTax(addonAmount);
     
+    // 精算額の計算
+    // 精算額（税抜き） = (領収額 - 手数料合計（税込） - つけ花（超過分・税込）) を税抜きにした額
+    // つけ花（超過分・税込）は、上限額までを付け花として処理する部分（addonAmount）を指す
+    let settlementAmountIncludingTax = 0;
+    let settlementAmountExcludingTax = 0;
+    let settlementTax = 0;
+    
+    if (mode === 'builtin') {
+        // 組み込み式：精算額 = 領収額合計 - 手数料合計 - つけ花（上限額までの部分・税込）
+        settlementAmountIncludingTax = grandTotal - feeTotal - addonAmount;
+        settlementAmountExcludingTax = calculateExcludingTax(settlementAmountIncludingTax);
+        settlementTax = calculateTax(settlementAmountIncludingTax);
+    } else {
+        // つけ花式：すべてつけ花なので、精算額は0
+        settlementAmountIncludingTax = 0;
+        settlementAmountExcludingTax = 0;
+        settlementTax = 0;
+    }
+    
     // インライン表示を更新（サマリー内）
+    const settlementElement = document.getElementById(`inline-settlement-${funeralId}`);
+    const settlementTaxElement = document.getElementById(`inline-settlement-tax-${funeralId}`);
+    const receivedTotalElement = document.getElementById(`inline-received-total-${funeralId}`);
+    const feeTotalElement = document.getElementById(`inline-fee-total-${funeralId}`);
+    const receivedMinusFeeElement = document.getElementById(`inline-received-minus-fee-${funeralId}`);
     const deductElement = document.getElementById(`inline-deduct-${funeralId}`);
     const addonElement = document.getElementById(`inline-addon-${funeralId}`);
     const deductTaxElement = document.getElementById(`inline-deduct-tax-${funeralId}`);
@@ -3748,6 +3773,63 @@ function updateFlowerCalculation(funeralId) {
     const deductItem = document.getElementById(`deduct-item-${funeralId}`);
     const addonItem = document.getElementById(`addon-item-${funeralId}`);
     const divider = document.getElementById(`divider-${funeralId}`);
+    
+    // 領収額合計（税込）と手数料合計（税込）の表示
+    const receivedTotalTax = calculateTax(grandTotal);
+    if (receivedTotalElement) {
+        receivedTotalElement.textContent = `¥${grandTotal.toLocaleString()}`;
+        // 親要素から calc-detail-tax クラスを持つ要素を探して更新
+        const parentContent = receivedTotalElement.closest('.calc-detail-content');
+        if (parentContent) {
+            const taxElement = parentContent.querySelector('.calc-detail-tax');
+            if (taxElement) {
+                taxElement.textContent = `(内税¥${receivedTotalTax.toLocaleString()})`;
+            }
+        }
+    }
+    const feeTotalTax = calculateTax(feeTotal);
+    if (feeTotalElement) {
+        feeTotalElement.textContent = `¥${feeTotal.toLocaleString()}`;
+        // 親要素から calc-detail-tax クラスを持つ要素を探して更新
+        const parentContent = feeTotalElement.closest('.calc-detail-content');
+        if (parentContent) {
+            const taxElement = parentContent.querySelector('.calc-detail-tax');
+            if (taxElement) {
+                taxElement.textContent = `(内税¥${feeTotalTax.toLocaleString()})`;
+            }
+        }
+    }
+    
+    // 領収額 - 手数料合計（税込）
+    const receivedMinusFee = grandTotal - feeTotal;
+    const receivedMinusFeeTax = calculateTax(receivedMinusFee);
+    if (receivedMinusFeeElement) {
+        receivedMinusFeeElement.textContent = `¥${receivedMinusFee.toLocaleString()}`;
+        // 親要素から calc-detail-tax クラスを持つ要素を探して更新
+        const parentContent = receivedMinusFeeElement.closest('.calc-detail-content');
+        if (parentContent) {
+            const taxElement = parentContent.querySelector('.calc-detail-tax');
+            if (taxElement) {
+                taxElement.textContent = `(内税¥${receivedMinusFeeTax.toLocaleString()})`;
+            }
+        }
+    }
+    
+    // 精算額の表示
+    if (settlementElement) {
+        if (mode === 'builtin' && settlementAmountExcludingTax > 0) {
+            settlementElement.textContent = `¥${settlementAmountExcludingTax.toLocaleString()}`;
+        } else {
+            settlementElement.textContent = '-';
+        }
+    }
+    if (settlementTaxElement) {
+        if (mode === 'builtin' && settlementTax > 0) {
+            settlementTaxElement.textContent = `¥${settlementTax.toLocaleString()}`;
+        } else {
+            settlementTaxElement.textContent = '-';
+        }
+    }
     
     if (mode === 'builtin') {
         // 組込式：減額を常に表示、つけ花は超過分がある場合のみ
