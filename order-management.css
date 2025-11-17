@@ -862,6 +862,12 @@
     padding: 10px 12px;
 }
 
+/* 芳名板列のフォントスタイル */
+.funeral-orders .orders-table td.nameplate-display,
+.funeral-orders .orders-table td:nth-child(4) {
+    font-family: "IPAmj明朝", "IPAmjMincho", serif !important;
+}
+
 .funeral-orders .orders-table tbody tr:first-child td {
     border-top: none;
 }
@@ -3830,6 +3836,7 @@
 /* Excel一覧表のスタイル */
 .excel-summary-container {
     padding: 0;
+    min-width: 1000px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -4309,6 +4316,7 @@
 #documentModal .modal-content {
     max-width: 900px;
     width: 90vw;
+    overflow: auto;
 }
 
 #documentModal .modal-body {

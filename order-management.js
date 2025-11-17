@@ -1108,6 +1108,7 @@ function updateOrderRow(orderNo, data) {
         cells[2].textContent = formatDate(data.orderDate);
         // 芳名板 (cells[3])
         cells[3].textContent = data.nameplate;
+        cells[3].className = 'nameplate-display';
         // 依頼者 (cells[4])
         cells[4].textContent = data.requester;
         // 連絡先 (cells[5])
@@ -1148,6 +1149,36 @@ function updateOrderRow(orderNo, data) {
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('ja-JP');
+}
+
+// 日時をフォーマットする関数（YYYY/MM/DD HH:mm形式）
+function formatDateTime(dateTimeString) {
+    if (!dateTimeString) return '';
+    
+    // datetime-local形式（YYYY-MM-DDTHH:mm）またはISO形式を処理
+    let date;
+    if (dateTimeString.includes('T')) {
+        date = new Date(dateTimeString);
+    } else if (dateTimeString.includes('-')) {
+        // 日付のみの場合（YYYY-MM-DD）
+        const dateOnly = dateTimeString.split(' ')[0];
+        date = new Date(dateOnly + 'T00:00:00');
+    } else {
+        // その他の形式の場合
+        date = new Date(dateTimeString);
+    }
+    
+    if (isNaN(date.getTime())) {
+        return dateTimeString; // パースできない場合は元の値を返す
+    }
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
 }
 
 function editOrderFromModal() {
@@ -1481,6 +1512,30 @@ function generateOrderFormHTML(orderNo, data) {
     const isNonStandard = totalAmount !== STANDARD_TOTAL;
     const nonStandardClass = isNonStandard ? 'non-standard' : '';
     
+    // 葬儀日の日付と時刻を解析
+    let funeralDateValue = currentDate.toISOString().split('T')[0];
+    let funeralTimeValue = '13:00';
+    
+    if (data.funeralDate) {
+        if (data.funeralDate.includes('T')) {
+            // datetime-local形式 (YYYY-MM-DDTHH:mm)
+            const parts = data.funeralDate.split('T');
+            funeralDateValue = parts[0];
+            funeralTimeValue = parts[1] || '13:00';
+        } else if (data.funeralDate.includes(' ')) {
+            // スペース区切り形式 (YYYY-MM-DD HH:mm)
+            const parts = data.funeralDate.split(' ');
+            funeralDateValue = parts[0];
+            funeralTimeValue = parts[1] || '13:00';
+        } else {
+            // 日付のみ (YYYY-MM-DD)
+            funeralDateValue = data.funeralDate;
+            funeralTimeValue = data.funeralTime || '13:00';
+        }
+    } else if (data.funeralTime) {
+        funeralTimeValue = data.funeralTime;
+    }
+    
     return `
         <div class="japanese-order-form">
             <!-- ヘッダー -->
@@ -1517,8 +1572,8 @@ function generateOrderFormHTML(orderNo, data) {
                 <div class="form-row">
                     <span class="label">葬儀開式日時</span>
                     <div class="datetime-group">
-                        <input type="date" class="form-date-input" value="${data.funeralDate ? data.funeralDate.split(' ')[0] : currentDate.toISOString().split('T')[0]}" data-field="funeralDate">
-                        <input type="time" class="form-time-input" value="${data.funeralTime || (data.funeralDate && data.funeralDate.includes(' ') ? data.funeralDate.split(' ')[1] : '13:00')}" data-field="funeralTime">
+                        <input type="date" class="form-date-input" value="${funeralDateValue}" data-field="funeralDate">
+                        <input type="time" class="form-time-input" value="${funeralTimeValue}" data-field="funeralTime">
                         <span class="time-part">開式</span>
                     </div>
                 </div>
@@ -1551,7 +1606,7 @@ function generateOrderFormHTML(orderNo, data) {
                 <div class="form-row nameplate-row">
                     <span class="label">芳名板 記載内容</span>
                     <div class="nameplate-content horizontal">
-                        <textarea class="form-textarea" data-field="nameplate" readonly>${data.nameplate}</textarea>
+                        <textarea class="form-textarea nameplate-text" data-field="nameplate" readonly>${data.nameplate}</textarea>
                     </div>
                     <div class="nameplate-note">※実際の芳名板は縦書となります。</div>
                 </div>
@@ -2615,7 +2670,7 @@ function generateExcelSummaryHTML(data) {
                     </div>
                     <div class="info-item">
                         <label>葬儀日:</label>
-                        <span>${data.funeralInfo.funeralDate}</span>
+                        <span>${formatDateTime(data.funeralInfo.funeralDate)}</span>
                     </div>
                     <div class="info-item">
                         <label>会場:</label>
@@ -2665,7 +2720,7 @@ function generateExcelSummaryHTML(data) {
                             <tr>
                                 <td>${order.no}</td>
                                 <td>${order.orderDate}</td>
-                                <td>${order.nameplate}</td>
+                                <td class="nameplate-display">${order.nameplate}</td>
                                 <td>${order.requester}</td>
                                 <td>${order.postalCode}</td>
                                 <td>${order.address}</td>
@@ -3042,7 +3097,7 @@ function getFuneralData(funeralId) {
     return {
         name: funeralInfo.name,
         deceased: funeralInfo.deceased,
-        date: formatDate(funeralInfo.funeralDate),
+        date: formatDateTime(funeralInfo.funeralDate),
         venue: funeralInfo.venue,
         address: '東京都渋谷区神宮前1-2-3' // 仮の住所（実際のシステムでは住所データも管理）
     };
@@ -3168,7 +3223,7 @@ function generateFloristOrderHTML(funeralData, orders) {
                     return `
                     <tr data-order-id="${order.orderNo}">
                         <td><span class="order-number">${order.orderNo}</span></td>
-                        <td><div class="nameplate-content">${order.nameplate}</div></td>
+                        <td><div class="nameplate-content nameplate-display">${order.nameplate}</div></td>
                         <td><div class="order-memo ${order.memo === '特記事項なし' ? 'empty' : ''}">${order.memo}</div></td>
                         <td>
                             <span class="email-status-badge ${emailStatus}" id="email-status-${order.orderNo}">${statusBadge}</span>
@@ -4000,7 +4055,7 @@ function generateDocumentSelectionHTML(data, type) {
                                                checked>
                                     </td>
                                     <td>${order.orderNo}</td>
-                                    <td>${order.nameplate}</td>
+                                    <td class="nameplate-display">${order.nameplate}</td>
                                     <td>${order.requester}</td>
                                     <td class="amount">${order.amount}</td>
                                     <td class="fee">${order.fee}</td>
@@ -4133,7 +4188,7 @@ function generateInvoiceHTML(data) {
                 
                 <div class="nameplate-section">
                     <span class="nameplate-label">芳名板記載内容:</span>
-                    <span class="nameplate-content">${nameplateText || ' '}</span>
+                    <span class="nameplate-content nameplate-display">${nameplateText || ' '}</span>
                 </div>
             </div>
             
@@ -4273,7 +4328,7 @@ function generateDocumentHTML(data, type) {
                     </div>
                     <div class="info-row">
                         <label>葬儀日:</label>
-                        <span>${data.funeralInfo.funeralDate}</span>
+                        <span>${formatDateTime(data.funeralInfo.funeralDate)}</span>
                     </div>
                     <div class="info-row">
                         <label>会場:</label>
@@ -4346,7 +4401,7 @@ function generateDocumentHTML(data, type) {
                         ${data.orders.map(order => `
                             <tr>
                                 <td>${order.orderNo}</td>
-                                <td>${order.nameplate}</td>
+                                <td class="nameplate-display">${order.nameplate}</td>
                                 <td>${order.requester}</td>
                                 <td class="amount">${order.amount}</td>
                                 <td class="fee">${order.fee}</td>
@@ -5136,13 +5191,14 @@ function editFuneralInfo(funeralId, event) {
     }
     
     // モーダルにデータを設定
-    document.getElementById('editFuneralName').textContent = `${funeralInfo.name}のご葬儀`;
+    const funeralName = funeralInfo.family || funeralInfo.name || '不明';
+    document.getElementById('editFuneralName').textContent = `${funeralName}のご葬儀`;
     document.getElementById('editStaffName').value = funeralInfo.staff;
     document.getElementById('editConfirmedDate').value = funeralInfo.confirmedDate;
     document.getElementById('editFlorist').value = funeralInfo.florist || '';
     
     // 参考情報を表示
-    document.getElementById('editFuneralDate').textContent = funeralInfo.funeralDate;
+    document.getElementById('editFuneralDate').textContent = formatDateTime(funeralInfo.funeralDate);
     document.getElementById('editFuneralVenue').textContent = funeralInfo.venue;
     document.getElementById('editDeceasedName').textContent = `${funeralInfo.deceased}様`;
     
@@ -5302,7 +5358,7 @@ function showFuneralReportProgress(reportType, funeralName, orders, callback) {
         <ul class="report-target-list">
             ${orders.map(order => `
                 <li class="report-target-item">
-                    <span class="target-name">No.${order.orderNo}: ${order.nameplate}</span>
+                    <span class="target-name">No.${order.orderNo}: <span class="nameplate-display">${order.nameplate}</span></span>
                     <span class="target-amount">${order.amount}</span>
                 </li>
             `).join('')}
@@ -5482,8 +5538,8 @@ function createFuneralGroupHTML(funeralId) {
     const modeBadgeClass = mode === 'builtin' ? 'builtin' : 'addon';
     const modeBadgeText = mode === 'builtin' ? '組込式' : 'つけ花';
     
-    // 日付フォーマット
-    const formattedFuneralDate = info.funeralDate.replace(/-/g, '/');
+    // 日時フォーマット
+    const formattedFuneralDate = formatDateTime(info.funeralDate);
     
     return `
         <!-- ${info.family}のご葬儀 -->
@@ -6927,7 +6983,7 @@ function generateCustomerListContent(funeralTitle, deceasedName, customers) {
                         <tr>
                             <td>${index + 1}</td>
                             <td>${customer.orderDate}</td>
-                            <td>${customer.nameplate}</td>
+                            <td class="nameplate-display">${customer.nameplate}</td>
                             <td>${customer.clientName}</td>
                             <td>${customer.postalCode}</td>
                             <td>${customer.address}</td>

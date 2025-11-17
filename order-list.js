@@ -632,7 +632,7 @@ function renderTable() {
             </td>
             <td>${order.deceasedName || '-'}</td>
             <td>${order.orderDate}</td>
-            <td>${order.nameplate}</td>
+            <td class="nameplate-display">${order.nameplate}</td>
             <td>${order.requester}</td>
             <td>${order.contact}</td>
             <td>
@@ -794,7 +794,7 @@ function showOrderDetail(orderId) {
             <h3>注文内容</h3>
             <div class="detail-row">
                 <label>芳名板記載:</label>
-                <span>${order.nameplate}</span>
+                <span class="nameplate-display">${order.nameplate}</span>
             </div>
             <div class="detail-row">
                 <label>依頼者:</label>

@@ -601,3 +601,17 @@ body {
     }
 }
 
+/* 芳名板フォントスタイル - IPAmj明朝 */
+.nameplate-text,
+#nameplate,
+.nameplate-content,
+.nameplate-content textarea,
+.nameplate-content input,
+.nameplate-content span,
+.nameplate-content div,
+td.nameplate,
+#detailNameplate,
+.nameplate-display {
+    font-family: "IPAmj明朝", "IPAmjMincho", serif !important;
+}
+

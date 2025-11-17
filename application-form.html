@@ -269,7 +269,7 @@
                     芳名板のお名前
                     <span class="required-tag">必須</span>
                 </label>
-                <textarea id="nameplate" name="nameplate" class="form-textarea" required></textarea>
+                <textarea id="nameplate" name="nameplate" class="form-textarea nameplate-text" required></textarea>
                 <p class="form-note">
                     ・式場に掲示するお名前をご入力ください。<br>
                     ・1枚の芳名板に連名可。連名の場合は表示する順番を上からご入力ください。<br>
@@ -424,7 +424,7 @@
             </fieldset>
 
             <!-- 請求書ご送付先 -->
-            <div class="form-group">
+            <div class="form-group" id="invoiceDeliveryMethodGroup">
                 <fieldset class="radio-fieldset">
                     <legend class="fieldset-legend">
                         請求書ご送付先
@@ -622,6 +622,8 @@
 
         applicantTypeRadios.forEach(radio => {
             radio.addEventListener('change', function() {
+                const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+                
                 if (this.value === 'company') {
                     // 企業・団体の場合
                     contactPersonGroup.style.display = 'block';
@@ -630,17 +632,21 @@
                     applicantNote.textContent = '企業・団体名をご入力ください。';
                     applicantNameInput.placeholder = '例: 株式会社〇〇';
                     
-                    // 請求書送付先も企業・団体用に変更
-                    invoiceNameLabel.textContent = '企業・団体名';
-                    invoiceNameInput.placeholder = '例: 株式会社〇〇';
-                    invoiceContactPersonGroup.style.display = 'block';
+                    // 請求書送付先も企業・団体用に変更（支払い方法が振込の場合のみ）
+                    if (selectedPayment === 'transfer') {
+                        invoiceNameLabel.textContent = '企業・団体名';
+                        invoiceNameInput.placeholder = '例: 株式会社〇〇';
+                        invoiceContactPersonGroup.style.display = 'block';
+                    }
                     
-                    // 領収書送付先も企業・団体用に変更
-                    const receiptNameLabel = document.getElementById('receiptNameLabel');
-                    const receiptNameInput = document.getElementById('receiptName');
-                    if (receiptNameLabel && receiptNameInput) {
-                        receiptNameLabel.textContent = '企業・団体名';
-                        receiptNameInput.placeholder = '例: 株式会社〇〇';
+                    // 領収書送付先も企業・団体用に変更（支払い方法が現地払いの場合のみ）
+                    if (selectedPayment === 'onsite') {
+                        const receiptNameLabel = document.getElementById('receiptNameLabel');
+                        const receiptNameInput = document.getElementById('receiptName');
+                        if (receiptNameLabel && receiptNameInput) {
+                            receiptNameLabel.textContent = '企業・団体名';
+                            receiptNameInput.placeholder = '例: 株式会社〇〇';
+                        }
                     }
                 } else {
                     // 個人の場合
@@ -651,30 +657,36 @@
                     applicantNote.textContent = 'お申し込みされる方のお名前をご入力ください。';
                     applicantNameInput.placeholder = '例: 輝 花子';
                     
-                    // 請求書送付先も個人用に変更
-                    invoiceNameLabel.textContent = 'お名前';
-                    invoiceNameInput.placeholder = '例: 輝 花子';
-                    invoiceContactPersonGroup.style.display = 'none';
-                    invoiceContactPersonInput.value = '';
+                    // 請求書送付先も個人用に変更（支払い方法が振込の場合のみ）
+                    if (selectedPayment === 'transfer') {
+                        invoiceNameLabel.textContent = 'お名前';
+                        invoiceNameInput.placeholder = '例: 輝 花子';
+                        invoiceContactPersonGroup.style.display = 'none';
+                        invoiceContactPersonInput.value = '';
+                    }
                     
-                    // 領収書送付先も個人用に変更
-                    const receiptNameLabel = document.getElementById('receiptNameLabel');
-                    const receiptNameInput = document.getElementById('receiptName');
-                    if (receiptNameLabel && receiptNameInput) {
-                        receiptNameLabel.textContent = '宛名';
-                        receiptNameInput.placeholder = '例: 輝 花子';
+                    // 領収書送付先も個人用に変更（支払い方法が現地払いの場合のみ）
+                    if (selectedPayment === 'onsite') {
+                        const receiptNameLabel = document.getElementById('receiptNameLabel');
+                        const receiptNameInput = document.getElementById('receiptName');
+                        if (receiptNameLabel && receiptNameInput) {
+                            receiptNameLabel.textContent = '宛名';
+                            receiptNameInput.placeholder = '例: 輝 花子';
+                        }
                     }
                 }
                 
-                // 「依頼者と同じ」がチェックされている場合は、変更を反映（郵送が選択されている場合のみ）
-                const isMailSelected = document.querySelector('input[name="invoiceDeliveryMethod"]:checked')?.value === 'mail';
-                if (sameAsApplicantCheckbox.checked && isMailSelected) {
-                    invoiceNameInput.value = applicantNameInput.value;
-                    invoiceContactPersonInput.value = contactPersonInput.value;
-                    
-                    // 担当者フィールドの非活性化状態も更新
-                    if (this.value === 'company') {
-                        invoiceContactPersonInput.disabled = true;
+                // 「依頼者と同じ」がチェックされている場合は、変更を反映（支払い方法が振込で郵送が選択されている場合のみ）
+                if (selectedPayment === 'transfer') {
+                    const isMailSelected = document.querySelector('input[name="invoiceDeliveryMethod"]:checked')?.value === 'mail';
+                    if (sameAsApplicantCheckbox.checked && isMailSelected) {
+                        invoiceNameInput.value = applicantNameInput.value;
+                        invoiceContactPersonInput.value = contactPersonInput.value;
+                        
+                        // 担当者フィールドの非活性化状態も更新
+                        if (this.value === 'company') {
+                            invoiceContactPersonInput.disabled = true;
+                        }
                     }
                 }
 
@@ -726,9 +738,17 @@
 
         function updateReceiptFieldsForPayment(selectedPayment) {
             const applicantType = document.querySelector('input[name="applicantType"]:checked')?.value;
-            const needsContactPerson = applicantType === 'company' && selectedPayment === 'transfer';
+            const invoiceDeliveryMethodGroup = document.getElementById('invoiceDeliveryMethodGroup');
+            const invoiceMailFields = document.getElementById('invoiceMailFields');
+            const invoiceEmailFields = document.getElementById('invoiceEmailFields');
+            const invoiceEmailInput = document.getElementById('invoiceEmail');
 
             if (!selectedPayment) {
+                // 請求書を非表示
+                invoiceDeliveryMethodGroup.style.display = 'none';
+                invoiceMailFields.style.display = 'none';
+                invoiceEmailFields.style.display = 'none';
+                // 領収書を非表示
                 receiptMailFields.style.display = 'none';
                 if (receiptAddressFields) {
                     receiptAddressFields.style.display = 'none';
@@ -738,9 +758,67 @@
                 return;
             }
 
-            receiptMailFields.style.display = 'block';
-
-            if (selectedPayment === 'onsite') {
+            if (selectedPayment === 'transfer') {
+                // 振込の場合：請求書を表示、領収書を非表示
+                invoiceDeliveryMethodGroup.style.display = 'block';
+                // 請求書送付方法に応じて表示を制御
+                const selectedInvoiceMethod = document.querySelector('input[name="invoiceDeliveryMethod"]:checked')?.value;
+                if (selectedInvoiceMethod === 'mail') {
+                    invoiceMailFields.style.display = 'block';
+                    invoiceEmailFields.style.display = 'none';
+                } else if (selectedInvoiceMethod === 'email') {
+                    invoiceMailFields.style.display = 'none';
+                    invoiceEmailFields.style.display = 'block';
+                }
+                
+                // 領収書を非表示
+                receiptMailFields.style.display = 'none';
+                if (receiptAddressFields) {
+                    receiptAddressFields.style.display = 'none';
+                }
+                receiptFields.name.required = false;
+                receiptFields.name.disabled = false;
+                receiptFields.name.value = '';
+                requiredReceiptAddressKeys.forEach(key => {
+                    if (receiptFields[key]) {
+                        receiptFields[key].required = false;
+                        receiptFields[key].value = '';
+                        receiptFields[key].disabled = true;
+                    }
+                });
+                if (receiptFields.address2) {
+                    receiptFields.address2.value = '';
+                    receiptFields.address2.disabled = true;
+                }
+                if (receiptFields.contactPerson) {
+                    receiptFields.contactPerson.value = '';
+                    receiptFields.contactPerson.disabled = true;
+                }
+                receiptContactPersonGroup.style.display = 'none';
+            } else if (selectedPayment === 'onsite') {
+                // 現地払いの場合：請求書を非表示、領収書の宛名だけ表示
+                invoiceDeliveryMethodGroup.style.display = 'none';
+                invoiceMailFields.style.display = 'none';
+                invoiceEmailFields.style.display = 'none';
+                invoiceEmailInput.required = false;
+                invoiceEmailInput.value = '';
+                // 請求書フィールドの必須を解除
+                invoiceFields.name.required = false;
+                invoiceFields.postalCode.required = false;
+                invoiceFields.prefecture.required = false;
+                invoiceFields.city.required = false;
+                invoiceFields.address1.required = false;
+                invoiceFields.name.value = '';
+                invoiceFields.postalCode.value = '';
+                invoiceFields.prefecture.value = '';
+                invoiceFields.city.value = '';
+                invoiceFields.address1.value = '';
+                invoiceFields.address2.value = '';
+                invoiceFields.contactPerson.value = '';
+                sameAsApplicantCheckbox.checked = false;
+                
+                // 領収書の宛名だけ表示
+                receiptMailFields.style.display = 'block';
                 if (sameAsApplicantReceiptCheckbox.checked) {
                     sameAsApplicantReceiptCheckbox.checked = false;
                     sameAsApplicantReceiptCheckbox.dispatchEvent(new Event('change'));
@@ -765,40 +843,22 @@
                 if (receiptAddressFields) {
                     receiptAddressFields.style.display = 'none';
                 }
-            } else if (selectedPayment === 'transfer') {
-                receiptFields.name.required = true;
-                receiptFields.name.disabled = false;
-
-                requiredReceiptAddressKeys.forEach(key => {
-                    if (receiptFields[key]) {
-                        receiptFields[key].required = true;
-                        receiptFields[key].disabled = false;
+                
+                // 担当者フィールドは企業・団体の場合のみ表示
+                const needsContactPerson = applicantType === 'company';
+                if (needsContactPerson) {
+                    receiptContactPersonGroup.style.display = 'block';
+                    if (receiptFields.contactPerson) {
+                        receiptFields.contactPerson.required = true;
+                        receiptFields.contactPerson.disabled = false;
                     }
-                });
-
-                if (receiptFields.address2) {
-                    receiptFields.address2.disabled = false;
-                }
-
-                if (receiptAddressFields) {
-                    receiptAddressFields.style.display = 'block';
-                }
-
-                if (sameAsApplicantReceiptCheckbox.checked) {
-                    sameAsApplicantReceiptCheckbox.dispatchEvent(new Event('change'));
-                }
-            }
-
-            if (needsContactPerson) {
-                receiptContactPersonGroup.style.display = 'block';
-                if (receiptFields.contactPerson) {
-                    receiptFields.contactPerson.disabled = false;
-                }
-            } else {
-                receiptContactPersonGroup.style.display = 'none';
-                if (receiptFields.contactPerson) {
-                    receiptFields.contactPerson.value = '';
-                    receiptFields.contactPerson.disabled = true;
+                } else {
+                    receiptContactPersonGroup.style.display = 'none';
+                    if (receiptFields.contactPerson) {
+                        receiptFields.contactPerson.required = false;
+                        receiptFields.contactPerson.value = '';
+                        receiptFields.contactPerson.disabled = true;
+                    }
                 }
             }
         }
@@ -820,6 +880,12 @@
 
         invoiceDeliveryMethodRadios.forEach(radio => {
             radio.addEventListener('change', function() {
+                // 支払い方法が振込の場合のみ処理
+                const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+                if (selectedPayment !== 'transfer') {
+                    return;
+                }
+                
                 if (this.value === 'mail') {
                     // 郵送の場合
                     invoiceMailFields.style.display = 'block';
@@ -860,8 +926,14 @@
         });
 
         sameAsApplicantCheckbox.addEventListener('change', function() {
+            // 支払い方法が振込の場合のみ機能
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+            if (selectedPayment !== 'transfer') {
+                this.checked = false;
+                return;
+            }
             // 郵送が選択されている場合のみ機能
-            const isMailSelected = document.querySelector('input[name="invoiceDeliveryMethod"]:checked').value === 'mail';
+            const isMailSelected = document.querySelector('input[name="invoiceDeliveryMethod"]:checked')?.value === 'mail';
             if (!isMailSelected) {
                 this.checked = false;
                 return;
@@ -904,7 +976,11 @@
         // 依頼者情報が変更されたときに、チェックボックスがONの場合は自動更新
         Object.keys(applicantFields).forEach(key => {
             applicantFields[key].addEventListener('input', function() {
-                const isMailSelected = document.querySelector('input[name="invoiceDeliveryMethod"]:checked').value === 'mail';
+                const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+                if (selectedPayment !== 'transfer') {
+                    return;
+                }
+                const isMailSelected = document.querySelector('input[name="invoiceDeliveryMethod"]:checked')?.value === 'mail';
                 if (sameAsApplicantCheckbox.checked && isMailSelected) {
                     invoiceFields[key].value = this.value;
                 }
@@ -913,49 +989,26 @@
 
         // 領収書「依頼者と同じ」チェックボックス制御
         sameAsApplicantReceiptCheckbox.addEventListener('change', function() {
+            // 支払い方法が現地払いの場合のみ機能
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+            if (selectedPayment !== 'onsite') {
+                this.checked = false;
+                return;
+            }
+            
             if (this.checked) {
-                // 依頼者情報をコピー
+                // 依頼者情報をコピー（宛名と担当者名のみ）
                 receiptFields.name.value = applicantFields.name.value;
-                receiptFields.contactPerson.value = applicantFields.contactPerson.value;
-                receiptFields.postalCode.value = applicantFields.postalCode.value;
-                receiptFields.prefecture.value = applicantFields.prefecture.value;
-                receiptFields.city.value = applicantFields.city.value;
-                receiptFields.address1.value = applicantFields.address1.value;
-                receiptFields.address2.value = applicantFields.address2.value;
-                
-                // フィールドを非活性化（担当者フィールドは表示されている場合のみ）
-                receiptFields.name.disabled = true;
-                receiptFields.postalCode.disabled = true;
-                receiptFields.prefecture.disabled = true;
-                receiptFields.city.disabled = true;
-                receiptFields.address1.disabled = true;
-                receiptFields.address2.disabled = true;
-                if (receiptContactPersonGroup.style.display !== 'none') {
+                if (receiptFields.contactPerson && receiptContactPersonGroup.style.display !== 'none') {
+                    receiptFields.contactPerson.value = applicantFields.contactPerson.value;
                     receiptFields.contactPerson.disabled = true;
                 }
+                
+                // 宛名フィールドを非活性化
+                receiptFields.name.disabled = true;
             } else {
                 // フィールドを活性化
                 receiptFields.name.disabled = false;
-                const selectedPaymentForReceipt = document.querySelector('input[name="paymentMethod"]:checked')?.value;
-                if (selectedPaymentForReceipt === 'transfer') {
-                    requiredReceiptAddressKeys.forEach(key => {
-                        if (receiptFields[key]) {
-                            receiptFields[key].disabled = false;
-                        }
-                    });
-                    if (receiptFields.address2) {
-                        receiptFields.address2.disabled = false;
-                    }
-                } else {
-                    requiredReceiptAddressKeys.forEach(key => {
-                        if (receiptFields[key]) {
-                            receiptFields[key].disabled = true;
-                        }
-                    });
-                    if (receiptFields.address2) {
-                        receiptFields.address2.disabled = true;
-                    }
-                }
                 if (receiptContactPersonGroup.style.display !== 'none') {
                     receiptFields.contactPerson.disabled = false;
                 }
@@ -963,25 +1016,37 @@
         });
 
         // 依頼者情報が変更されたときに、領収書のチェックボックスがONの場合は自動更新
-        Object.keys(applicantFields).forEach(key => {
-            applicantFields[key].addEventListener('input', function() {
-                if (sameAsApplicantReceiptCheckbox.checked) {
-                    receiptFields[key].value = this.value;
+        applicantFields.name.addEventListener('input', function() {
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+            if (selectedPayment === 'onsite' && sameAsApplicantReceiptCheckbox.checked) {
+                receiptFields.name.value = this.value;
+            }
+        });
+        
+        if (applicantFields.contactPerson) {
+            applicantFields.contactPerson.addEventListener('input', function() {
+                const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+                if (selectedPayment === 'onsite' && sameAsApplicantReceiptCheckbox.checked) {
+                    if (receiptFields.contactPerson && receiptContactPersonGroup.style.display !== 'none') {
+                        receiptFields.contactPerson.value = this.value;
+                    }
                 }
             });
-        });
+        }
 
         // 代表者区分変更時に、領収書の「依頼者と同じ」がチェックされている場合は反映
         applicantTypeRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                // 領収書の「依頼者と同じ」がチェックされている場合は、変更を反映
-                if (sameAsApplicantReceiptCheckbox.checked) {
+                // 領収書の「依頼者と同じ」がチェックされている場合は、変更を反映（支払い方法が現地払いの場合のみ）
+                const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+                if (selectedPayment === 'onsite' && sameAsApplicantReceiptCheckbox.checked) {
                     receiptNameInput.value = applicantNameInput.value;
-                    receiptContactPersonInput.value = contactPersonInput.value;
-                    
-                    // 担当者フィールドの非活性化状態も更新
-                    if (this.value === 'company') {
-                        receiptContactPersonInput.disabled = true;
+                    if (receiptContactPersonInput && receiptContactPersonGroup.style.display !== 'none') {
+                        receiptContactPersonInput.value = contactPersonInput.value;
+                        // 担当者フィールドの非活性化状態も更新
+                        if (this.value === 'company') {
+                            receiptContactPersonInput.disabled = true;
+                        }
                     }
                 }
             });

@@ -279,7 +279,7 @@
                                             <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
                                             <td>12</td>
                                             <td>2024/01/16</td>
-                                            <td>株式会社サンプル</td>
+                                            <td class="nameplate-display">株式会社サンプル</td>
                                             <td>山田花子</td>
                                             <td>090-1234-5678</td>
                                             <td class="amount">¥14,300</td>
@@ -327,7 +327,7 @@
                                             <td><input type="checkbox" class="row-checkbox" data-group="1"></td>
                                             <td>13</td>
                                             <td>2024/01/16</td>
-                                            <td>輝商事株式会社</td>
+                                            <td class="nameplate-display">輝商事株式会社</td>
                                             <td>輝 次郎</td>
                                             <td>080-1111-2222</td>
                                             <td class="amount">¥14,300</td>
@@ -665,7 +665,7 @@
                                             <td><input type="checkbox" class="row-checkbox" data-group="2"></td>
                                             <td>11</td>
                                             <td>2024/01/15</td>
-                                            <td>田中工業株式会社</td>
+                                            <td class="nameplate-display">田中工業株式会社</td>
                                             <td>田中美子</td>
                                             <td>080-9876-5432</td>
                                             <td class="amount">¥20,000</td>
@@ -956,7 +956,7 @@
                                             <td><input type="checkbox" class="row-checkbox" data-group="3"></td>
                                             <td>10</td>
                                             <td>2024/01/15</td>
-                                            <td>佐藤工業株式会社</td>
+                                            <td class="nameplate-display">佐藤工業株式会社</td>
                                             <td>佐藤太郎</td>
                                             <td>070-1111-2222</td>
                                             <td class="amount">¥14,300</td>
@@ -1443,7 +1443,8 @@
                         </div>
                         <div class="form-row">
                             <label for="newFuneralDate">葬儀日:</label>
-                            <input type="date" id="newFuneralDate" required>
+                            <input type="datetime-local" id="newFuneralDate" required>
+                            <p class="form-note">葬儀の日付と時刻を選択してください</p>
                         </div>
                         <div class="form-row">
                             <label for="newVenue">会場:</label>
@@ -1640,7 +1641,7 @@
                         <h3>芳名板・金額</h3>
                         <div class="form-row">
                             <label for="editNameplate">芳名板のお名前:</label>
-                            <textarea id="editNameplate" rows="3" required placeholder="式場に掲示するお名前を入力してください"></textarea>
+                            <textarea id="editNameplate" class="nameplate-text" rows="3" required placeholder="式場に掲示するお名前を入力してください"></textarea>
                         </div>
                         <div class="form-row">
                             <label for="editAmount">金額（税込）:</label>
