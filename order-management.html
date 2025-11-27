@@ -131,6 +131,10 @@
                                             <i class="fas fa-file-alt"></i> 帳票作成
                                         </button>
                                         <div class="dropdown-menu" id="dropdown-1">
+                                            <button class="dropdown-item" onclick="downloadOrderTemplatePDF(1)">
+                                                <i class="fas fa-download"></i> 注文書テンプレート
+                                            </button>
+                                            <div class="dropdown-divider"></div>
                                             <button class="dropdown-item" onclick="generateFuneralInvoices(1)">
                                                 <i class="fas fa-file-invoice-dollar"></i> 請求書作成
                                             </button>
@@ -490,7 +494,10 @@
                                             <i class="fas fa-file-alt"></i> 帳票作成
                                         </button>
                                         <div class="dropdown-menu" id="dropdown-2">
-                                            
+                                            <button class="dropdown-item" onclick="downloadOrderTemplatePDF(2)">
+                                                <i class="fas fa-download"></i> 注文書テンプレート
+                                            </button>
+                                            <div class="dropdown-divider"></div>
                                 <button class="dropdown-item" onclick="generateFuneralInvoices(2)">
                                     <i class="fas fa-file-invoice-dollar"></i> 請求書作成
                                 </button>
@@ -755,7 +762,10 @@
                                             <i class="fas fa-file-alt"></i> 帳票作成
                                         </button>
                                         <div class="dropdown-menu" id="dropdown-3">
-                                            
+                                            <button class="dropdown-item" onclick="downloadOrderTemplatePDF(3)">
+                                                <i class="fas fa-download"></i> 注文書テンプレート
+                                            </button>
+                                            <div class="dropdown-divider"></div>
                                 <button class="dropdown-item" onclick="generateFuneralInvoices(3)">
                                     <i class="fas fa-file-invoice-dollar"></i> 請求書作成
                                 </button>
@@ -1277,9 +1287,9 @@
                     </div>
 
                     <div class="form-section" id="builtinLimitSection">
-                        <h3>付け花処理上限額の設定</h3>
+                        <h3>付け花金額の設定</h3>
                         <div class="form-row">
-                            <label for="builtinLimitInput">付け花として処理する上限額（円）:</label>
+                            <label for="builtinLimitInput">付け花の金額:</label>
                             <input type="number" id="builtinLimitInput" min="0" step="1000" value="50000" placeholder="例: 50000">
                             <p class="form-note">
                                 この金額までを付け花として処理します。超過分は自動的に葬儀代金から引きます。<br>
@@ -1321,7 +1331,7 @@
                                 <span class="preview-value" id="previewAddonTax">¥0</span>
                             </div>
                             <div class="preview-item highlight">
-                                <span class="preview-label">葬儀代から減額（税込）:</span>
+                                <span class="preview-label">精算額（税込）:</span>
                                 <span class="preview-value deduct" id="previewDeduct">¥0</span>
                             </div>
                             <div class="preview-item" style="padding-left: 20px; font-size: 0.9em; color: #666;">
@@ -1418,9 +1428,9 @@
                             </label>
                         </div>
                         <div class="form-row" id="newBuiltinLimitRow">
-                            <label for="newBuiltinLimit">付け花として処理する上限額（円）:</label>
+                            <label for="newBuiltinLimit">付け花の金額:</label>
                             <input type="number" id="newBuiltinLimit" min="0" step="1000" value="50000" placeholder="50000">
-                            <p class="form-note">付け花として処理する上限額（組み込み式の場合のみ）</p>
+                            <p class="form-note">付け花として処理する金額（組み込み式の場合のみ）</p>
                         </div>
                     </div>
                 </form>

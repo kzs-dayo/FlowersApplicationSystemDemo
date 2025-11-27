@@ -5664,6 +5664,10 @@ function createFuneralGroupHTML(funeralId) {
                             <i class="fas fa-file-alt"></i> 帳票作成
                         </button>
                         <div class="dropdown-menu" id="dropdown-${funeralId}">
+                            <button class="dropdown-item" onclick="downloadOrderTemplatePDF(${funeralId})">
+                                <i class="fas fa-download"></i> 注文書テンプレート
+                            </button>
+                            <div class="dropdown-divider"></div>
                             <button class="dropdown-item" onclick="generateFuneralInvoices(${funeralId})">
                                 <i class="fas fa-file-invoice-dollar"></i> 請求書作成
                             </button>
@@ -7135,10 +7139,22 @@ function downloadCustomerListPDF() {
 }
 
 // 注文書テンプレートPDFダウンロード機能
-function downloadOrderTemplatePDF() {
+// funeralId: ご葬家ID（オプション）。指定された場合はご葬家名を含むファイル名でダウンロード
+function downloadOrderTemplatePDF(funeralId) {
     try {
         // PDFファイルのパス
         const pdfPath = 'template/注文書.pdf';
+        
+        // ファイル名を決定
+        let fileName = '注文書.pdf';
+        if (funeralId) {
+            // ご葬家情報を取得
+            const funeralInfo = funeralInfoData[funeralId];
+            if (funeralInfo) {
+                const funeralName = funeralInfo.family || funeralInfo.name || `ご葬家${funeralId}`;
+                fileName = `注文書_${funeralName}.pdf`;
+            }
+        }
         
         // fetch APIを使用してPDFファイルを取得
         fetch(pdfPath)
@@ -7155,7 +7171,7 @@ function downloadOrderTemplatePDF() {
                 // ダウンロード用のa要素を作成
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = '注文書.pdf'; // ダウンロード時のファイル名
+                a.download = fileName; // ダウンロード時のファイル名
                 document.body.appendChild(a);
                 
                 // クリックイベントを発火してダウンロード
